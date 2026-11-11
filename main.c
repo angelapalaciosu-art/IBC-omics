@@ -3284,7 +3284,7 @@ int main(void) {
         printf("      Opcion [5]: Ingresar al Menu Pases \n");
         printf("      Opcion [6]: Cambiar precios de los pases \n");
         printf("      Opcion [7]: Salir del sistema \n");
-        printf("   Ingrese una opcion: ");
+        printf("   Ingrese una opcion valida: ");
         opcionSeleccionada = inputEntero();
 
         switch (opcionSeleccionada) {
