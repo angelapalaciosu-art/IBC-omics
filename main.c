@@ -1232,30 +1232,7 @@ int contarTitulosEnSala(struct Sala *sala) {
     }
     return cantidad;
 }
-/* Esta funcion ordena los titulos por cantidad de ejemplares de mayor a menor */
-struct Sala *ordenarTitulosPorEjemplares(struct Sala *sala) {
-    int huboCambio;
-    struct NodoTitulo *rec;
-    struct Titulo *aux;
 
-    if (sala == NULL || sala->headNodoTitulo == NULL) {
-        return NULL;
-    }
-    do {
-        huboCambio = 0;
-        rec = sala->headNodoTitulo->sig;
-        while (rec != NULL && rec->sig != NULL) {
-            if (rec->datosTitulo->cantidadEjemplares < rec->sig->datosTitulo->cantidadEjemplares) {
-                aux = rec->datosTitulo;
-                rec->datosTitulo = rec->sig->datosTitulo;
-                rec->sig->datosTitulo = aux;
-                huboCambio = 1;
-            }
-            rec = rec->sig;
-        }
-    } while (huboCambio == 1);
-    return sala;
-}
 /* Esta funcion ordena las salas por cantidad de personas de mayor a menor */
 struct Tienda *ordenarSalasPorPersonas(struct Tienda *tienda) {
     int i, j;
@@ -1919,7 +1896,7 @@ struct Titulo *obtenerTituloMenorListaEspera (struct NodoTitulo *head) {
         return NULL;
     }
 
-    rec = head->sig;
+    rec = head->sig;ordenarTitulosPorEjemplares()
 
     while (rec != NULL) {
         if (rec->datosTitulo != NULL) {
