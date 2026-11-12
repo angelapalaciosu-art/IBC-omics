@@ -4,7 +4,7 @@
 #include <time.h>
 
 #define MAX_SALAS 6
-/*COMENTARIO DE PRUBEA*/
+
 /* =========================================================================
    DECLARACIONES ADELANTADAS
    ========================================================================= */
@@ -1233,6 +1233,24 @@ int contarTitulosEnSala(struct Sala *sala) {
     return cantidad;
 }
 
+/* Esta funcion ordena las salas por cantidad de personas de mayor a menor */
+struct Tienda *ordenarSalasPorPersonas(struct Tienda *tienda) {
+    int i, j;
+    struct Sala *aux;
+    if (tienda == NULL || tienda->salas == NULL) {
+        return NULL;
+    }
+    for (i = 0; i < tienda->cantidadSalas - 1; i++) {
+        for (j = 0; j < tienda->cantidadSalas - 1 - i; j++) {
+            if (contarPersonasEnSala(tienda->raiz, tienda->salas[j]) < contarPersonasEnSala(tienda->raiz, tienda->salas[j + 1])) {
+                aux = tienda->salas[j];
+                tienda->salas[j] = tienda->salas[j + 1];
+                tienda->salas[j + 1] = aux;
+            }
+        }
+    }
+    return tienda;
+}
 /* Esta funcion ordena las salas por cantidad de titulos de mayor a menor */
 struct Tienda *ordenarSalasPorTitulos(struct Tienda *tienda) {
     int i, j;
