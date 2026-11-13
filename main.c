@@ -732,9 +732,9 @@ void actualizarEstadoListaEspera(struct Titulo *titulo) {
 }
 
 /* Esta funcion crea un titulo  */
-struct Titulo *crearTitulo(int idTitulo, char *nombreTitulo, int tipoTitulo, int clasificacionEdad, int precio, int cantidadEjemplares, int estado, int estadoListaEspera, int ejemplaresPorDespacho, int diasDemoraDespacho) {
+struct Titulo *crearTitulo(int idTitulo, char *nombreTitulo, int tipoTitulo, int clasificacionEdad, int precio, int cantidadEjemplares, int estado, int ejemplaresPorDespacho, int diasDemoraDespacho) {
     struct Titulo *nuevoTitulo;
-    if (nombreTitulo == NULL || tipoTitulo < 1 || tipoTitulo > 6 || estado < 1 || estado > 4 || estadoListaEspera < 1 || estadoListaEspera > 2 || ejemplaresPorDespacho < 0 || diasDemoraDespacho < 0) {
+    if (nombreTitulo == NULL || tipoTitulo < 1 || tipoTitulo > 6 || estado < 1 || estado > 4 || ejemplaresPorDespacho < 0 || diasDemoraDespacho < 0) {
         return NULL;
     }
     nuevoTitulo = (struct Titulo *) malloc(sizeof(struct Titulo));
@@ -976,7 +976,6 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
         printf("      Opcion [6]: Modificar estado \n");
         printf("      Opcion [7]: Modificar ejemplares por despacho \n");
         printf("      Opcion [8]: Modificar dias de demora del despacho \n");
-        printf("      Opcion [9]: Modificar estado de lista de espera \n");
         printf("\n");
         printf("      Opcion [0]: Salir de Menu \n");
         printf("\n");
@@ -1045,6 +1044,7 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                     printf("Error: Ingrese un estado valido (1-4) = ");
                     tituloModificar->estado = inputEntero();
                 }
+                actualizarEstadoListaEspera(tituloModificar);
                 printf("Estado modificado con exito! Nuevo estado: %d \n\n", tituloModificar->estado);
                 break;
             case 7:
@@ -1061,18 +1061,7 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                 tituloModificar->diasDemoraDespacho = inputEntero();
                 printf("Valor modificado con exito! Nuevo valor de dias de demora: %d \n\n", tituloModificar->diasDemoraDespacho);
                 break;
-            case 9:
-                printf("Ha seleccionado la opcion 9: Modificar estado de lista de espera \n");
-                printf("Estado de lista de espera registrado: %d - %s \n", tituloModificar->estadoListaEspera, tituloModificar->estadoListaEspera == 1 ? "Activa" : "Suspendida");
-                printf("Opciones: [1] Activa / [2] Suspendida\n");
-                printf("Ingrese el nuevo estado de la lista de espera (1-2) = ");
-                tituloModificar->estadoListaEspera = inputEntero();
-                while (tituloModificar->estadoListaEspera < 1 || tituloModificar->estadoListaEspera > 2) {
-                    printf("Error: Ingrese un estado de lista de espera valido (1-2) = ");
-                    tituloModificar->estadoListaEspera = inputEntero();
-                }
-                printf("Estado de lista de espera modificado con exito! Nuevo estado: %d - %s \n\n", tituloModificar->estadoListaEspera, tituloModificar->estadoListaEspera == 1 ? "Activa" : "Suspendida");
-                break;
+
             case 0:
                 printf("Saliendo del menu...\n");
                 break;
@@ -1595,7 +1584,7 @@ struct Titulo *crearYAgregarTitulo(struct Tienda *tienda, struct Sala *sala) {
         diasDemoraDespacho = inputEntero();
     }
 
-    nuevoTitulo = crearTitulo(idTitulo, nombreTitulo, tipoTitulo, clasificacionEdad, precio, cantidadEjemplares, estado, estadoListaEspera, ejemplaresPorDespacho, diasDemoraDespacho);
+    nuevoTitulo = crearTitulo(idTitulo, nombreTitulo, tipoTitulo, clasificacionEdad, precio, cantidadEjemplares, estado, ejemplaresPorDespacho, diasDemoraDespacho);
     if (nuevoTitulo == NULL) {
         return NULL;
     }
