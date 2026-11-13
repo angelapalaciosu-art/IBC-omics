@@ -1886,30 +1886,7 @@ struct Titulo *obtenerTituloMayorListaEspera(struct NodoTitulo *head) {
     return tituloMayor;
 }
 
-struct Titulo *obtenerTituloMenorListaEspera (struct NodoTitulo *head) {
-    struct NodoTitulo *rec;
-    int cantListaEspera = 0;
-    int menor = -1;
-    struct Titulo *tituloMenor = NULL;
 
-    if (head == NULL || head ->sig == NULL) {
-        return NULL;
-    }
-
-    rec = head->sig;ordenarTitulosPorEjemplares()
-
-    while (rec != NULL) {
-        if (rec->datosTitulo != NULL) {
-            cantListaEspera = contarCantidadClientesEnListaEspera(rec->datosTitulo->headListaEspera);
-            if (cantListaEspera > 0 && (tituloMenor == NULL || cantListaEspera < menor)) { /*toma al primero como menor para despues empezar a comparar*/
-                tituloMenor = rec->datosTitulo;
-                menor = cantListaEspera;
-            }
-        }
-        rec = rec->sig;
-    }
-    return tituloMenor;
-}
 
 int calcularTiempoEstimadoEsperaDias(struct Titulo *tituloEncontrado) {
     int cantidadListaEspera = 0;
