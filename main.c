@@ -2276,75 +2276,6 @@ void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
     }
 }
 
-void modificarEstadoListaEsperaMenu(struct Tienda *ibcomics) {
-    struct Titulo *tituloEncontrado = NULL;
-    int idTituloBuscado;
-    int nuevoEstado;
-
-    if (ibcomics != NULL) {
-        printf(" ============ MENU MODIFICAR ESTADO DE LISTA DE ESPERA ============\n");
-
-        /*el ciclo se repite mientras no se encuentre un titulo*/
-        while (tituloEncontrado == NULL) {
-            printf("Ingrese el id del titulo (0 para cancelar): ");
-            idTituloBuscado = inputEntero();
-
-            if (idTituloBuscado == 0) {
-                printf("Operacion cancelada\n");
-                return;
-            }
-
-            tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
-
-            if (tituloEncontrado == NULL) {
-                printf("Error: No se pudo encontrar el titulo con el ID %d. Intente nuevamente\n\n", idTituloBuscado);
-            }
-        }
-
-        printf("Titulo encontrado: %s\n", tituloEncontrado->nombreTitulo);
-        printf("\n");
-
-        if (tituloEncontrado->estadoListaEspera == 1) {
-            printf("Estado actual de la lista de espera: Activa\n");
-        } else {
-            printf("Estado actual de la lista de espera: Suspendida\n");
-        }
-
-        printf("Opciones: [1] Activar / [2] Suspender / [0] Cancelar\n");
-        printf("Ingrese el nuevo estado: ");
-        nuevoEstado = inputEntero();
-
-        while (nuevoEstado < 0 || nuevoEstado > 2) {
-            printf("Error: Ingrese una opcion valida (0, 1, 2): ");
-            nuevoEstado = inputEntero();
-        }
-
-        if (nuevoEstado == 0) {
-            printf("Operacion cancelada.\n");
-            return;
-        }
-
-        if (nuevoEstado == tituloEncontrado->estadoListaEspera) {
-            printf("La lista de espera ya se encuentra en ese estado\n");
-            return;
-        }
-
-        /*un titulo descatalogado no puede tener lista de espera activa*/
-        if (nuevoEstado == 1 && tituloEncontrado->estado == 4) {
-            printf("Error: No se puede activar la lista de un titulo Descatalogado\n");
-            return;
-        }
-
-        tituloEncontrado->estadoListaEspera = nuevoEstado;
-
-        if (nuevoEstado == 1) {
-            printf("La lista de espera del titulo %s ahora esta ACTIVA\n", tituloEncontrado->nombreTitulo);
-        } else {
-            printf("La lista de espera del titulo %s ahora esta SUSPENDIDA\n", tituloEncontrado->nombreTitulo);
-        }
-    }
-
-}
 
 
 /*------------------MENU LISTA ESPERA---------------*/
@@ -2370,10 +2301,9 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
         printf("      Opcion [3]: Mostrar tiempo estimado de Lista de espera \n");
         printf("      Opcion [4]: Mostrar cantidad de Clientes en una Lista de espera \n");
         printf("      Opcion [5]: Mostrar Titulo con mayor Lista de espera por sala \n");
-        printf("      Opcion [6]: Modificar estado lista de espera \n");
         printf("\n");
-        printf("      Opcion [7]: Vaciar Lista de espera \n");
-        printf("      Opcion [8]: Salir de Menu \n");
+        printf("      Opcion [6]: Vaciar Lista de espera \n");
+        printf("      Opcion [7]: Salir de Menu \n");
         printf("\n");
 
         printf("   Por favor, ingrese una de las opciones disponibles : \n");
@@ -2411,25 +2341,21 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
                 break;
 
             case 6:
-                printf("Ha seleccionado la opcion 7: Modificar estado lista de espera \n");
-                modificarEstadoListaEsperaMenu(ibcomics);
-                break;
-
-            case 7:
-                printf("Ha seleccionado la opcion 8: Vaciar Lista de espera \n");
+                printf("Ha seleccionado la opcion 6: Vaciar Lista de espera \n");
                 vaciarListaEsperaMenu(ibcomics);
                 break;
 
-            case 8:
+            case 7:
                 printf("Saliendo del menu...\n");
                 break;
+
 
             default :
                 printf("\n  ERROR! Opcion no valida. Intente nuevamente :) \n");
                 break;
         }
 
-    } while (opcionSeleccionada != 9);
+    } while (opcionSeleccionada != 7);
 }
 /* =========================================================================
    MODULO DE PASES (Nico)
