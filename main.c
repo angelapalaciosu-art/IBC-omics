@@ -1968,6 +1968,25 @@ int eliminarClienteDeListaEspera(struct NodoListaEspera **head, int idBuscado) {
 
     return 0;
 }
+/*-----------listar--------------------*/
+
+void listarClientesListaEspera(struct NodoListaEspera *head) {
+    struct NodoListaEspera *rec;
+    int lugarCliente = 1;
+
+    if (head == NULL) {
+        printf("La lista se encuentra vacia");
+        return;
+    }
+
+    rec = head;
+
+    do {
+        lugarCliente++;
+        printf("[%d] | ID: %d | RUT: %s | NOMBRE: %s | EDAD: %d ", lugarCliente, rec->datosCliente->idCliente, rec->datosCliente->rutCliente, rec->datosCliente->nombreCliente, rec->datosCliente->edad);
+        rec = rec -> sig;
+    }while (rec != head);
+}
 
 
 /*AGREGAR CLIENTE A LA LISTA DE ESPERA*/
@@ -1986,10 +2005,11 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
         while (tituloEncontrado == NULL) {  /*tituloEncontrado empieza en null, despues si se encuentra no vuelve a este while y sigue (se utiliza para preguntar hasta encontrar)*/
             printf("Bienvenido/da, por favor ingrese el id del titulo que desea esperar : \n");
 
-            if (scanf("%d", &idTituloBuscado) != 1) {  /*para que se ingrese solo un int, retorna 1 si se ingresa un int y 0 si es un simbolo o letra*/
-                while (getchar() != '\n');
-                printf("Error: Ingrese un ID numerico valido.\n\n");
-                continue;
+            idTituloBuscado = inputEntero();
+
+            if (idTituloBuscado == 0) {
+                printf("Error: Operacion cancelada . . .");
+                return;
             }
 
             tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
@@ -2010,33 +2030,34 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
             /*si retorna null significa que no está en la lista de espera por lo que se puede ingresar*/
 
             if (clienteEnFila == NULL) {  /*para que un mismo cliente no ingrese dos veces*/
-                if (tituloEncontrado->estadoListaEspera == 1){
-                   printf("Error: El titulo esta descatalogado, no admite lista de espera \n");
-                }
-                if (tituloEncontrado->estado == 4) {
 
-
+                if (tituloEncontrado->estadoListaEspera == 1){  /*Si la lista de espera está activa*/
                     nuevoNodo = crearNodoListasEspera(clienteEnTienda);
-                    enlazarNodoListaEspera(&(tituloEncontrado->headListaEspera), nuevoNodo);
 
-                    printf("Se ha anadido con exito al cliente! \n");
-                    printf("Nombre del cliente: %s\n", clienteEnTienda->nombreCliente);
-                    printf("Rut del cliente: %s\n", clienteEnTienda->rutCliente);
-                    printf("Titulo en la lista de espera : %s\n", tituloEncontrado->nombreTitulo);
+                    if (nuevoNodo != NULL) {
+                        enlazarNodoListaEspera(&(tituloEncontrado->headListaEspera), nuevoNodo);
+
+                        printf("Se ha anadido con exito al cliente! \n");
+                        printf("Nombre del cliente: %s\n", clienteEnTienda->nombreCliente);
+                        printf("Rut del cliente: %s\n", clienteEnTienda->rutCliente);
+                        printf("Titulo en la lista de espera : %s\n", tituloEncontrado->nombreTitulo);
+                    }
+                    else {
+                        printf("Error al agregar al cliente.\n");
+                    }
                 }
                 else {
-                    printf("Error: Solo los titulos Agotados admiten lista de espera.\n");
+                    printf("Error: La lista de espera esta suspendida. \n");
                 }
             }
             else {
-                printf("Error: El cliente ya se encuentra dentro de la lista de espera.\n");
+                printf("Error: El cliente ya se encuentra dentro de la lista de espera\n");
             }
         } else {
             printf("Error: El cliente no se encuentra registrado en el sistema general de la tienda.\n");
         }
     }
 }
-
 
 void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     int idTituloBuscado;
@@ -2225,7 +2246,42 @@ void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
 }
 
 
+void menuListarClientesListaEspera(struct Tienda *ibcomics) {
+    struct Titulo *tituloEncontrado;
+    int idTitulo;
 
+    if (ibcomics != NULL) {
+        printf(" ============ MENU LISTAR LISTA DE ESPERA ============\n");
+        printf("\n");
+
+        while (tituloEncontrado == NULL) {
+            printf("Ingrese el ID del titulo (escriba 0 para cancelar): \n");
+            idTitulo = inputEntero();
+
+            if (idTitulo == 0) {
+                printf("La operacion se ha cancelado . . .. \n");
+                return;
+            }
+
+            tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTitulo);
+
+            if (tituloEncontrado == NULL) {
+                printf("No existe titulo con ese ID, Intente nuevamente \n");
+            }
+        }
+
+        printf("El titulo ha sido encontrado! \n");
+        printf("Nombre: %s", tituloEncontrado->nombreTitulo);
+        if (tituloEncontrado->estadoListaEspera == 1) {
+            printf("Estado de la lista de espera: Activa \n");
+        }
+        else {
+            printf("Estado de la lista de espera: Suspendida \n");
+        }
+        printf("\n");
+        listarClientesListaEspera(tituloEncontrado->headListaEspera);
+    }
+}
 
 void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
     struct Titulo *tituloEncontrado = NULL;
@@ -2294,9 +2350,10 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
         printf("      Opcion [3]: Mostrar tiempo estimado de Lista de espera \n");
         printf("      Opcion [4]: Mostrar cantidad de Clientes en una Lista de espera \n");
         printf("      Opcion [5]: Mostrar Titulo con mayor Lista de espera por sala \n");
+        printf("      Opcion [6]: Listar clientes en una lista de espera \n");
         printf("\n");
-        printf("      Opcion [6]: Vaciar Lista de espera \n");
-        printf("      Opcion [7]: Salir de Menu \n");
+        printf("      Opcion [7]: Vaciar Lista de espera \n");
+        printf("      Opcion [8]: Salir de Menu \n");
         printf("\n");
 
         printf("   Por favor, ingrese una de las opciones disponibles : \n");
@@ -2334,21 +2391,25 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
                 break;
 
             case 6:
-                printf("Ha seleccionado la opcion 6: Vaciar Lista de espera \n");
-                vaciarListaEsperaMenu(ibcomics);
+                printf("Ha seleccionado la opcion 6: Listar clientes en una lista de espera \n");
+                menuListarClientesListaEspera(ibcomics);
                 break;
 
             case 7:
-                printf("Saliendo del menu...\n");
+                printf("Ha seleccionado la opcion 7: Vaciar Lista de espera \n");
+                vaciarListaEsperaMenu(ibcomics);
                 break;
 
+            case 8:
+                printf("Saliendo del menu...\n");
+                break;
 
             default :
                 printf("\n  ERROR! Opcion no valida. Intente nuevamente :) \n");
                 break;
         }
 
-    } while (opcionSeleccionada != 7);
+    } while (opcionSeleccionada != 8);
 }
 /* =========================================================================
    MODULO DE PASES (Nico)
