@@ -1968,6 +1968,26 @@ int eliminarClienteDeListaEspera(struct NodoListaEspera **head, int idBuscado) {
 
     return 0;
 }
+/*-----------listar--------------------*/
+
+void listarClientesListaEspera(struct NodoListaEspera *head) {
+    struct NodoListaEspera *rec;
+    int lugarCliente = 1;
+
+    if (head == NULL) {
+        printf("La lista se encuentra vacia");
+        return NULL;
+    }
+
+    rec = head;
+
+    do {
+        lugarCliente++;
+        printf("[%d] | ID: %d | RUT: %s | NOMBRE: %s | EDAD: %d ", lugarCliente, rec->datosCliente->idCliente, rec->datosCliente->rutCliente, rec->datosCliente->nombreCliente, rec->datosCliente->edad);
+        rec = rec -> sig;
+    }while (rec != head)
+}
+
 
 
 /*AGREGAR CLIENTE A LA LISTA DE ESPERA*/
@@ -2227,6 +2247,11 @@ void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
 }
 
 
+void menuListarClientesListaEspera() {
+
+}
+
+
 
 
 void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
@@ -2296,9 +2321,10 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
         printf("      Opcion [3]: Mostrar tiempo estimado de Lista de espera \n");
         printf("      Opcion [4]: Mostrar cantidad de Clientes en una Lista de espera \n");
         printf("      Opcion [5]: Mostrar Titulo con mayor Lista de espera por sala \n");
+        printf("      Opcion [6]: Listar clientes en una lista de espera \n");
         printf("\n");
-        printf("      Opcion [6]: Vaciar Lista de espera \n");
-        printf("      Opcion [7]: Salir de Menu \n");
+        printf("      Opcion [7]: Vaciar Lista de espera \n");
+        printf("      Opcion [8]: Salir de Menu \n");
         printf("\n");
 
         printf("   Por favor, ingrese una de las opciones disponibles : \n");
@@ -2336,21 +2362,24 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
                 break;
 
             case 6:
-                printf("Ha seleccionado la opcion 6: Vaciar Lista de espera \n");
+                printf("Ha seleccionado la opcion 6: Listar clientes en una lista de espera \n");
+                dsdhsahkjdajkds
+
+            case 7:
+                printf("Ha seleccionado la opcion 7: Vaciar Lista de espera \n");
                 vaciarListaEsperaMenu(ibcomics);
                 break;
 
-            case 7:
+            case 8:
                 printf("Saliendo del menu...\n");
                 break;
-
 
             default :
                 printf("\n  ERROR! Opcion no valida. Intente nuevamente :) \n");
                 break;
         }
 
-    } while (opcionSeleccionada != 7);
+    } while (opcionSeleccionada != 8);
 }
 /* =========================================================================
    MODULO DE PASES (Nico)
