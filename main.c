@@ -1514,7 +1514,7 @@ int eliminarTitulo(struct Tienda *tienda, struct Titulo *tituloEliminar) {
 
 struct Titulo *crearYAgregarTitulo(struct Tienda *tienda, struct Sala *sala) {
     int idTitulo, tipoTitulo, clasificacionEdad, precio, cantidadEjemplares;
-    int estado, estadoListaEspera, ejemplaresPorDespacho, diasDemoraDespacho;
+    int estado, ejemplaresPorDespacho, diasDemoraDespacho;
     char nombreTitulo[100];
     struct Titulo *nuevoTitulo;
 
@@ -1579,14 +1579,6 @@ struct Titulo *crearYAgregarTitulo(struct Tienda *tienda, struct Sala *sala) {
     while (estado < 1 || estado > 4) {
         printf("Error: Ingrese un estado valido (1-4) = ");
         estado = inputEntero();
-    }
-
-    printf("Opciones: [1] Activa / [2] Suspendida\n");
-    printf("Ingrese el estado de la lista de espera (1-2) = ");
-    estadoListaEspera = inputEntero();
-    while (estadoListaEspera < 1 || estadoListaEspera > 2) {
-        printf("Error: Ingrese un estado de lista de espera valido (1-2) = ");
-        estadoListaEspera = inputEntero();
     }
 
     printf("Ingrese los ejemplares por despacho = ");
