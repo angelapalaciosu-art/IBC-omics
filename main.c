@@ -102,12 +102,12 @@ struct Tienda {
    UTILIDADES
    ========================================================================= */
 int inputEntero(void) {
-    int numero, c;
+    int numero, caracterLeido;
     while (scanf("%d", &numero) != 1) {
         printf("ERROR: Ingrese un numero valido: ");
-        while ((c = getchar()) != '\n' && c != EOF);
+        while ((caracterLeido = getchar()) != '\n' && caracterLeido != EOF);
     }
-    while ((c = getchar()) != '\n' && c != EOF);
+    while ((caracterLeido = getchar()) != '\n' && caracterLeido != EOF);
     return numero;
 }
 
@@ -164,7 +164,7 @@ struct Cliente *buscarClientePorRut(struct NodoCliente *raiz, char *rut) {
 int crearIdNuevoCliente(struct NodoCliente *raiz) {
     int idNuevo = 0, esUnico = 0;
     while (esUnico != 1) {
-        idNuevo = (rand() % 1000) + (rand() % 1000) + 1;
+        idNuevo = (rand() % 10000) + (rand() % 10000) + 1;
         if (buscarClientePorID(raiz, idNuevo) == NULL) {
             esUnico = 1;
         }
