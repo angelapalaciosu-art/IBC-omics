@@ -1886,8 +1886,6 @@ struct Titulo *obtenerTituloMayorListaEspera(struct NodoTitulo *head) {
     return tituloMayor;
 }
 
-
-
 int calcularTiempoEstimadoEsperaDias(struct Titulo *tituloEncontrado) {
     int cantidadListaEspera = 0;
     int despachos = 0;
@@ -2233,54 +2231,7 @@ void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
     }
 }
 
-void mostrarTituloMenorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
-    struct Titulo *tituloEncontrado = NULL;
-    int opcionSeleccionada = 0;
-    int i;
-    int indiceSala;
 
-    if (ibcomics != NULL) {
-        printf(" ============ MENU MOSTRAR TITULO CON MENOR LISTA DE ESPERA POR SALA ============\n");
-        printf("\n");
-
-        while (opcionSeleccionada < 1 || opcionSeleccionada > 6) {
-            printf(" Ingrese la sala que desea buscar: \n");
-            printf(" Opciones disponibles : \n");
-            printf(" === [1] SuperHeroe / [2] Manga y Anime / [3] Novela Grafica  ===\n");
-            printf(" === [4] Comic Independiente / [5] Infantil y Humor Grafico / [6] Coleccionista ===\n");
-
-            if (scanf(" %d", &opcionSeleccionada) != 1) {
-                while (getchar() != '\n');
-                printf("Error: Ingrese una opcion numerica valida.\n\n");
-                continue;
-            }
-
-            if (opcionSeleccionada < 1 || opcionSeleccionada > 6) {
-                printf("Error: Opcion fuera de rango (1-6). Intente nuevamente.\n\n");
-            }
-        }
-
-        indiceSala = -1;
-        for (i = 0; i < ibcomics->cantidadSalas; i++) {
-            if (ibcomics->salas[i] != NULL && ibcomics->salas[i]->tematica == opcionSeleccionada) {  /*ira a la sala correspondiente y calcula*/
-                indiceSala = i;
-                break;
-            }
-        }
-
-        if (indiceSala != -1) {
-            tituloEncontrado = obtenerTituloMenorListaEspera(ibcomics->salas[indiceSala]->headNodoTitulo);
-
-            if (tituloEncontrado != NULL) {
-                printf("\n =====> El titulo con menor lista de espera es: '%s' <=====\n", tituloEncontrado->nombreTitulo);
-            } else {
-                printf("\n No hay titulos con lista de espera en esta sala.\n");
-            }
-        } else {
-            printf("\n Error: No se encontro ninguna sala registrada con la tematica seleccionada.\n");
-        }
-    }
-}
 
 
 void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
