@@ -719,6 +719,18 @@ struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario
     nuevaSala->cantTrabajadores = cantTrabajadores;
     return nuevaSala;
 }
+/*cambia el estado de una lista de espera*/
+void actualizarEstadoListaEspera(struct Titulo *titulo) {
+    if (titulo == NULL) {
+        return;
+    }
+    if (titulo->estado == 2) { /*Si titulo esta agotado, el estado de la lista de espera será Activo*/
+        titulo->estadoListaEspera = 1;
+    } else {
+        titulo->estadoListaEspera = 2; /*Si titulo está dispo, en preventa o descatalogado, el estado de lista de espera será Suspendido*/
+    }
+}
+
 /* Esta funcion crea un titulo validando sus datos */
 struct Titulo *crearTitulo(int idTitulo, char *nombreTitulo, int tipoTitulo, int clasificacionEdad, int precio, int cantidadEjemplares, int estado, int estadoListaEspera, int ejemplaresPorDespacho, int diasDemoraDespacho) {
     struct Titulo *nuevoTitulo;
