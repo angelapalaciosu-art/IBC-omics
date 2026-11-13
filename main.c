@@ -101,6 +101,7 @@ struct Tienda {
 /* =========================================================================
    UTILIDADES
    ========================================================================= */
+/*Solicida un numero int al usuario y valida su ingreso para evitar dos enter seguidos*/
 int inputEntero(void) {
     int numero, caracterLeido;
     while (scanf("%d", &numero) != 1) {
