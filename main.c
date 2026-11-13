@@ -731,7 +731,7 @@ void actualizarEstadoListaEspera(struct Titulo *titulo) {
     }
 }
 
-/* Esta funcion crea un titulo validando sus datos */
+/* Esta funcion crea un titulo  */
 struct Titulo *crearTitulo(int idTitulo, char *nombreTitulo, int tipoTitulo, int clasificacionEdad, int precio, int cantidadEjemplares, int estado, int estadoListaEspera, int ejemplaresPorDespacho, int diasDemoraDespacho) {
     struct Titulo *nuevoTitulo;
     if (nombreTitulo == NULL || tipoTitulo < 1 || tipoTitulo > 6 || estado < 1 || estado > 4 || estadoListaEspera < 1 || estadoListaEspera > 2 || ejemplaresPorDespacho < 0 || diasDemoraDespacho < 0) {
@@ -749,9 +749,9 @@ struct Titulo *crearTitulo(int idTitulo, char *nombreTitulo, int tipoTitulo, int
     nuevoTitulo->precio = precio;
     nuevoTitulo->cantidadEjemplares = cantidadEjemplares;
     nuevoTitulo->estado = estado;
-    nuevoTitulo->estadoListaEspera = estadoListaEspera;
     nuevoTitulo->ejemplaresPorDespacho = ejemplaresPorDespacho;
     nuevoTitulo->diasDemoraDespacho = diasDemoraDespacho;
+    actualizarEstadoListaEspera(nuevoTitulo);  /*ahora no se pide ingresar un valor, se hace el calculo automatico*/
     return nuevoTitulo;
 }
 /* Esta funcion enlaza un nodo al final de la lista de titulos */
