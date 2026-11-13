@@ -2370,11 +2370,10 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
         printf("      Opcion [3]: Mostrar tiempo estimado de Lista de espera \n");
         printf("      Opcion [4]: Mostrar cantidad de Clientes en una Lista de espera \n");
         printf("      Opcion [5]: Mostrar Titulo con mayor Lista de espera por sala \n");
-        printf("      Opcion [6]: Mostrar Titulo con menor Lista de espera por sala\n");
-        printf("      Opcion [7]: Modificar estado lista de espera \n");
+        printf("      Opcion [6]: Modificar estado lista de espera \n");
         printf("\n");
-        printf("      Opcion [8]: Vaciar Lista de espera \n");
-        printf("      Opcion [9]: Salir de Menu \n");
+        printf("      Opcion [7]: Vaciar Lista de espera \n");
+        printf("      Opcion [8]: Salir de Menu \n");
         printf("\n");
 
         printf("   Por favor, ingrese una de las opciones disponibles : \n");
@@ -2412,21 +2411,16 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
                 break;
 
             case 6:
-                printf("Ha seleccionado la opcion 6: Mostrar titulo con Menor lista de espera por sala \n");
-                mostrarTituloMenorListaEsperaEnSalaMenu(ibcomics);
-                break;
-
-            case 7:
                 printf("Ha seleccionado la opcion 7: Modificar estado lista de espera \n");
                 modificarEstadoListaEsperaMenu(ibcomics);
                 break;
 
-            case 8:
+            case 7:
                 printf("Ha seleccionado la opcion 8: Vaciar Lista de espera \n");
                 vaciarListaEsperaMenu(ibcomics);
                 break;
 
-            case 9:
+            case 8:
                 printf("Saliendo del menu...\n");
                 break;
 
