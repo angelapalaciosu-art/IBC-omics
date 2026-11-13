@@ -724,7 +724,7 @@ void actualizarEstadoListaEspera(struct Titulo *titulo) {
     if (titulo == NULL) {
         return;
     }
-    if (titulo->estado == 2) { /*Si titulo esta agotado, el estado de la lista de espera será Activo*/
+    if (titulo->estado == 2 || titulo->estado == 3) { /*Si titulo esta agotado o en preventa, el estado de la lista de espera será Activo*/
         titulo->estadoListaEspera = 1;
     } else {
         titulo->estadoListaEspera = 2; /*Si titulo está dispo, en preventa o descatalogado, el estado de lista de espera será Suspendido*/
@@ -2025,11 +2025,11 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
                     printf("Titulo en la lista de espera : %s\n", tituloEncontrado->nombreTitulo);
                 }
                 else {
-                    printf("Error: La lista de espera esta suspendida \n");
+                    printf("Error: Solo los titulos Agotados admiten lista de espera.\n");
                 }
             }
             else {
-                printf("Error: El cliente ya se encuentra dentro de la lista de espera\n");
+                printf("Error: El cliente ya se encuentra dentro de la lista de espera.\n");
             }
         } else {
             printf("Error: El cliente no se encuentra registrado en el sistema general de la tienda.\n");
