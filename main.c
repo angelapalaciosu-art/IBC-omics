@@ -2043,11 +2043,11 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
                         printf("Titulo en la lista de espera : %s\n", tituloEncontrado->nombreTitulo);
                     }
                     else {
-                        printf("Error: No hay memoria para agregar al cliente.\n");
+                        printf("Error al agregar al cliente.\n");
                     }
                 }
                 else {
-                    printf("Error: La lista de espera esta suspendida, solo los titulos agotados la admiten. \n");
+                    printf("Error: La lista de espera esta suspendida. \n");
                 }
             }
             else {
