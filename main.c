@@ -3,8 +3,6 @@
 #include <string.h>
 #include <time.h>
 
-#define MAX_SALAS 6
-
 /* =========================================================================
    DECLARACIONES ADELANTADAS
    ========================================================================= */
@@ -613,7 +611,7 @@ void mostrarMenuClientes(struct Tienda *tienda) {
    ========================================================================= */
 /* Esta funcion crea el arreglo de punteros a salas vacio */
 
-struct Sala **crearArregloSalas(int maxSalas) {
+   struct Sala **crearArregloSalas(int maxSalas) {
     struct Sala **arregloSalas;
     int i;
     if (maxSalas <= 0) {
@@ -670,11 +668,11 @@ struct Sala *buscarSalaPorNombre(struct Tienda *tienda, char *nombreSala) {
     return NULL;
 }
 /* Esta funcion agrega una sala al arreglo de la tienda */
-struct Sala *agregarSala(struct Tienda *tienda, struct Sala *sala) {
+struct Sala *agregarSala(struct Tienda *tienda, struct Sala *sala, int tamSalas) {
     if (tienda == NULL || sala == NULL || tienda->salas == NULL) {
         return NULL;
     }
-    if (tienda->cantidadSalas >= MAX_SALAS) {
+    if (tienda->cantidadSalas >= tamSalas) {
         return NULL;
     }
     if (buscarSalaPorId(tienda, sala->idSala) != NULL || buscarSalaPorTematica(tienda, sala->tematica) != NULL) {
@@ -1270,7 +1268,7 @@ struct Tienda *ordenarSalasPorTitulos(struct Tienda *tienda) {
     return tienda;
 }
 
-struct Sala *crearYAgregarSala(struct Tienda *tienda) {
+struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
     int idSala, tematica, aforoMax, cantTrabajadores;
     char nombreSala[100], horario[100];
     struct Sala *nuevaSala;
@@ -1278,8 +1276,8 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda) {
     if (tienda == NULL || tienda->salas == NULL) {
         return NULL;
     }
-    if (tienda->cantidadSalas >= MAX_SALAS) {
-        printf("Error: No se pueden registrar mas salas (maximo %d).\n\n", MAX_SALAS);
+    if (tienda->cantidadSalas >= tamSalas) {
+        printf("Error: No se pueden registrar mas salas (maximo %d).\n\n", tamSalas);
         return NULL;
     }
 
@@ -3137,6 +3135,7 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
 int main(void) {
     int opcionSeleccionada;
     int preciosPases[4];
+   int tamSalas = 6;
     struct Tienda *ibcomics;
 
     srand(time(NULL));
@@ -3146,7 +3145,7 @@ int main(void) {
     if (ibcomics != NULL) {
         ibcomics->nombreTienda = "IBC - OMICS INC.";
         ibcomics->raiz = NULL;
-        ibcomics->salas = crearArregloSalas(MAX_SALAS);
+        ibcomics->salas = crearArregloSalas(tamSalas);
         ibcomics->cantidadSalas = 0;
     }
 
