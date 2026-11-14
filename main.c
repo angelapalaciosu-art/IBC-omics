@@ -171,7 +171,7 @@ int crearIdNuevoCliente(struct NodoCliente *raiz) {
     return idNuevo;
 }
 /* Función lógica pura para inicializar la memoria de un cliente nuevo. */
-struct Cliente *inicializarClienteLogica(int idNuevo, const char *nombre, const char *rut, int edad, const char *correo) {
+struct Cliente *inicializarCliente(int idNuevo, const char *nombre, const char *rut, int edad, const char *correo) {
     struct Cliente *clienteNuevo = malloc(sizeof(struct Cliente));
     if (clienteNuevo == NULL) {
         return NULL;
@@ -235,7 +235,7 @@ struct Cliente *crearCliente(struct NodoCliente *raiz) {
     correo[strcspn(correo, "\n")] = '\0';
 
     idNuevo = crearIdNuevoCliente(raiz);
-    return inicializarClienteLogica(idNuevo, nombre, rut, edad, correo);
+    return inicializarCliente(idNuevo, nombre, rut, edad, correo);
 }
 
 /* Busca el nodo que sera el PADRE de un cliente nuevo dentro del ABB.*/
