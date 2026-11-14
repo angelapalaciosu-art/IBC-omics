@@ -517,6 +517,21 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
         }
     } while (opcionModificar != 0);
 }
+struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutId) {
+    int i;
+
+    if (raiz == NULL || rutId == NULL || rutId[0] == '\0') {
+        return NULL;
+    }
+
+    /*recorre el char ingresado y si tiene guion o punto se asume que se ingresa un rut */
+    for (i = 0; rutId[i] != '\0'; i++) {
+        if (rutId[i] == '-' || rutId[i] == '.') {
+            return buscarClientePorRut(raiz, rutId);  /*si es rut me busca al cliente por rut en el arbol*/
+        }
+    }
+    return buscarClientePorID(raiz, atoi(rutId));
+}
 
 /*pide id o rut y busca al cliente para utilzar en funciones de menu*/
 struct Cliente *veriricarPedirCliente(struct Tienda *ibcomics) {
@@ -1863,21 +1878,7 @@ struct Cliente *buscarClientePorRutOIdListaEspera(struct NodoListaEspera *head, 
     }
     return clienteEncontrado;
 }
-struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutId) {
-    int i;
 
-    if (raiz == NULL || rutId == NULL || rutId[0] == '\0') {
-        return NULL;
-    }
-
-    /*recorre el char ingresado y si tiene guion o punto se asume que se ingresa un rut */
-    for (i = 0; rutId[i] != '\0'; i++) {
-        if (rutId[i] == '-' || rutId[i] == '.') {
-            return buscarClientePorRut(raiz, rutId);  /*si es rut me busca al cliente por rut en el arbol*/
-        }
-    }
-    return buscarClientePorID(raiz, atoi(rutId));
-}
 
 /*------------------------------MOSTRAR--------------------------------------*/
 int contarCantidadClientesEnListaEspera(struct NodoListaEspera *head) {
