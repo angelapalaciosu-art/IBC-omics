@@ -948,6 +948,30 @@ void listarSalas(struct Tienda *tienda) {
                tienda->salas[i]->nombreSala, tienda->salas[i]->horario, tienda->salas[i]->aforoMax);
     }
 }
+
+struct Titulo *validacionPedirTitulo(struct Tienda *ibcomics) {
+    struct Titulo *tituloEncontrado = NULL;
+    int idTitulo;
+
+    if (ibcomics == NULL) {
+        return NULL;
+    }
+    while (tituloEncontrado == NULL) {
+        printf("Ingrese el id del titulo (0 para cancelar) = \n");
+        idTitulo = inputEntero();
+
+        if (idTitulo == 0) {
+            printf("La operacion ha sido cancelada \n");
+            return NULL;
+        }
+        tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTitulo);  /*busca si el titulo está en alguna sala*/
+        if (tituloEncontrado == NULL) {
+            printf("Error: No existe titulo con ese ID \n");
+        }
+    }
+    return tituloEncontrado
+}
+
 /* Esta funcion muestra el menu para modificar los datos de un titulo */
 void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) {
     int opcionModificar;
