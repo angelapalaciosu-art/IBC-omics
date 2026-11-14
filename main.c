@@ -518,6 +518,27 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
     } while (opcionModificar != 0);
 }
 
+/*pide id o rut y busca al cliente para utilzar en funciones de menu*/
+struct Cliente *veriricarPedirCliente(struct Tienda *ibcomics) {
+    char texto[30];
+    struct Cliente * clienteEncontrado;
+
+    if (ibcomics == NULL) {
+        return NULL;
+    }
+    printf("Ingrese RUT o Id del cliente (Ej: 12.345.678-9) = \n");
+    fgets(texto, 30, stdin);
+    texto[strcspn(texto, "\n")] = "\0";  /*para que no tome el espacio */
+
+    clienteEncontrado = buscarClientePorRutOIdArbol(ibcomics->raiz, texto);
+
+    if (clienteEncontrado == NULL) {
+        printf("Error: El cliente no se encuentra registrado \n");
+    }
+    return clienteEncontrado;
+}
+
+
 /* Menu principal de clientes. */
 void mostrarMenuClientes(struct Tienda *tienda) {
     int opcionMenu, opcionValida, idOperar;
@@ -948,7 +969,7 @@ void listarSalas(struct Tienda *tienda) {
                tienda->salas[i]->nombreSala, tienda->salas[i]->horario, tienda->salas[i]->aforoMax);
     }
 }
-
+/*pide el id del titulo hasta que exista*/
 struct Titulo *validacionPedirTitulo(struct Tienda *ibcomics) {
     struct Titulo *tituloEncontrado = NULL;
     int idTitulo;
@@ -969,7 +990,7 @@ struct Titulo *validacionPedirTitulo(struct Tienda *ibcomics) {
             printf("Error: No existe titulo con ese ID \n");
         }
     }
-    return tituloEncontrado
+    return tituloEncontrado;
 }
 
 /* Esta funcion muestra el menu para modificar los datos de un titulo */
@@ -1848,7 +1869,8 @@ struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutI
     if (raiz == NULL || rutId == NULL || rutId[0] == '\0') {
         return NULL;
     }
-    /*recorre todo el char ingresado y si tiene guion o punto se asume que se ingresa un rut*/
+
+    /*recorre el char ingresado y si tiene guion o punto se asume que se ingresa un rut */
     for (i = 0; rutId[i] != '\0'; i++) {
         if (rutId[i] == '-' || rutId[i] == '.') {
             return buscarClientePorRut(raiz, rutId);  /*si es rut me busca al cliente por rut en el arbol*/
