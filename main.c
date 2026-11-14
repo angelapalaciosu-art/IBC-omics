@@ -534,7 +534,7 @@ struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutI
 }
 
 /*pide id o rut y busca al cliente para utilzar en funciones de menu*/
-struct Cliente *veriricarPedirCliente(struct Tienda *ibcomics) {
+struct Cliente *verificarPedirCliente(struct Tienda *ibcomics) {
     char texto[30];
     struct Cliente * clienteEncontrado;
 
@@ -543,7 +543,7 @@ struct Cliente *veriricarPedirCliente(struct Tienda *ibcomics) {
     }
     printf("Ingrese RUT o Id del cliente (Ej: 12.345.678-9) = \n");
     fgets(texto, 30, stdin);
-    texto[strcspn(texto, "\n")] = "\0";  /*para que no tome el espacio */
+    texto[strcspn(texto, "\n")] = '\0';  /*para que no tome el espacio */
 
     clienteEncontrado = buscarClientePorRutOIdArbol(ibcomics->raiz, texto);
 
