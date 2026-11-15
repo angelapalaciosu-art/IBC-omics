@@ -158,318 +158,297 @@ struct Cliente *buscarClientePorRut(struct NodoCliente *raiz, char *rut) {
     }
     return buscarClientePorRut(raiz->der, rut);
 }
+/* Detecta si se ingresó un RUT (por guion y punto) o un ID int */
+struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutId) {
+    int i;
 
-/* Genera un ID aleatorio que no este usado por ningun cliente del arbol. */
-int crearIdNuevoCliente(struct NodoCliente *raiz) {
-    int idNuevo = 0, esUnico = 0;
+    if (raiz == NULL || rutId == NULL || rutId[0] == '\0') {
+        return NULL;
+    }
+    /* Si el texto contiene puntos o guiones, se asume que es rut */
+    for (i = 0; rutId[i] != '\0'; i++) {
+        if (rutId[i] == '-' || rutId[i] == '.') {
+            return buscarClientePorRut(raiz, rutId);
+        }
+    }
+    /* Si no, lo convertimos a entero y lo buscamos por ID */
+    return buscarClientePorID(raiz, atoi(rutId));
+}
+/* Valida la existencia de un cliente pidiendo una entrada de texto (RUT o ID) */
+struct Cliente *verificarPedirCliente(struct Tienda *ibcomics, char *texto) {
+    if (ibcomics == NULL) {
+        return NULL;
+    }
+    return buscarClientePorRutOIdArbol(ibcomics->raiz, texto);
+}
+/* Genera un número de ID aleatorio quee es unico*/
+int generarIdUnico(struct NodoCliente *raiz) {
+    int nuevoId;
+    int esUnico;
+    nuevoId = 0;
+    esUnico = 0;
+
     while (esUnico != 1) {
-        idNuevo = (rand() % 10000) + (rand() % 10000) + 1;
-        if (buscarClientePorID(raiz, idNuevo) == NULL) {
+        nuevoId = (rand() % 10000) + (rand() % 10000) + 1;
+        if (buscarClientePorID(raiz, nuevoId) == NULL) {
             esUnico = 1;
         }
     }
-    return idNuevo;
+    return nuevoId;
 }
-/* Función lógica pura para inicializar la memoria de un cliente nuevo. */
-struct Cliente *inicializarCliente(int idNuevo, const char *nombre, const char *rut, int edad, const char *correo) {
-    struct Cliente *clienteNuevo = malloc(sizeof(struct Cliente));
-    if (clienteNuevo == NULL) {
+/* Reserva memoria e inicializa los campos de un clientenuevo */
+struct Cliente *crearEstructuraCliente(int id, const char *nombre, const char *rut, int edad, const char *correo) {
+    struct Cliente *nuevoCliente;
+
+    nuevoCliente = (struct Cliente *)malloc(sizeof(struct Cliente));
+    if (nuevoCliente == NULL) {
         return NULL;
     }
-    clienteNuevo->idCliente = idNuevo;
-    clienteNuevo->edad = edad;
-    strcpy(clienteNuevo->rutCliente, rut);
     
-    clienteNuevo->nombreCliente = copiarTexto(nombre);
-    clienteNuevo->correo = copiarTexto(correo);
+    nuevoCliente->idCliente = id;
+    nuevoCliente->edad = edad;
+    strcpy(nuevoCliente->rutCliente, rut);
+    
+    nuevoCliente->nombreCliente = copiarTexto(nombre);
+    nuevoCliente->correo = copiarTexto(correo);
 
-    if (clienteNuevo->nombreCliente == NULL || clienteNuevo->correo == NULL) {
-        free(clienteNuevo->nombreCliente);
-        free(clienteNuevo->correo);
-        free(clienteNuevo);
+    if (nuevoCliente->nombreCliente == NULL || nuevoCliente->correo == NULL) {
+        free(nuevoCliente->nombreCliente);
+        free(nuevoCliente->correo);
+        free(nuevoCliente);
         return NULL;
     }
 
-    clienteNuevo->datosSala = NULL;
-    clienteNuevo->headPase = malloc(sizeof(struct NodoPase));
-    if (clienteNuevo->headPase == NULL) {
-        free(clienteNuevo->nombreCliente);
-        free(clienteNuevo->correo);
-        free(clienteNuevo);
+    nuevoCliente->datosSala = NULL;
+    nuevoCliente->headPase = (struct NodoPase *)malloc(sizeof(struct NodoPase));
+    if (nuevoCliente->headPase == NULL) {
+        free(nuevoCliente->nombreCliente);
+        free(nuevoCliente->correo);
+        free(nuevoCliente);
         return NULL;
     }
-    clienteNuevo->headPase->datosPase = NULL;
-    clienteNuevo->headPase->sig = NULL;
+    nuevoCliente->headPase->datosPase = NULL;
+    nuevoCliente->headPase->sig = NULL;
 
-    return clienteNuevo;
+    return nuevoCliente;
 }  
-/* Pide por consola los datos de un cliente nuevo y lo construye (no lo inserta en el arbol).*/
-struct Cliente *crearCliente(struct NodoCliente *raiz) {
-    int idNuevo, edad;
-    char nombre[50], rut[13], correo[50];
 
-    printf(" ============ MENU REGISTRAR CLIENTE ============\n\n");
+/* Busca el nodo padre correspondiente para insertar un nuevo cliente en ABB */
+struct NodoCliente *encontrarPadreParaCliente(struct NodoCliente *raiz, int idNuevo) {
+    struct NodoCliente *actual;
 
-    printf("Ingrese el nombre completo del cliente = ");
-    fgets(nombre, sizeof(nombre), stdin);
-    nombre[strcspn(nombre, "\n")] = '\0';
-
-    printf("Ingrese el rut del cliente (Ej: 12.345.678-9 ) = ");
-    fgets(rut, sizeof(rut), stdin);
-    rut[strcspn(rut, "\n")] = '\0';
-
-    if (buscarClientePorRut(raiz, rut) != NULL) {
-        printf("Error: Ya existe un cliente con ese RUT.\n");
-        return NULL;
-    }
-
-    printf("Ingrese la edad del cliente = ");
-    edad = inputEntero();
-    while (edad < 1 || edad > 120) {
-        printf("Error: Ingrese una edad valida (1-120) = ");
-        edad = inputEntero();
-    }
-
-    printf("Ingrese el correo del cliente = ");
-    fgets(correo, sizeof(correo), stdin);
-    correo[strcspn(correo, "\n")] = '\0';
-
-    idNuevo = crearIdNuevoCliente(raiz);
-    return inicializarCliente(idNuevo, nombre, rut, edad, correo);
-}
-
-/* Busca el nodo que sera el PADRE de un cliente nuevo dentro del ABB.*/
-struct NodoCliente *buscarNodoParaClienteNuevo(struct NodoCliente *raiz, int idClienteNuevo) {
-    struct NodoCliente *rec;
     if (raiz != NULL) {
-        rec = raiz;
-        while (rec != NULL) {
-            if (rec->datosCliente->idCliente < idClienteNuevo) {
-                if (rec->der == NULL) {
-                    return rec;
+        actual = raiz;
+        while (actual != NULL) {
+            if (actual->datosCliente->idCliente < idNuevo) {
+                if (actual->der == NULL) {
+                    return actual;
                 }
-                rec = rec->der;
+                actual = actual->der;
             } else {
-                if (rec->izq == NULL) {
-                    return rec;
+                if (actual->izq == NULL) {
+                    return actual;
                 }
-                rec = rec->izq;
+                actual = actual->izq;
             }
         }
     }
     return NULL;
 }
-/* Crea un cliente nuevo y lo inserta en el ABB. */
-void crearYAgregarClienteAArbol(struct NodoCliente **raiz) {
-    struct NodoCliente *nodoNuevo, *nodoAnterior;
-    struct Cliente *clienteNuevo;
 
-    clienteNuevo = crearCliente(*raiz);
-    if (clienteNuevo == NULL) {
-        return;
+/* Inserta el nodo del cliente dentro del árbol */
+int insertarClienteEnArbol(struct NodoCliente **raiz, struct Cliente *nuevoCliente) {
+    struct NodoCliente *nuevoNodo;
+    struct NodoCliente *padre;
+
+    if (nuevoCliente == NULL) {
+        return 0;
     }
-
-    nodoNuevo = malloc(sizeof(struct NodoCliente));
-    if (nodoNuevo == NULL) {
-        liberarCliente(clienteNuevo);
-        return;
+    
+    nuevoNodo = (struct NodoCliente *)malloc(sizeof(struct NodoCliente));
+    if (nuevoNodo == NULL) {
+        return 0;
     }
-    nodoNuevo->datosCliente = clienteNuevo;
-    nodoNuevo->izq = NULL;
-    nodoNuevo->der = NULL;
+    nuevoNodo->datosCliente = nuevoCliente;
+    nuevoNodo->izq = NULL;
+    nuevoNodo->der = NULL;
 
-    nodoAnterior = buscarNodoParaClienteNuevo(*raiz, clienteNuevo->idCliente);
-    if (nodoAnterior == NULL) {
-        *raiz = nodoNuevo;
-    } else if (nodoAnterior->datosCliente->idCliente < clienteNuevo->idCliente) {
-        nodoAnterior->der = nodoNuevo;
+    padre = encontrarPadreParaCliente(*raiz, nuevoCliente->idCliente);
+    if (padre == NULL) {
+        *raiz = nuevoNodo;
+    } else if (padre->datosCliente->idCliente < nuevoCliente->idCliente) {
+        padre->der = nuevoNodo;
     } else {
-        nodoAnterior->izq = nodoNuevo;
+        padre->izq = nuevoNodo;
     }
-    printf("\nSe ha anadido con exito al cliente! \n");
-    printf("Nombre del cliente: %s\n", clienteNuevo->nombreCliente);
-    printf("Rut del cliente: %s\n", clienteNuevo->rutCliente);
-    printf("ID asignado automaticamente: %d\n\n", clienteNuevo->idCliente);
+    return 1;
 }
 
-/* Libera toda la memoria de un cliente: pases, nombre, correo y la estructura misma. */
+/* Libera toda la memoria dinamica asociada a un cliente */
 void liberarCliente(struct Cliente *cliente) {
-    struct NodoPase *rec, *temp; 
+    struct NodoPase *actual;
+    struct NodoPase *siguiente; 
+
     if (cliente == NULL) {
         return;
     }
-    rec = cliente->headPase ? cliente->headPase->sig : NULL;
-    while (rec != NULL) {
-        temp = rec;
-        rec = rec->sig;
-        if (temp->datosPase != NULL) {
-            free(temp->datosPase->fechaUso);
-            free(temp->datosPase);
+    
+    actual = cliente->headPase ? cliente->headPase->sig : NULL;
+    while (actual != NULL) {
+        siguiente = actual->sig;
+        if (actual->datosPase != NULL) {
+            free(actual->datosPase->fechaUso);
+            free(actual->datosPase);
         }
-        free(temp);
+        free(actual);
+        actual = siguiente;
     }
     if (cliente->headPase) free(cliente->headPase);
     if (cliente->nombreCliente) free(cliente->nombreCliente);
     if (cliente->correo) free(cliente->correo);
     free(cliente);
 }
-/* Quita al cliente de las listas de espera de todos los titulos de todas las salas. */
-int quitarClienteDeListasEspera(struct Tienda *tienda, int idCliente) {
-    int i, quitados = 0;
-    struct NodoTitulo *rec;
 
+/* Desvincula un cliente de las listas de espera de todas las salas */
+int removerClienteDeListasDeEspera(struct Tienda *tienda, int idCliente) {
+    int i;
+    int totalRemovidos;
+    struct NodoTitulo *tituloActual;
+
+    totalRemovidos = 0;
     if (tienda == NULL || tienda->salas == NULL) {
         return 0;
     }
+    
     for (i = 0; i < tienda->cantidadSalas; i++) {
         if (tienda->salas[i] != NULL && tienda->salas[i]->headNodoTitulo != NULL) {
-            rec = tienda->salas[i]->headNodoTitulo->sig;
-            while (rec != NULL) {
-                if (rec->datosTitulo != NULL &&
-                    eliminarClienteDeListaEspera(&(rec->datosTitulo->headListaEspera), idCliente) == 1) {
-                    quitados++;
+            tituloActual = tienda->salas[i]->headNodoTitulo->sig;
+            while (tituloActual != NULL) {
+                if (tituloActual->datosTitulo != NULL &&
+                    eliminarClienteDeListaEspera(&(tituloActual->datosTitulo->headListaEspera), idCliente) == 1) {
+                    totalRemovidos++;
                 }
-                rec = rec->sig;
+                tituloActual = tituloActual->sig;
             }
         }
     }
-    return quitados;
+    return totalRemovidos;
 }
 
-/* Cuenta los pases de un cliente. */
-int contarPasesDeCliente(struct Cliente *cliente) {
-    int cantidad = 0;
-    struct NodoPase *rec;
+/* Cuenta pases tiene comprados un cliente */
+int contarPasesCliente(struct Cliente *cliente) {
+    int totalPases;
+    struct NodoPase *actual;
 
+    totalPases = 0;
     if (cliente == NULL || cliente->headPase == NULL) {
         return 0;
     }
-    rec = cliente->headPase->sig;
-    while (rec != NULL) {
-        if (rec->datosPase != NULL) {
-            cantidad++;
+    
+    actual = cliente->headPase->sig;
+    while (actual != NULL) {
+        if (actual->datosPase != NULL) {
+            totalPases++;
         }
-        rec = rec->sig;
+        actual = actual->sig;
     }
-    return cantidad;
+    return totalPases;
 }
-/* Elimina al cliente del sistema completo: lo quita de las listas de espera de todos los titulos,
-   libera sus pases (liberarCliente) y finalmente lo saca del arbol.*/
-/* Lógica pura para remover y liberar el nodo del ABB. */
-int eliminarClienteDeArbolLogica(struct Tienda *tienda, int idEliminar, int *pasesEliminadosOut, int *listasQuitadasOut) {
+
+/* Retira y reestructurar el nodo del cliente en el ABB luego de la eliminacion */
+int procesarEliminacionClienteArbol(struct Tienda *tienda, int idEliminar, int *pasesBorrados, int *listasBorradas) {
     struct NodoCliente **raiz;
-    struct NodoCliente *nodoEliminar, *nodoAnterior = NULL, *nodoHijo;
-    struct NodoCliente *nodoSucesor, *anteriorSucesor;
+    struct NodoCliente *aEliminar;
+    struct NodoCliente *padre;
+    struct NodoCliente *hijo;
+    struct NodoCliente *sucesor;
+    struct NodoCliente *padreSucesor;
 
     if (tienda == NULL || tienda->raiz == NULL) {
         return 0;
     }
+    
     raiz = &(tienda->raiz);
+    padre = NULL;
+    aEliminar = *raiz;
 
-    nodoEliminar = *raiz;
-    while (nodoEliminar != NULL && nodoEliminar->datosCliente->idCliente != idEliminar) {
-        nodoAnterior = nodoEliminar;
-        if (idEliminar < nodoEliminar->datosCliente->idCliente) {
-            nodoEliminar = nodoEliminar->izq;
+    while (aEliminar != NULL && aEliminar->datosCliente->idCliente != idEliminar) {
+        padre = aEliminar;
+        if (idEliminar < aEliminar->datosCliente->idCliente) {
+            aEliminar = aEliminar->izq;
         } else {
-            nodoEliminar = nodoEliminar->der;
+            aEliminar = aEliminar->der;
         }
     }
-    if (nodoEliminar == NULL) {
+    if (aEliminar == NULL) {
         return 0;
     }
 
-    *listasQuitadasOut = quitarClienteDeListasEspera(tienda, idEliminar);
-    *pasesEliminadosOut = contarPasesDeCliente(nodoEliminar->datosCliente);
+    *listasBorradas = removerClienteDeListasDeEspera(tienda, idEliminar);
+    *pasesBorrados = contarPasesCliente(aEliminar->datosCliente);
 
-    if (nodoEliminar->izq != NULL && nodoEliminar->der != NULL) {
-        anteriorSucesor = nodoEliminar;
-        nodoSucesor = nodoEliminar->der;
-        while (nodoSucesor->izq != NULL) {
-            anteriorSucesor = nodoSucesor;
-            nodoSucesor = nodoSucesor->izq;
+    if (aEliminar->izq != NULL && aEliminar->der != NULL) {
+        padreSucesor = aEliminar;
+        sucesor = aEliminar->der;
+        while (sucesor->izq != NULL) {
+            padreSucesor = sucesor;
+            sucesor = sucesor->izq;
         }
-        liberarCliente(nodoEliminar->datosCliente);
-        nodoEliminar->datosCliente = nodoSucesor->datosCliente;
-        if (anteriorSucesor == nodoEliminar) {
-            anteriorSucesor->der = nodoSucesor->der;
+        liberarCliente(aEliminar->datosCliente);
+        aEliminar->datosCliente = sucesor->datosCliente;
+        if (padreSucesor == aEliminar) {
+            padreSucesor->der = sucesor->der;
         } else {
-            anteriorSucesor->izq = nodoSucesor->der;
+            padreSucesor->izq = sucesor->der;
         }
-        free(nodoSucesor);
+        free(sucesor);
     } else {
-        if (nodoEliminar->izq != NULL) {
-            nodoHijo = nodoEliminar->izq;
+        if (aEliminar->izq != NULL) {
+            hijo = aEliminar->izq;
         } else {
-            nodoHijo = nodoEliminar->der;
+            hijo = aEliminar->der;
         }
-        if (nodoAnterior == NULL) {
-            *raiz = nodoHijo;
-        } else if (nodoAnterior->izq == nodoEliminar) {
-            nodoAnterior->izq = nodoHijo;
+        
+        if (padre == NULL) {
+            *raiz = hijo;
+        } else if (padre->izq == aEliminar) {
+            padre->izq = hijo;
         } else {
-            nodoAnterior->der = nodoHijo;
+            padre->der = hijo;
         }
-        liberarCliente(nodoEliminar->datosCliente);
-        free(nodoEliminar);
+        liberarCliente(aEliminar->datosCliente);
+        free(aEliminar);
     }
     return 1;
 }
-/* Interfaz de consola para eliminar cliente (E/S separada de la lógica del árbol). */
-void eliminarClienteDeArbol(struct Tienda *tienda, int idEliminar) {
-    int listasQuitadas = 0, pasesEliminados = 0;
 
-    printf(" ============ MENU ELIMINAR CLIENTE ============\n\n");
-    if (tienda == NULL || tienda->raiz == NULL) {
-        printf("Error: No existe ningun cliente en el sistema.\n");
-        return;
-    }
-
-    if (eliminarClienteDeArbolLogica(tienda, idEliminar, &pasesEliminados, &listasQuitadas)) {
-        printf("Cliente eliminado del sistema con exito! \n");
-        printf("Pases eliminados: %d | Listas de espera de las que fue removido: %d\n", pasesEliminados, listasQuitadas);
-    } else {
-        printf("Error: No se pudo encontrar al cliente con el ID %d.\n", idEliminar);
-    }
-}
-
-/* Libera todo el arbol y los clientes que contiene. */
-void liberarArbol(struct NodoCliente *raiz) {
-    if (raiz == NULL) {
-        return;
-    }
-    liberarArbol(raiz->izq);
-    liberarArbol(raiz->der);
-    liberarCliente(raiz->datosCliente);
-    free(raiz);
-}
-
-/* Muestra por pantalla todos los datos de un cliente. */
-void mostrarDatosCliente(struct Cliente *cliente) {
+/* Imprime  los datos de un cliente */
+void mostrarInformacionCliente(struct Cliente *cliente) {
     printf(" ============ DATOS DEL CLIENTE ============\n\n");
     printf("ID: %d \n", cliente->idCliente);
     printf("Nombre: %s \n", cliente->nombreCliente);
     printf("RUT: %s \n", cliente->rutCliente);
-    printf("Edad: %d anios \n", cliente->edad);
+    printf("Edad: %d anos \n", cliente->edad);
     printf("Correo: %s \n\n", cliente->correo);
 }
 
-/* Lista todos los clientes ordenados por ID (recorrido inorden). */
+/* Muestra la lista de clientes ordenados por ID */
 void listarClientes(struct NodoCliente *raiz) {
     if (raiz == NULL) {
         return;
     }
     listarClientes(raiz->izq);
-    printf("   [%d] %s | RUT: %s | %d anios \n", raiz->datosCliente->idCliente,
+    printf("   [%d] %s | RUT: %s | %d anos \n", raiz->datosCliente->idCliente,
            raiz->datosCliente->nombreCliente, raiz->datosCliente->rutCliente, raiz->datosCliente->edad);
     listarClientes(raiz->der);
 }
 
-/* Submenu para modificar el nombre, la edad o el correo de un cliente.*/
+/* menu interactivo para modificar los datos personales de un cliente */
 void menuModificarCliente(struct Cliente *clienteModificar) {
-    int opcionModificar;
+    int opcion;
+
     if (clienteModificar == NULL) {
-        printf("\nError: No existe el cliente que se quiere modificar.\n");
+        printf("\nError: El cliente a modificar no existe.\n");
         return;
     }
 
@@ -478,82 +457,138 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
         printf("      Opcion [1]: Modificar nombre \n");
         printf("      Opcion [2]: Modificar edad \n");
         printf("      Opcion [3]: Modificar correo \n\n");
-        printf("      Opcion [0]: Salir de Menu \n\n");
-        printf("   Por favor, ingrese una de las opciones disponibles : \n");
-        opcionModificar = inputEntero();
+        printf("      Opcion [0]: Salir al menu anterior \n\n");
+        printf("   Por favor, ingrese una opcion: ");
+        opcion = inputEntero();
         printf("\n");
-        switch (opcionModificar) {
+        
+        switch (opcion) {
             case 1:
-                printf("Nombre registrado: %s \n", clienteModificar->nombreCliente);
-                printf("Ingrese el nuevo nombre = ");
+                printf("Nombre actual: %s \n", clienteModificar->nombreCliente);
+                printf("Ingrese el nuevo nombre: ");
                 fgets(clienteModificar->nombreCliente, 50, stdin);
                 clienteModificar->nombreCliente[strcspn(clienteModificar->nombreCliente, "\n")] = '\0';
-                printf("Nombre modificado con exito! Nuevo nombre: %s \n\n", clienteModificar->nombreCliente);
+                printf("¡Nombre modificado con exito! Nuevo nombre: %s \n\n", clienteModificar->nombreCliente);
                 break;
             case 2:
-                printf("Edad registrada: %d \n", clienteModificar->edad);
-                printf("Ingrese la nueva edad = ");
+                printf("Edad actual: %d \n", clienteModificar->edad);
+                printf("Ingrese la nueva edad: ");
                 clienteModificar->edad = inputEntero();
                 while (clienteModificar->edad < 1 || clienteModificar->edad > 120) {
-                    printf("Error: Ingrese una edad valida (1-120) = ");
+                    printf("Error: Ingrese una edad valida (1-120): ");
                     clienteModificar->edad = inputEntero();
                 }
-                printf("Edad modificada con exito! Nueva edad: %d \n\n", clienteModificar->edad);
+                printf("¡Edad modificada con exito! Nueva edad: %d \n\n", clienteModificar->edad);
                 break;
             case 3:
-                printf("Correo registrado: %s \n", clienteModificar->correo);
-                printf("Ingrese el nuevo correo = ");
+                printf("Correo actual: %s \n", clienteModificar->correo);
+                printf("Ingrese el nuevo correo: ");
                 fgets(clienteModificar->correo, 50, stdin);
                 clienteModificar->correo[strcspn(clienteModificar->correo, "\n")] = '\0';
-                printf("Correo modificado con exito! Nuevo correo: %s \n\n", clienteModificar->correo);
+                printf("¡Correo modificado con exito! Nuevo correo: %s \n\n", clienteModificar->correo);
                 break;
             case 0:
-                printf("Saliendo del menu...\n");
+                printf("Saliendo del submenu...\n");
                 break;
             default:
-                printf("\n  ERROR! Opcion no valida. Intente nuevamente :) \n");
+                printf("\n  ¡ERROR! Opcion no valida. Intente nuevamente. \n");
                 break;
         }
-    } while (opcionModificar != 0);
+    } while (opcion != 0);
 }
-struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutId) {
-    int i;
+/* Interfaz para registrar un cliente nuevo*/
+void registrarCliente(struct NodoCliente **raiz) {
+    int idGenerado;
+    int edadCliente;
+    char nombreCliente[50];
+    char rutCliente[13];
+    char correoCliente[50];
+    struct Cliente *nuevoCliente;
 
-    if (raiz == NULL || rutId == NULL || rutId[0] == '\0') {
-        return NULL;
+    printf(" ============ MENU REGISTRAR CLIENTE ============\n\n");
+
+    printf("Ingrese el nombre completo del cliente: ");
+    fgets(nombreCliente, sizeof(nombreCliente), stdin);
+    nombreCliente[strcspn(nombreCliente, "\n")] = '\0';
+
+    printf("Ingrese el RUT del cliente (Ej: 12.345.678-9): ");
+    fgets(rutCliente, sizeof(rutCliente), stdin);
+    rutCliente[strcspn(rutCliente, "\n")] = '\0';
+
+    if (buscarClientePorRut(*raiz, rutCliente) != NULL) {
+        printf("Error: Ya existe un cliente registrado con ese RUT.\n");
+        return;
     }
 
-    /*recorre el char ingresado y si tiene guion o punto se asume que se ingresa un rut */
-    for (i = 0; rutId[i] != '\0'; i++) {
-        if (rutId[i] == '-' || rutId[i] == '.') {
-            return buscarClientePorRut(raiz, rutId);  /*si es rut me busca al cliente por rut en el arbol*/
-        }
+    printf("Ingrese la edad del cliente: ");
+    edadCliente = inputEntero();
+    while (edadCliente < 1 || edadCliente > 120) {
+        printf("Error: Ingrese una edad valida (1-120): ");
+        edadCliente = inputEntero();
     }
-    return buscarClientePorID(raiz, atoi(rutId));
+
+    printf("Ingrese el correo del cliente: ");
+    fgets(correoCliente, sizeof(correoCliente), stdin);
+    correoCliente[strcspn(correoCliente, "\n")] = '\0';
+
+    idGenerado = generarIdUnico(*raiz);
+    nuevoCliente = crearEstructuraCliente(idGenerado, nombreCliente, rutCliente, edadCliente, correoCliente);
+
+    if (insertarClienteEnArbol(raiz, nuevoCliente)) {
+        printf("\n¡Se ha anadido con exito al cliente!\n");
+        printf("Nombre: %s\n", nuevoCliente->nombreCliente);
+        printf("RUT: %s\n", nuevoCliente->rutCliente);
+        printf("ID asignado automaticamente: %d\n\n", nuevoCliente->idCliente);
+    } else {
+        printf("Error al registrar el cliente en el arbol.\n");
+        liberarCliente(nuevoCliente);
+    }
 }
 
-/*pide id o rut del cliente para verficar si existe*/
-struct Cliente *verificarPedirCliente(struct Tienda *ibcomics, char *texto){
-    struct Cliente * clienteEncontrado;
+/* Interfaz para la eliminación de un cliente */
+void eliminarClienteInterfaz(struct Tienda *tienda) {
+    int pasesBorrados;
+    int listasBorradas;
+    char entradaBusqueda[50];
+    struct Cliente *clienteAOperar;
 
-    if (ibcomics == NULL) {
-        return NULL;
-    }
-    clienteEncontrado = buscarClientePorRutOIdArbol(ibcomics->raiz, texto);
+    pasesBorrados = 0;
+    listasBorradas = 0;
 
-    if (clienteEncontrado != NULL) {
-        return clienteEncontrado;
+    printf(" ============ MENU ELIMINAR CLIENTE ============\n\n");
+    if (tienda == NULL || tienda->raiz == NULL) {
+        printf("Error: No existe ningun cliente registrado en el sistema.\n");
+        return;
     }
-    return NULL;
+
+    printf("Ingrese el ID o RUT del cliente a eliminar: ");
+    fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
+    entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
+
+    clienteAOperar = verificarPedirCliente(tienda, entradaBusqueda);
+    if (clienteAOperar == NULL) {
+        printf("Error: No se pudo encontrar al cliente ingresado.\n\n");
+        return;
+    }
+
+    if (procesarEliminacionClienteArbol(tienda, clienteAOperar->idCliente, &pasesBorrados, &listasBorradas)) {
+        printf("¡Cliente eliminado del sistema con exito!\n");
+        printf("Pases eliminados: %d | Listas de espera de las que fue removido: %d\n", pasesBorrados, listasBorradas);
+    } else {
+        printf("Error al intentar eliminar al cliente.\n");
+    }
 }
 
-
-/* Menu principal de clientes. */
+/* Menu principal de clientes y sus debidas gestiones */
 void mostrarMenuClientes(struct Tienda *tienda) {
-    int opcionMenu, opcionValida, idOperar;
-    char rut[13];
-    struct Cliente *clienteOperar = NULL;
-    struct NodoCliente **raiz = &(tienda->raiz);
+    int opcionMenu;
+    int opcionValida;
+    char entradaBusqueda[50];
+    struct Cliente *clienteActual;
+    struct NodoCliente **raizClientes;
+
+    clienteActual = NULL;
+    raizClientes = &(tienda->raiz);
 
     do {
         opcionValida = 1;
@@ -562,77 +597,67 @@ void mostrarMenuClientes(struct Tienda *tienda) {
         printf("  ||                   C L I E N T E S                   ||\n");
         printf("  =========================================================\n\n");
 
-        printf("      Opcion [1]: Registrar nuevo Cliente en el sistema \n");
-        printf("      Opcion [2]: Modificar datos de un Cliente \n");
-        printf("      Opcion [3]: Eliminar Cliente del sistema \n");
-        printf("      Opcion [4]: Buscar Cliente por ID \n");
-        printf("      Opcion [5]: Buscar Cliente por RUT \n");
-        printf("      Opcion [6]: Listar todos los Clientes \n\n");
-        printf("      Opcion [0]: Salir de Menu \n\n");
+        printf("      Opcion [1]: Registrar nuevo cliente en el sistema \n");
+        printf("      Opcion [2]: Modificar datos de un cliente \n");
+        printf("      Opcion [3]: Eliminar cliente del sistema \n");
+        printf("      Opcion [4]: Buscar cliente por ID o RUT \n");
+        printf("      Opcion [5]: Listar todos los clientes \n\n");
+        printf("      Opcion [0]: Salir al menu principal \n\n");
 
-        printf("   Por favor, ingrese una de las opciones disponibles : \n");
+        printf("   Por favor, ingrese una opcion: ");
         opcionMenu = inputEntero();
         printf("\n");
+        
         switch (opcionMenu) {
             case 1:
-                crearYAgregarClienteAArbol(raiz);
+                registrarCliente(raizClientes);
                 break;
             case 2:
-                printf(" ============ MENU BUSCAR CLIENTE POR ID ============\n");
-                printf("Ingrese el id del cliente = ");
-                idOperar = inputEntero();
-                clienteOperar = buscarClientePorID(*raiz, idOperar);
-                if (clienteOperar != NULL) {
-                    printf("Cliente encontrado con exito!\n");
-                    menuModificarCliente(clienteOperar);
+                printf(" ============ MENU MODIFICAR CLIENTE ============\n");
+                printf("Ingrese el ID o RUT del cliente: ");
+                fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
+                entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
+                
+                clienteActual = verificarPedirCliente(tienda, entradaBusqueda);
+                if (clienteActual != NULL) {
+                    printf("¡Cliente encontrado con exito!\n");
+                    menuModificarCliente(clienteActual);
                 } else {
-                    printf("Error: No se pudo encontrar al cliente con el ID %d.\n\n", idOperar);
+                    printf("Error: No se pudo encontrar al cliente ingresado.\n\n");
                 }
                 break;
             case 3:
-                printf("Ingrese el id del cliente = ");
-                idOperar = inputEntero();
-                eliminarClienteDeArbol(tienda, idOperar);
+                eliminarClienteInterfaz(tienda);
                 break;
             case 4:
-                printf(" ============ MENU BUSCAR CLIENTE POR ID ============\n");
-                printf("Ingrese el id del cliente = ");
-                idOperar = inputEntero();
-                clienteOperar = buscarClientePorID(*raiz, idOperar);
-                if (clienteOperar != NULL) {
-                    mostrarDatosCliente(clienteOperar);
+                printf(" ============ MENU BUSCAR CLIENTE (ID o RUT) ============\n");
+                printf("Ingrese el ID o RUT del cliente: ");
+                fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
+                entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
+                
+                clienteActual = verificarPedirCliente(tienda, entradaBusqueda);
+                if (clienteActual != NULL) {
+                    mostrarInformacionCliente(clienteActual);
                 } else {
-                    printf("Error: No se pudo encontrar al cliente con el ID %d.\n\n", idOperar);
+                    printf("Error: No se encontro ningun cliente con los datos ingresados.\n\n");
                 }
                 break;
             case 5:
-                printf(" ============ MENU BUSCAR CLIENTE POR RUT ============\n");
-                printf("Ingrese el rut del cliente (Ej: 12.345.678-9 ) = ");
-                fgets(rut, 13, stdin);
-                rut[strcspn(rut, "\n")] = '\0';
-                clienteOperar = buscarClientePorRut(*raiz, rut);
-                if (clienteOperar != NULL) {
-                    mostrarDatosCliente(clienteOperar);
-                } else {
-                    printf("Error: No se encontro al cliente con el RUT ingresado.\n\n");
-                }
-                break;
-            case 6:
                 printf(" ============ MENU LISTAR CLIENTES ============\n\n");
-                if (*raiz == NULL) {
+                if (*raizClientes == NULL) {
                     printf("Error: No hay clientes registrados en el sistema.\n\n");
                 } else {
-                    listarClientes(*raiz);
+                    listarClientes(*raizClientes);
                 }
                 break;
             case 0:
-                printf("Saliendo del menu...\n");
+                printf("Saliendo del menu de clientes...\n");
                 break;
             default:
                 opcionValida = 0;
         }
         if (opcionValida == 0) {
-            printf("\n  ERROR! Opcion no valida. Intente nuevamente :) \n");
+            printf("\n  ¡ERROR! Opcion no valida. Intente nuevamente. \n");
         }
     } while (opcionMenu != 0);
 }
