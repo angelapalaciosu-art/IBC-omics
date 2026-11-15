@@ -3073,7 +3073,7 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
         printf("      Opcion [1]: Ver datos de mi Pase \n");
         printf("      Opcion [2]: Comprar Pase(s) \n");
         printf("      Opcion [3]: Anular mi Pase \n");
-        printf("      Opcion [4]: Ver cantidad de Pases comprados \n");
+        printf("      Opcion [4]: Cantidad de Pases comprados por cliente\n");
         printf("      Opcion [5]: Eliminar Pase(s) \n");
         printf("      Opcion [6]: Cambiar datos del Pase \n");
         printf("      Opcion [7]: Ver Pases mas vendidos \n");
@@ -3099,7 +3099,7 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
                 anularPases(ibcomics->raiz);
                 break;
             case 4:
-                printf("Ha seleccionado la opcion 4: Ver cantidad de pases comprados \n");
+                printf("Ha seleccionado la opcion 4: Cantidad de Pases comprados por cliente \n");
                 verCantidad(ibcomics->raiz);
                 break;
             case 5:
@@ -3127,7 +3127,101 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
         }
     } while (opcion != 9);
 }
-struct crearArreglo
+/*-------------------Modularizar menu ingresarSacarClientes a las salas--------------------*/
+
+/*retorna 1 si toda la fecha de parteA  es igual a la de parteBc*/
+int fechaHoraIguales(int paseFecha[5], int salaFecha[5] ){
+    int i;
+    /* Pase Horario ;arregloFecha[5]; /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
+    /* Sala Horario;arregloFecha[5]; /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
+    for (i = 0; i < 5; i++) {
+        if (paseFecha[i] != salaFecha[i]) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+int verificarCumpleFechaPase(struct Pase *pase, struct Sala *salaEncontrada) {
+
+    if (pase != NULL && salaEncontrada != NULL) {
+        return fechaHoraIguales(pase->arregloFecha, salaEncontrada->arregloFecha);
+    }
+    return 0;
+}
+int verificarPaseActivo(struct Pase *pase) {
+    if (pase != NULL && pase->estado == 1) {
+        return 1;
+    }
+    return 0;
+}
+int verificarAforoMax(struct Sala *salaEncontrada) {
+    if (salaEncontrada != NULL && salaEncontrada->aforoActual < salaEncontrada->aforoMax) {
+        return 1;
+    }
+    return 0;
+}
+
+
+int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresado, struct Pase *pase) {
+    struct Sala *salaEncontrada;
+
+    if (ibcomics == NULL || clienteIngresado == NULL || pase == NULL ) {
+        return 0;
+    }
+
+    if (ibcomics->diaAbierto == 2 ) {  /*La tienda está cerrada */
+         return 0;
+    }
+    if (buscarPasePorId(clienteIngresado->headPase, pase->idPase) != pase || pase->datosSala == NULL) { /*si el pase ingresado no esta o la sala*/
+        return 0;
+    }
+    salaEncontrada = pase->datosSala;  /*el pase apunta a la sala que le corresponde*/
+
+    if (verificarPaseActivo(pase) == 0 || verificarCumpleFechaPase(pase, salaEncontrada) == 0 || verificarAforoMax(salaEncontrada) == 0) {
+        return 0;   /*Si no se cumplen todas las condiciones*/
+    }
+    clienteIngresado->datosSala = salaEncontrada;
+    salaEncontrada->aforoActual++;
+    pase->estado = 2;   /* Utilizado */
+    return 1;
+}
+
+void menusIngresarClienteSala(struct Tienda *ibcomics) {
+    struct Cliente *clienteEncontrado;
+    struct Pase *paseEncontrado;
+    char *idRutCliente;
+    int idPase;
+
+    if (ibcomics == NULL) {
+        return;
+    }
+    printf(" ============ MENU INGRESAR CLIENTE A SALA ============\n");
+    printf("\n");
+
+    if (ibcomics->diaAbierto == 1) {  /*Si el dia esta abierto*/
+        printf("Ingrese ID o RUT del cliente (Ej. 12.345.678-9) = \n");
+        scanf("%14s", idRutCliente);
+        while (getchar() != '\n');
+        verificarPedirCliente(ibcomics, idRutCliente);
+        printf("\nPases del Cliente = \n");
+
+        mostrarDatosDelPasePorCliente
+
+        printf("Ingrese el ID del pase = \n");
+        idPase = inputEntero();
+        paseEncontrado = buscarPasePorId(clienteEncontrado->headPase, idPase);
+
+        ingresarClienteSala(ibcomics, clienteEncontrado, paseEncontrado);
+        printf("\nIngreso exitoso !\n");
+        printf("El cliente %s ha ingresado a la sala %s\n", clienteEncontrado->nombreCliente, clienteEncontrado->datosSala->nombreSala);
+        printf("s\nAforo Actual = %d   |   Aforo Maximo = %ds\n", clienteEncontrado->datosSala->aforoActual, clienteEncontrado->datosSala->aforoMax);
+
+    }
+    printf("Ocurrio un error, o el dia esta cerrado . . .\n");
+    return;
+}
+
 
 /* =========================================================================
    FUNCION PRINCIPAL (MAIN)
@@ -3135,7 +3229,7 @@ struct crearArreglo
 int main(void) {
     int opcionSeleccionada;
     int preciosPases[4];
-    int tamSalas = 6;
+    int tamSalas = 12;
     struct Tienda *ibcomics;
 
     srand(time(NULL));
