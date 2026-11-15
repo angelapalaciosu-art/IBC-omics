@@ -446,7 +446,6 @@ void liberarArbol(struct NodoCliente *raiz) {
 
 /* Muestra por pantalla todos los datos de un cliente. */
 void mostrarDatosCliente(struct Cliente *cliente) {
-    printf("\n Cliente encontrado con exito!\n");
     printf(" ============ DATOS DEL CLIENTE ============\n\n");
     printf("ID: %d \n", cliente->idCliente);
     printf("Nombre: %s \n", cliente->nombreCliente);
@@ -533,7 +532,7 @@ struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutI
     return buscarClientePorID(raiz, atoi(rutId));
 }
 
-/*pide id o rut y busca al cliente para utilzar en funciones de menu*/
+/*pide id o rut del cliente para verficar si existe*/
 struct Cliente *verificarPedirCliente(struct Tienda *ibcomics, char *texto){
     struct Cliente * clienteEncontrado;
 
@@ -1967,7 +1966,7 @@ int eliminarClienteDeListaEspera(struct NodoListaEspera **head, int idBuscado) {
     struct NodoListaEspera *rec;
     struct NodoListaEspera *nodoQuitado;
 
-    if (head == NULL || *head == NULL || idBuscado < 0) {
+    if (head == NULL || *head == NULL || idBuscado <= 0) {
         return 0;
     }
 
@@ -2044,11 +2043,12 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
         printf("El titulo no se encuentra en la tienda\n");
         return;
     }
+    printf("Titulo encontrado: %s\n\n", tituloEncontrado->nombreTitulo);
 
     printf("Ingrese ID del cliente o RUT (Ej: 12.345.678-9) =\n");
-    scanf("14s", idRutCliente);
+    scanf("%14s", idRutCliente);
     while (getchar() != '\n');
-    
+
     clienteEnTienda = buscarClientePorRutOIdArbol(ibcomics->raiz, idRutCliente);
     if (clienteEnTienda == NULL) {
         printf("Error: El cliente no se encuentra registrado en la tienda\n");
@@ -2078,50 +2078,35 @@ void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     char idRutCliente[15];
     struct Titulo *tituloEncontrado = NULL;
     struct Cliente *clienteEncontrado = NULL;
-    int resultado;
 
-    if (ibcomics != NULL) {
-        printf(" ============ MENU QUITAR CLIENTE LISTA DE ESPERA ============\n");
+    if (ibcomics == NULL) {
+        return;
+    }
+    printf(" ============ MENU QUITAR CLIENTE LISTA DE ESPERA ============\n");
+    printf("Ingrese el ID del titulo que desea buscar: \n");
+    idTituloBuscado = inputEntero();
 
-        while (tituloEncontrado == NULL) {  /*empieza como null, despues en la segunda vuelta ya tiene a un titulo por lo que sale del bucle*/
-            printf("Ingrese el id del titulo que desea buscar = ");
+    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    if (tituloEncontrado == NULL) {
+        printf("El titulo no se encuentra en la tienda\n");
+        return;
+    }
+    printf("Titulo encontrado: %s\n\n", tituloEncontrado->nombreTitulo);
+    printf("Ingrese ID del cliente o RUT (Ej: 12.345.678-9) =\n");
+    scanf("%14s", idRutCliente);
+    while (getchar() != '\n');
 
-            if (scanf("%d", &idTituloBuscado) != 1) {  /*para que solo reconozca int*/
-                while (getchar() != '\n');
-                printf("Error: Ingrese un ID numerico valido.\n\n");
-                continue;
-            }
+    /*no se verifica si el cliente está en tienda pq se asume que si está en una lista de espera ya está en la tienda*/
 
-            tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
-
-            if (tituloEncontrado == NULL) {
-                printf("Error: No se pudo encontrar el titulo con el ID %d. Intente nuevamente.\n\n", idTituloBuscado);
-            }
-        }
-        /*si se sale del bucle significa q lo encontro*/
-
-        printf("Titulo encontrado con exito! \n");
-        printf("Nombre del titulo: %s\n\n", tituloEncontrado->nombreTitulo);
-
-        printf("Ingrese el id o rut del cliente que desea quitar (Ej : 12.345.678-9 ) = ");
-        scanf(" %14s", idRutCliente);
-
-        clienteEncontrado = buscarClientePorRutOIdListaEspera(tituloEncontrado->headListaEspera, idRutCliente);
-
-        if (clienteEncontrado != NULL) {  /*si la funcion encuentra al cliente retorna sus datos*/
-            printf("Cliente encontrado con exito!\n");
-            printf("Nombre: %s | RUT: %s\n\n", clienteEncontrado->nombreCliente, clienteEncontrado->rutCliente);
-
-            resultado = eliminarClienteDeListaEspera(&(tituloEncontrado->headListaEspera), clienteEncontrado->idCliente);
-
-            if (resultado == 1) {
-                printf("Cliente eliminado con exito! \n");
-            } else {
-                printf("Error: El cliente no pudo ser eliminado.\n");
-            }
-        } else {
-            printf("Error: No se encontro al cliente con los datos ingresados en la lista de espera.\n");
-        }
+    clienteEncontrado = verificarPedirClienteListaEspera(tituloEncontrado, idRutCliente);
+    if (clienteEncontrado == NULL) {
+        printf("Error: No se encontro al cliente en la lista de espera.\n");
+        return;
+    }
+    if (eliminarClienteDeListaEspera(&(tituloEncontrado->headListaEspera), clienteEncontrado->idCliente) == 1) {
+        printf("Cliente eliminado con exito!\n");
+    } else {
+        printf("Error: El cliente no pudo ser eliminado.\n");
     }
 }
 
