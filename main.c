@@ -1406,10 +1406,10 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
     if (nuevaSala == NULL) {
         return NULL;
     }
-    return agregarSala(tienda, nuevaSala);
+    return agregarSala(tienda, nuevaSala, tamSalas);
 }
 
-void mostrarMenuSalas(struct Tienda *tienda) {
+void mostrarMenuSalas(struct Tienda *tienda, tamSalas) {
     int opcionMenu, opcionValida, idOperar;
     char nombreOperar[100];
     struct Sala *salaOperar = NULL;
@@ -1446,7 +1446,7 @@ void mostrarMenuSalas(struct Tienda *tienda) {
         switch (opcionMenu) {
             case 1:
                 printf("Ha seleccionado la opcion 1: Registrar nueva sala en el sistema \n");
-                salaOperar = crearYAgregarSala(tienda);
+                salaOperar = crearYAgregarSala(tienda, tamSalas);
                 if (salaOperar != NULL) {
                     printf("Sala registrada con exito! \n\n");
                 }
