@@ -3125,7 +3125,7 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
 int main(void) {
     int opcionSeleccionada;
     int preciosPases[4];
-   int tamSalas = 6;
+   int tamSalas = 12;
     struct Tienda *ibcomics;
 
     srand(time(NULL));
