@@ -85,6 +85,7 @@ struct Sala {
     int tematica; /* 1:Superheroe / 2:Manga y Anime / 3:Novela Grafica / 4:Comic Independiente / 5:Infantil y Humor Grafico / 6:Coleccionista */
     char *horario;
     int aforoMax;
+    int aforoActual; /*personas dentro de la sala*/
     int cantTrabajadores;
     struct NodoTitulo *headNodoTitulo;
 };
@@ -2097,7 +2098,7 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
         return;
     }
     enlazarNodoListaEspera(&(tituloEncontrado->headListaEspera), nuevoNodo);
-    mostrarDatosCliente(clienteEnTienda);
+    mostrarInformacionCliente(clienteEnTienda);
 }
 
 void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
@@ -2135,7 +2136,7 @@ void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     } else {
         printf("Error: El cliente no pudo ser eliminado.\n");
     }
-    mostrarDatosCliente(clienteEncontrado);
+    mostrarInformacionCliente(clienteEncontrado);
 }
 
 void MenuCalcularTiempoEstimadoEsperaDias(struct Tienda *ibcomics) {
@@ -3181,7 +3182,6 @@ int main(void) {
         }
     } while (opcionSeleccionada != 7);
 
-    liberarArbol(ibcomics->raiz);
     free(ibcomics->salas);
     free(ibcomics);
     return 0;
