@@ -144,7 +144,7 @@ struct Cliente *buscarClientePorID(struct NodoCliente *raiz, int idBuscado) {
 
 /* Busca un cliente por RUT. */
 struct Cliente *buscarClientePorRut(struct NodoCliente *raiz, char *rut) {
-    struct Cliente *clienteBuscar;
+    struct Cliente *clienteEncontrado;
     if (raiz == NULL) {
         return NULL;
     }
@@ -152,9 +152,9 @@ struct Cliente *buscarClientePorRut(struct NodoCliente *raiz, char *rut) {
         return raiz->datosCliente;
     }
     /* El arbol esta ordenado por ID, no por RUT: hay que revisar ambos lados */
-    clienteBuscar = buscarClientePorRut(raiz->izq, rut);
-    if (clienteBuscar != NULL) {
-        return clienteBuscar;
+    clienteEncontrado = buscarClientePorRut(raiz->izq, rut);
+    if (clienteEncontrado != NULL) {
+        return clienteEncontrado;
     }
     return buscarClientePorRut(raiz->der, rut);
 }
