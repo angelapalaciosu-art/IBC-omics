@@ -1409,7 +1409,7 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
     return agregarSala(tienda, nuevaSala, tamSalas);
 }
 
-void mostrarMenuSalas(struct Tienda *tienda, tamSalas) {
+void mostrarMenuSalas(struct Tienda *tienda, int tamSalas) {
     int opcionMenu, opcionValida, idOperar;
     char nombreOperar[100];
     struct Sala *salaOperar = NULL;
