@@ -31,7 +31,8 @@ struct Pase {
     int tipoPase; /* 1:General / 2:Infantil / 3:Familiar / 4:Prioritario  */
     int valor;
     int estado; /* 1:Activo / 2:Utilizado / 3:Anulado / 4:Vencido */
-    char *fechaUso;
+    char *horarioUso; /*Maniana, Tarde, Noche*/
+    int arregloFecha[5]; /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
     struct Sala *datosSala;
 };
 
@@ -83,7 +84,8 @@ struct Sala {
     char *nombreSala;
     int idSala;
     int tematica; /* 1:Superheroe / 2:Manga y Anime / 3:Novela Grafica / 4:Comic Independiente / 5:Infantil y Humor Grafico / 6:Coleccionista */
-    char *horario;
+    char *horario;  /*Maniana, Tarde, Noche*/
+    int arregloFecha[5];  /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
     int aforoMax;
     int aforoActual; /*personas dentro de la sala*/
     int cantTrabajadores;
@@ -95,6 +97,9 @@ struct Tienda {
     int cantidadSalas;
     struct Sala **salas;
     struct NodoCliente *raiz;
+    int diaAbierto;   /*1: Abierto / 2: Cerrado*/
+    int arregloFechaAct[3];  /*[0]: Dia / [1]: Mes / [2]: Anio */
+    int totalClientes;
 };
 
 /* =========================================================================
@@ -751,7 +756,7 @@ struct NodoTitulo *crearNodoTitulo(struct Titulo *titulo) {
     return nuevoNodo;
 }
 /* Esta funcion crea una sala  y su nodo fantasma de titulos */
-struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario, int aforoMax, int cantTrabajadores) {
+struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario, int aforoMax, int cantTrabajadores, int aforoActual) {
     struct Sala *nuevaSala;
     if (nombreSala == NULL || horario == NULL || tematica < 1 || tematica > 6) {
         return NULL;
@@ -771,6 +776,7 @@ struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario
     nuevaSala->tematica = tematica;
     nuevaSala->aforoMax = aforoMax;
     nuevaSala->cantTrabajadores = cantTrabajadores;
+    nuevaSala->aforoActual = aforoActual;
     return nuevaSala;
 }
 /*cambia el estado de una lista de espera*/
@@ -2426,8 +2432,11 @@ struct Pase *crearPase(void) {
     pase->tipoPase = 0;
     pase->valor = 0;
     pase->estado = 0;
-    pase->fechaUso = NULL;
+    pase->horarioUso = NULL;
     pase->datosSala = NULL;
+    pase->arregloFecha[0] = 0;
+    pase->arregloFecha[1] = 0;
+    pase->arregloFecha[2] = 0;
     return pase;
 }
 
@@ -3119,13 +3128,15 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
         }
     } while (opcion != 9);
 }
+struct crearArreglo
+
 /* =========================================================================
    FUNCION PRINCIPAL (MAIN)
    ========================================================================= */
 int main(void) {
     int opcionSeleccionada;
     int preciosPases[4];
-   int tamSalas = 6;
+    int tamSalas = 6;
     struct Tienda *ibcomics;
 
     srand(time(NULL));
@@ -3137,6 +3148,9 @@ int main(void) {
         ibcomics->raiz = NULL;
         ibcomics->salas = crearArregloSalas(tamSalas);
         ibcomics->cantidadSalas = 0;
+        ibcomics->diaAbierto = 0;
+
+        ibcomics->totalClientes = 0;
     }
 
     do {
