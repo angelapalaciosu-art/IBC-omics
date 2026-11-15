@@ -31,7 +31,8 @@ struct Pase {
     int tipoPase; /* 1:General / 2:Infantil / 3:Familiar / 4:Prioritario  */
     int valor;
     int estado; /* 1:Activo / 2:Utilizado / 3:Anulado / 4:Vencido */
-    char *fechaUso;
+    char *horarioUso; /*Maniana, Tarde, Noche*/
+    int arregloFecha[5]; /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
     struct Sala *datosSala;
 };
 
@@ -83,7 +84,8 @@ struct Sala {
     char *nombreSala;
     int idSala;
     int tematica; /* 1:Superheroe / 2:Manga y Anime / 3:Novela Grafica / 4:Comic Independiente / 5:Infantil y Humor Grafico / 6:Coleccionista */
-    char *horario;
+    char *horario;  /*Maniana, Tarde, Noche*/
+    int arregloFecha[5];  /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
     int aforoMax;
     int aforoActual; /*personas dentro de la sala*/
     int cantTrabajadores;
@@ -95,8 +97,10 @@ struct Tienda {
     int cantidadSalas;
     struct Sala **salas;
     struct NodoCliente *raiz;
+    int diaAbierto;   /*1: Abierto / 2: Cerrado*/
+    int arregloFechaAct[3];  /*[0]: Dia / [1]: Mes / [2]: Anio */
+    int totalClientes;
 };
-
 /* =========================================================================
    UTILIDADES
    ========================================================================= */
