@@ -534,23 +534,18 @@ struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutI
 }
 
 /*pide id o rut y busca al cliente para utilzar en funciones de menu*/
-struct Cliente *verificarPedirCliente(struct Tienda *ibcomics) {
-    char texto[30];
+struct Cliente *verificarPedirCliente(struct Tienda *ibcomics, char *texto){
     struct Cliente * clienteEncontrado;
 
     if (ibcomics == NULL) {
         return NULL;
     }
-    printf("Ingrese RUT o Id del cliente (Ej: 12.345.678-9) = \n");
-    fgets(texto, 30, stdin);
-    texto[strcspn(texto, "\n")] = '\0';  /*para que no tome el espacio */
-
     clienteEncontrado = buscarClientePorRutOIdArbol(ibcomics->raiz, texto);
 
-    if (clienteEncontrado == NULL) {
-        printf("Error: El cliente no se encuentra registrado \n");
+    if (clienteEncontrado != NULL) {
+        return clienteEncontrado;
     }
-    return clienteEncontrado;
+    return NULL;
 }
 
 
@@ -985,26 +980,12 @@ void listarSalas(struct Tienda *tienda) {
     }
 }
 /*pide el id del titulo hasta que exista*/
-struct Titulo *validacionPedirTitulo(struct Tienda *ibcomics) {
+struct Titulo *verificarPedirTitulo(struct Tienda *ibcomics, int idTitulo) {
     struct Titulo *tituloEncontrado = NULL;
-    int idTitulo;
-
-    if (ibcomics == NULL) {
+    if (ibcomics == NULL || idTitulo <= 0) {
         return NULL;
     }
-    while (tituloEncontrado == NULL) {
-        printf("Ingrese el id del titulo (0 para cancelar) = \n");
-        idTitulo = inputEntero();
-
-        if (idTitulo == 0) {
-            printf("La operacion ha sido cancelada \n");
-            return NULL;
-        }
-        tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTitulo);  /*busca si el titulo está en alguna sala*/
-        if (tituloEncontrado == NULL) {
-            printf("Error: No existe titulo con ese ID \n");
-        }
-    }
+    tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTitulo);  /*busca si el titulo está en alguna sala*/
     return tituloEncontrado;
 }
 
@@ -1879,6 +1860,16 @@ struct Cliente *buscarClientePorRutOIdListaEspera(struct NodoListaEspera *head, 
     return clienteEncontrado;
 }
 
+/*Busca al cliente dentro de la lista de espera para que no esté repetido*/
+struct Cliente *verificarPedirClienteListaEspera(struct Titulo *titulo, char *texto) {
+    struct Cliente *clienteEncontrado;
+    if (titulo == NULL) {
+        return NULL;
+    }
+    clienteEncontrado = buscarClientePorRutOIdListaEspera(titulo->headListaEspera, texto);
+    return clienteEncontrado;
+}
+
 
 /*------------------------------MOSTRAR--------------------------------------*/
 int contarCantidadClientesEnListaEspera(struct NodoListaEspera *head) {
@@ -2037,70 +2028,49 @@ void listarClientesListaEspera(struct NodoListaEspera *head) {
 void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     char idRutCliente[15];
     int idTituloBuscado;
-    struct Cliente *clienteEnTienda = NULL;
-    struct Cliente *clienteEnFila = NULL;
-    struct Titulo *tituloEncontrado = NULL;
-    struct NodoListaEspera *nuevoNodo = NULL;
+    struct Cliente *clienteEnTienda, *clienteEnFila;
+    struct Titulo *tituloEncontrado;
+    struct NodoListaEspera *nuevoNodo;
 
-    if (ibcomics != NULL) {
-        printf(" ============ MENU AGREGAR CLIENTE LISTA DE ESPERA ============\n");
-        printf("\n");
-
-        while (tituloEncontrado == NULL) {  /*tituloEncontrado empieza en null, despues si se encuentra no vuelve a este while y sigue (se utiliza para preguntar hasta encontrar)*/
-            printf("Bienvenido/da, por favor ingrese el id del titulo que desea esperar : \n");
-
-            idTituloBuscado = inputEntero();
-
-            if (idTituloBuscado == 0) {
-                printf("Error: Operacion cancelada . . .");
-                return;
-            }
-
-            tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
-
-            if (tituloEncontrado == NULL) {
-                printf("Error: No se pudo encontrar el titulo con el ID %d. Intente nuevamente.\n\n", idTituloBuscado);
-            }
-        }
-
-        printf("Por favor ingrese ID del cliente o RUT (Ej: 12.345.678-9 ) = \n");
-        scanf("%14s", idRutCliente);
-        while (getchar() != '\n');
-
-        clienteEnTienda = buscarClientePorRutOIdArbol(ibcomics->raiz, idRutCliente);  /*busca al cliente en el arbol*/
-
-        if (clienteEnTienda != NULL) {
-            clienteEnFila = buscarClientePorRutOIdListaEspera(tituloEncontrado->headListaEspera, idRutCliente); /*busca al cliente en la lista de espera*/
-            /*si retorna null significa que no está en la lista de espera por lo que se puede ingresar*/
-
-            if (clienteEnFila == NULL) {  /*para que un mismo cliente no ingrese dos veces*/
-
-                if (tituloEncontrado->estadoListaEspera == 1){  /*Si la lista de espera está activa*/
-                    nuevoNodo = crearNodoListasEspera(clienteEnTienda);
-
-                    if (nuevoNodo != NULL) {
-                        enlazarNodoListaEspera(&(tituloEncontrado->headListaEspera), nuevoNodo);
-
-                        printf("Se ha anadido con exito al cliente! \n");
-                        printf("Nombre del cliente: %s\n", clienteEnTienda->nombreCliente);
-                        printf("Rut del cliente: %s\n", clienteEnTienda->rutCliente);
-                        printf("Titulo en la lista de espera : %s\n", tituloEncontrado->nombreTitulo);
-                    }
-                    else {
-                        printf("Error al agregar al cliente.\n");
-                    }
-                }
-                else {
-                    printf("Error: La lista de espera esta suspendida. \n");
-                }
-            }
-            else {
-                printf("Error: El cliente ya se encuentra dentro de la lista de espera\n");
-            }
-        } else {
-            printf("Error: El cliente no se encuentra registrado en el sistema general de la tienda.\n");
-        }
+    if (ibcomics == NULL) {
+        return;
     }
+    printf(" ============ MENU AGREGAR CLIENTE LISTA DE ESPERA ============\n\n");
+    printf("Ingrese el ID del titulo que desea buscar: \n");
+    idTituloBuscado = inputEntero();
+
+    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    if (tituloEncontrado == NULL) {
+        printf("El titulo no se encuentra en la tienda\n");
+        return;
+    }
+
+    printf("Ingrese ID del cliente o RUT (Ej: 12.345.678-9) =\n");
+    scanf("14s", idRutCliente);
+    while (getchar() != '\n');
+    
+    clienteEnTienda = buscarClientePorRutOIdArbol(ibcomics->raiz, idRutCliente);
+    if (clienteEnTienda == NULL) {
+        printf("Error: El cliente no se encuentra registrado en la tienda\n");
+        return;
+    }
+
+    clienteEnFila = verificarPedirClienteListaEspera(tituloEncontrado, idRutCliente);
+    if (clienteEnFila != NULL) {
+        printf("Error: El cliente ya se encuentra dentro de la lista de espera\n");
+        return;
+    }
+    if (tituloEncontrado->estadoListaEspera != 1) {  /*1: Activo*/
+        printf("Error: La lista de espera se encuentra suspendida\n");
+        return;
+    }
+    nuevoNodo = crearNodoListasEspera(clienteEnTienda);
+    if (nuevoNodo == NULL) {
+        printf("Error al agregar cliente");
+        return;
+    }
+    enlazarNodoListaEspera(&(tituloEncontrado->headListaEspera), nuevoNodo);
+    mostrarDatosCliente(clienteEnTienda);
 }
 
 void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
