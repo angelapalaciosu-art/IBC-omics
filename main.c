@@ -672,6 +672,7 @@ struct Sala *buscarSalaPorId(struct Tienda *tienda, int idSala) {
     return NULL;
 }
 /* Esta funcion busca una sala en la tienda segun su Tematica */
+/*recibe el numero de la tematica y la busca en el arreglo salas*/
 struct Sala *buscarSalaPorTematica(struct Tienda *tienda, int tematica) {
     int i;
     if (tienda == NULL) {
@@ -981,6 +982,7 @@ void listarSalas(struct Tienda *tienda) {
 /*pide el id del titulo hasta que exista*/
 struct Titulo *verificarPedirTitulo(struct Tienda *ibcomics, int idTitulo) {
     struct Titulo *tituloEncontrado = NULL;
+
     if (ibcomics == NULL || idTitulo <= 0) {
         return NULL;
     }
@@ -2049,7 +2051,7 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     scanf("%14s", idRutCliente);
     while (getchar() != '\n');
 
-    clienteEnTienda = buscarClientePorRutOIdArbol(ibcomics->raiz, idRutCliente);
+    clienteEnTienda = verificarPedirCliente(ibcomics,idRutCliente);
     if (clienteEnTienda == NULL) {
         printf("Error: El cliente no se encuentra registrado en la tienda\n");
         return;
@@ -2108,6 +2110,7 @@ void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     } else {
         printf("Error: El cliente no pudo ser eliminado.\n");
     }
+    mostrarDatosCliente(clienteEncontrado);
 }
 
 void MenuCalcularTiempoEstimadoEsperaDias(struct Tienda *ibcomics) {
@@ -2119,31 +2122,19 @@ void MenuCalcularTiempoEstimadoEsperaDias(struct Tienda *ibcomics) {
         return;
     }
 
-    printf(" ============ MENU CALCULAR TIEMPO ESTIMADO DE ESPERA POR TITULO ============\n");
-    /*solicita id del titulo hasta encontrar uno existente*/
-    while (tituloEncontrado == NULL) {
-        printf("Ingrese el ID del titulo que desea buscar = ");
+    printf(" ============ MENU CALCULAR TIEMPO ESTIMADO DE ESPERA POR TITULO ============\n\n");
+    printf("Ingrese el ID del titulo que desea buscar = \n");
 
-        if (scanf("%d", &idTituloBuscado) != 1) {
-            while (getchar() != '\n');
-            printf("Error: Ingrese un ID numerico valido.\n\n");
-            continue;
-        }
+    idTituloBuscado = inputEntero();
 
-        tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
-
-        if (tituloEncontrado == NULL) {
-            printf("Error: No se pudo encontrar el titulo con el ID %d. Intente nuevamente.\n\n", idTituloBuscado);
-        }
+    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    if (tituloEncontrado == NULL) {
+        printf("El titulo no se encuentra en la tienda\n");
+        return;
     }
 
-    /*si se sale del bucle es pq encontro el titulo*/
-
     printf("Titulo encontrado con exito!\n");
-    printf("Nombre del titulo buscado: %s\n", tituloEncontrado->nombreTitulo);
-    printf("Cantidad de ejemplares por despacho: %d\n", tituloEncontrado->ejemplaresPorDespacho);
-    printf("Dias de demora por despacho: %d\n\n", tituloEncontrado->diasDemoraDespacho);
-    printf("\n");
+    mostrarDatosTitulo(tituloEncontrado);
 
     cantidadDias = calcularTiempoEstimadoEsperaDias(tituloEncontrado);
 
@@ -2162,124 +2153,108 @@ void MenuContarCantidadClientesEnListaEspera(struct Tienda *ibcomics) {
     struct Titulo *tituloEncontrado = NULL;
     int idTituloBuscado;
     int cantidadClientes;
+    if (ibcomics == NULL) {
+        return;
+    }
+    printf(" ============ MENU CONTAR CANTIDAD DE CLIENTES EN LISTA DE ESPERA ============\n");
+    printf("Ingrese el ID del titulo que desea buscar = \n");
 
-    if (ibcomics != NULL) {
-        printf(" ============ MENU CONTAR CANTIDAD DE CLIENTES EN LISTA DE ESPERA ============\n");
+    idTituloBuscado = inputEntero();
 
-        while (tituloEncontrado == NULL) {   /*pregunta hasta encontrar un titulo, en la primera vuelta siempre es null*/
-            printf("Ingrese el id del titulo que desea buscar: \n");
+    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    if (tituloEncontrado == NULL) {
+        printf("El titulo no se encuentra en la tienda\n");
+        return;
+    }
 
-            if (scanf("%d", &idTituloBuscado) != 1) {
-                while (getchar() != '\n');
-                printf("Error: Ingrese un ID numerico valido.\n\n");
-                continue;
-            }
-            tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
+    printf("Titulo encontrado con exito!\n");
+    mostrarDatosTitulo(tituloEncontrado);
 
-            if (tituloEncontrado == NULL) {
-                printf("Error: No se pudo encontrar el titulo con el ID %d. Intente nuevamente.\n\n", idTituloBuscado);
-            }
-        }
+    cantidadClientes = contarCantidadClientesEnListaEspera(tituloEncontrado->headListaEspera);
 
-        printf("Nombre del titulo buscado: %s\n", tituloEncontrado->nombreTitulo);
-        cantidadClientes = contarCantidadClientesEnListaEspera(tituloEncontrado->headListaEspera);
-
-        if (cantidadClientes == 1) {
-            printf("\n");
-            printf("Cantidad de personas en la lista de espera de %s es de : %d persona\n", tituloEncontrado->nombreTitulo, cantidadClientes);
-        }
-        else {
-            printf("\n");
-            printf("Cantidad de personas en la lista de espera de %s es de : %d personas\n", tituloEncontrado->nombreTitulo, cantidadClientes);
-        }
+    if (cantidadClientes == 1) {
+        printf("\n Cantidad de personas en la lista de espera de %s es de : %d persona\n", tituloEncontrado->nombreTitulo, cantidadClientes);
+    }
+    else {
+        printf("\n Cantidad de personas en la lista de espera de %s es de : %d personas\n", tituloEncontrado->nombreTitulo, cantidadClientes);
     }
 }
 
 void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
     struct Titulo *tituloEncontrado = NULL;
+    struct Sala *salaEncontrada = NULL;
     int opcionSeleccionada = 0;
-    int i;
-    int indiceSala;
 
-    if (ibcomics != NULL) {
-        printf(" ============ MENU MOSTRAR TITULO CON MAYOR LISTA DE ESPERA POR SALA ============\n");
-        printf("\n");
+    if (ibcomics == NULL) {
+        return;
+    }
 
-        while (opcionSeleccionada < 1 || opcionSeleccionada > 6) {
-            printf(" Ingrese la sala que desea buscar: \n");
-            printf(" Opciones disponibles : \n");
-            printf(" === [1] SuperHeroe / [2] Manga y Anime / [3] Novela Grafica  ===\n");
-            printf(" === [4] Comic Independiente / [5] Infantil y Humor Grafico / [6] Coleccionista ===\n");
+    printf(" ============ MENU MOSTRAR TITULO CON MAYOR LISTA DE ESPERA POR SALA ============\n");
+    printf("\n");
 
-            if (scanf(" %d", &opcionSeleccionada) != 1) { /*para que solo tome int*/
-                while (getchar() != '\n');
-                printf("Error: Ingrese una opcion numerica valida.\n\n");
-                continue;
-            }
+    do {
+        printf(" Opciones disponibles : \n");
+        printf(" === [1] SuperHeroe / [2] Manga y Anime / [3] Novela Grafica  ===\n");
+        printf(" === [4] Comic Independiente / [5] Infantil y Humor Grafico / [6] Coleccionista ===\n");
 
-            if (opcionSeleccionada < 1 || opcionSeleccionada > 6) {
-                printf("Error: Opcion fuera de rango (1-6). Intente nuevamente.\n\n");
+        printf("\n Ingrese la sala que desea buscar: \n");
+        opcionSeleccionada = inputEntero();
+
+        if (opcionSeleccionada < 1 || opcionSeleccionada > 6) {
+            printf("Error: Opcion fuera de rango (1-6). Intente nuevamente.\n\n");
+        }
+        /*sala encontrada sigue como null y vuelve a repetir la pregunta*/
+        else {
+            salaEncontrada = buscarSalaPorTematica(ibcomics, opcionSeleccionada);
+
+            if (salaEncontrada == NULL) {
+                printf("Error: No hay ninguna sala registrada con esa tematica. Intente nuevamente.\n\n");
             }
         }
+    }while (salaEncontrada == NULL);
 
-        indiceSala = -1;
-        for (i = 0; i < ibcomics->cantidadSalas; i++) {
-            if (ibcomics->salas[i] != NULL && ibcomics->salas[i]->tematica == opcionSeleccionada) {
-                indiceSala = i;
-                break;
-            }
-        }
+    printf("Sala encontrada con exito!\n");
+    printf("Nombre de la sala: %s\n", salaEncontrada->nombreSala);
 
-        if (indiceSala != -1) {
-            tituloEncontrado = obtenerTituloMayorListaEspera(ibcomics->salas[indiceSala]->headNodoTitulo);  /*ira a la sala correspondinte y hace el calculo*/
+    tituloEncontrado = obtenerTituloMayorListaEspera(salaEncontrada->headNodoTitulo);  /*solo busca el titulo, no se necesita validar si existe*/
 
-            if (tituloEncontrado != NULL) {
-                printf("\n =====> El titulo con mayor lista de espera es: '%s' <=====\n", tituloEncontrado->nombreTitulo);
-            } else {
-                printf("\n No hay titulos con lista de espera en esta sala.\n");
-            }
-        } else {
-            printf("\n Error: No se encontro ninguna sala registrada con la tematica seleccionada.\n");
-        }
+    if (tituloEncontrado != NULL) {
+        printf("\n =====> El titulo con mayor lista de espera es: '%s' <=====\n", tituloEncontrado->nombreTitulo);
+    } else {
+        printf("\n No hay titulos con lista de espera en esta sala.\n");
     }
 }
 
-
 void menuListarClientesListaEspera(struct Tienda *ibcomics) {
     struct Titulo *tituloEncontrado;
-    int idTitulo;
+    int idTituloBuscado;
 
-    if (ibcomics != NULL) {
-        printf(" ============ MENU LISTAR LISTA DE ESPERA ============\n");
-        printf("\n");
-
-        while (tituloEncontrado == NULL) {
-            printf("Ingrese el ID del titulo (escriba 0 para cancelar): \n");
-            idTitulo = inputEntero();
-
-            if (idTitulo == 0) {
-                printf("La operacion se ha cancelado . . .. \n");
-                return;
-            }
-
-            tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTitulo);
-
-            if (tituloEncontrado == NULL) {
-                printf("No existe titulo con ese ID, Intente nuevamente \n");
-            }
-        }
-
-        printf("El titulo ha sido encontrado! \n");
-        printf("Nombre: %s", tituloEncontrado->nombreTitulo);
-        if (tituloEncontrado->estadoListaEspera == 1) {
-            printf("Estado de la lista de espera: Activa \n");
-        }
-        else {
-            printf("Estado de la lista de espera: Suspendida \n");
-        }
-        printf("\n");
-        listarClientesListaEspera(tituloEncontrado->headListaEspera);
+    if (ibcomics == NULL) {
+        return;
     }
+
+    printf(" ============ MENU LISTAR LISTA DE ESPERA ============\n");
+    printf("\n");
+    printf("Ingrese el ID del titulo que desea buscar = \n");
+
+    idTituloBuscado = inputEntero();
+
+    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    if (tituloEncontrado == NULL) {
+        printf("El titulo no se encuentra en la tienda\n");
+        return;
+    }
+
+    printf("El titulo ha sido encontrado! \n");
+    printf("Nombre: %s", tituloEncontrado->nombreTitulo);
+    if (tituloEncontrado->estadoListaEspera == 1) {
+        printf("Estado de la lista de espera: Activa \n");
+    }
+    else {
+        printf("Estado de la lista de espera: Suspendida \n");
+    }
+    printf("\n");
+    listarClientesListaEspera(tituloEncontrado->headListaEspera);
 }
 
 void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
@@ -2287,44 +2262,35 @@ void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
     int idTituloBuscado;
     int resultado;
 
-    if (ibcomics != NULL) {
-        printf(" ============ MENU VACIAR LISTA DE ESPERA ============\n");
-        printf("\n");
+    if (ibcomics == NULL) {
+        return;
+    }
 
-        /*bucle pedir el id del titulo hasta encontrar uno existente*/
-        while (tituloEncontrado == NULL) {
-            printf("Ingrese ID del titulo que desea buscar: \n");
+    printf(" ============ MENU VACIAR LISTA DE ESPERA ============\n");
+    printf("\n");
+    printf("Ingrese el ID del titulo que desea buscar = \n");
 
-            if (scanf("%d", &idTituloBuscado) != 1) {
-                while (getchar() != '\n');
-                printf("Error: Ingrese un ID numerico valido.\n\n");
-                continue;
-            }
+    idTituloBuscado = inputEntero();
 
-            tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
+    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    if (tituloEncontrado == NULL) {
+        printf("El titulo no se encuentra en la tienda\n");
+        return;
+    }
 
-            if (tituloEncontrado == NULL) {
-                printf("Error: No se pudo encontrar el titulo con el ID %d. Intente nuevamente.\n\n", idTituloBuscado);
-            }
-        }
+    printf("El titulo ha sido encontrado! \n");
+    printf("Nombre: %s", tituloEncontrado->nombreTitulo);
 
-        printf("Nombre del titulo encontrado : %s \n", tituloEncontrado->nombreTitulo);
+    if (tituloEncontrado->headListaEspera != NULL) {
+        resultado = vaciarListaEspera(&(tituloEncontrado->headListaEspera));
 
-        if (tituloEncontrado->headListaEspera != NULL) {
-            resultado = vaciarListaEspera(&(tituloEncontrado->headListaEspera));
-
-            if (resultado == 1) {
-                printf("La Lista de espera del titulo %s ha sido vaciada con exito !! \n", tituloEncontrado->nombreTitulo);
-            } else {
-                printf("Error: La Lista de espera no pudo vaciarse \n");
-            }
+        if (resultado == 1) {
+            printf("La Lista de espera del titulo %s ha sido vaciada con exito !! \n", tituloEncontrado->nombreTitulo);
         } else {
-            printf("La lista de espera para este titulo ya se encuentra vacia.\n");
+                printf("Error: La Lista de espera no pudo vaciarse \n");
         }
     }
 }
-
-
 
 /*------------------MENU LISTA ESPERA---------------*/
 
