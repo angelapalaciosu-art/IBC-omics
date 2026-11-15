@@ -3159,7 +3159,7 @@ int main(void) {
                 mostrarMenuClientes(ibcomics);
                 break;
             case 2:
-                mostrarMenuSalas(ibcomics);
+                mostrarMenuSalas(ibcomics, tamSalas);
                 break;
             case 3:
                 mostrarMenuTitulos(ibcomics);
