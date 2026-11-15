@@ -2565,10 +2565,6 @@ struct Pase *crearPaseCompleto(struct Tienda *tienda, int tipoPase, int valorPas
 /*resolver que el puntero datoSala no queden apuntando a una sala ya eliminada*/
 void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala) {
     struct NodoPase *rec;
-
-    if (raiz == NULL) {
-        return;
-    }
     if (raiz->datosCliente != NULL && raiz->datosCliente->headPase != NULL) {
         rec = raiz->datosCliente->headPase->sig;
         while (rec != NULL) {
