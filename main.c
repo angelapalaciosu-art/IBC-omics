@@ -3493,33 +3493,13 @@ void cerrarDia(struct Tienda *tienda) {
     tienda->diaAbierto = 2;
     printf("\n ¡El dia ha sido cerrado correctamente!\n");
 }
-/* =========================================================================
-   FUNCION PRINCIPAL (MAIN)
-   ========================================================================= */
-int main(void) {
+void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4]) {
     int opcionSeleccionada;
-    int preciosPases[4];
-    int tamSalas = 12;
-    struct Tienda *ibcomics;
-
-    srand(time(NULL));
-    poblarPrecios(preciosPases);
-
-    ibcomics = (struct Tienda *)malloc(sizeof(struct Tienda));
-    if (ibcomics != NULL) {
-        ibcomics->nombreTienda = "IBC - OMICS INC.";
-        ibcomics->raiz = NULL;
-        ibcomics->salas = crearArregloSalas(tamSalas);
-        ibcomics->cantidadSalas = 0;
-        ibcomics->diaAbierto = 0;
-
-        ibcomics->totalClientes = 0;
-    }
 
     do {
         printf("\n==========================================================\n");
         printf("         B I E N V E N I D O   A L   M E N U\n");
-        printf("                  I B C - OMICS INC.\n");
+        printf("                 I B C - OMICS INC.\n");
         printf("============================================================\n");
         printf("      Opcion [1]: Ingresar al Menu Cliente \n");
         printf("      Opcion [2]: Ingresar al Menu Salas \n");
@@ -3527,7 +3507,7 @@ int main(void) {
         printf("      Opcion [4]: Ingresar al Menu Lista de espera \n");
         printf("      Opcion [5]: Ingresar al Menu Pases \n");
         printf("      Opcion [6]: Cambiar precios de los pases \n");
-        printf("      Opcion [7]: Salir del sistema \n");
+        printf("      Opcion [7]: Salir al menu principal (Jornada)\n");
         printf("   Ingrese una opcion valida: ");
         opcionSeleccionada = inputEntero();
 
@@ -3551,13 +3531,77 @@ int main(void) {
                 cambiarPrecios(preciosPases);
                 break;
             case 7:
-                printf("\nSaliendo del sistema. Que tenga un excelente dia :)\n");
+                printf("\nSaliendo del menu de la tienda...\n");
                 break;
             default:
                 printf("\nOpcion no valida. Intente nuevamente :)\n");
                 break;
         }
     } while (opcionSeleccionada != 7);
+}
+/* =========================================================================
+   FUNCION PRINCIPAL (MAIN)
+   ========================================================================= */
+int main(void) {
+    int opcionPrincipal;
+    int preciosPases[4];
+    int tamSalas = 12;
+    struct Tienda *ibcomics;
+
+    srand(time(NULL));
+    poblarPrecios(preciosPases);
+
+    ibcomics = (struct Tienda *)malloc(sizeof(struct Tienda));
+    if (ibcomics != NULL) {
+        ibcomics->nombreTienda = "IBC - OMICS INC.";
+        ibcomics->raiz = NULL;
+        ibcomics->salas = crearArregloSalas(tamSalas);
+        ibcomics->cantidadSalas = 0;
+        ibcomics->diaAbierto = 0; // 0: No iniciado, 1: Abierto, 2: Cerrado
+        ibcomics->totalClientes = 0;
+    }
+    
+    do {
+        printf("\n==========================================================\n");
+        printf("       SISTEMA PRINCIPAL - IBC - OMICS INC.\n");
+        printf("==========================================================\n");
+        printf("   [1] Abrir el dia\n");
+        printf("   [2] Ingresar cliente a sala (Control de entrada)\n");
+        printf("   [3] Abrir Menu Principal de la Tienda\n");
+        printf("   [4] Cerrar el dia\n");
+        printf("   [5] Salir del sistema\n");
+        printf("   Ingrese una opcion: ");
+        opcionPrincipal = inputEntero();
+
+        switch (opcionPrincipal) {
+            case 1:
+                abrirDia(ibcomics);
+                break;
+            case 2:
+                if (ibcomics->diaAbierto == 1) {
+                    menusIngresarClienteSala(ibcomics);
+                } else {
+                    printf("\nError: El dia debe estar ABIERTO para ingresar clientes a las salas.\n");
+                }
+                break;
+            case 3:
+                if (ibcomics->diaAbierto == 1) {
+                    mostrarMenuPrincipal(ibcomics, preciosPases);
+                } else {
+                    printf("\nError: Debe abrir el dia primero para acceder al menu principal.\n");
+                }
+                break;
+            case 4:
+                cerrarDia(ibcomics);
+                break;
+            case 5:
+                printf("\nSaliendo del sistema. Que tenga un excelente dia :)\n");
+                break;
+            default:
+                printf("\nOpcion no valida. Intente nuevamente :)\n");
+                break;
+        }
+    } while (opcionPrincipal != 5);
 
     free(ibcomics->salas);
     free(ibcomics);
