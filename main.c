@@ -2091,15 +2091,15 @@ void listarClientesListaEspera(struct NodoListaEspera *head) {
     int lugarCliente = 1;
 
     if (head == NULL) {
-        printf("La lista se encuentra vacia");
+        printf("La lista se encuentra vacia\n");
         return;
     }
 
     rec = head;
 
     do {
+        printf("\n[%d] | ID: %d | RUT: %s | NOMBRE: %s | EDAD: %d \n", lugarCliente, rec->datosCliente->idCliente, rec->datosCliente->rutCliente, rec->datosCliente->nombreCliente, rec->datosCliente->edad);
         lugarCliente++;
-        printf("[%d] | ID: %d | RUT: %s | NOMBRE: %s | EDAD: %d ", lugarCliente, rec->datosCliente->idCliente, rec->datosCliente->rutCliente, rec->datosCliente->nombreCliente, rec->datosCliente->edad);
         rec = rec -> sig;
     }while (rec != head);
 }
@@ -2402,12 +2402,8 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
         printf("\n");
 
         printf("   Por favor, ingrese una de las opciones disponibles : \n");
-
-        if (scanf("%d", &opcionSeleccionada) != 1) {
-            while (getchar() != '\n');
-
-            opcionSeleccionada = -1;
-        }
+        opcionSeleccionada = inputEntero();
+        printf("\n");
 
         switch (opcionSeleccionada) {
             case 1:
