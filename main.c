@@ -153,7 +153,7 @@ char *copiarTexto(const char *textoOriginal) {
     }
     return copia;
 }
-
+/*Valida que una cadena solo contenga letras sin nigun caracter distinto*/
 int validarNombreSoloLetrasYEspacios(const char *cadenaNombre) {
     int indice;
     char caracterActual;
@@ -175,7 +175,7 @@ int validarNombreSoloLetrasYEspacios(const char *cadenaNombre) {
 /* =========================================================================
    MODULO DE CLIENTES Y ARBOL 
    ========================================================================= */
-
+/*Busca a un cliente en el arbol binario utilizando el id*/
 struct Cliente *buscarClientePorID(struct NodoCliente *raiz, int idBuscado) {
     if (raiz == NULL) {
         return NULL;
@@ -189,7 +189,7 @@ struct Cliente *buscarClientePorID(struct NodoCliente *raiz, int idBuscado) {
         return buscarClientePorID(raiz->izq, idBuscado);
     }
 }
-
+/*Busca a un cliente en el arbol recorruendo de forma recursiva por el rut*/
 struct Cliente *buscarClientePorRut(struct NodoCliente *raiz, char *rut) {
     struct Cliente *clienteEncontrado;
     if (raiz == NULL) {
@@ -204,7 +204,7 @@ struct Cliente *buscarClientePorRut(struct NodoCliente *raiz, char *rut) {
     }
     return buscarClientePorRut(raiz->der, rut);
 }
-
+/*Detecta si la entrada es un rut o si es un id Numerico*/
 struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutId) {
     int i;
     if (raiz == NULL || rutId == NULL || rutId[0] == '\0') {
@@ -217,7 +217,7 @@ struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutI
     }
     return buscarClientePorID(raiz, atoi(rutId));
 }
-
+/*Verfica y pide a un cliente  ap partir de la tienda*/
 struct Cliente *verificarPedirCliente(struct Tienda *ibcomics, char *texto) {
     if (ibcomics == NULL) {
         return NULL;
