@@ -2873,6 +2873,29 @@ void verDatosPases(struct NodoCliente *clientes) {
     }
 
 }
+char *nombreEstadoPase(int estado) {
+    if (estado == 1) {
+        return "Activo";
+    } else if (estado == 2) {
+        return "Utilizado";
+    } else if (estado == 3) {
+        return "Anulado";
+    } else if (estado == 4) {
+        return "Vencido";
+    }
+    return "Desconocido";
+}
+
+void listarPasesDeCliente(struct Cliente *cliente) {
+    struct NodoPase *rec;
+    rec = cliente->headPase->sig;
+    while (rec!=NULL) {
+        if (rec->datosPase != NULL) {
+            printf("ID = [%d]  |  Valor = %d  |  Horario = %s  |  Estado = %s\n", rec->datosPase->idPase, rec->datosPase->valor, rec->datosPase->horarioUso, nombreEstadoPase(rec->datosPase->estado));
+        }
+        rec = rec->sig;
+    }
+}
 
 void anularPases(struct NodoCliente *abb) {
     int idCliente, id_Pase;
