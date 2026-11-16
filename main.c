@@ -3193,7 +3193,66 @@ void modificarDatosPase(struct Tienda *tienda) {
     printf("\n");
     printf("Saliendo del menu modificar pase...\n");
 }
+/* FUNCION QUE ABRE EL DIA PREGUNTANDO AL USUARIO LA FECHA ACTUAL Y VERIFICANDOLA*/
+void abrirDia(struct Tienda *tienda) {
+    if (tienda == NULL) return;
 
+    if (tienda->diaAbierto == 1) {
+        printf("\nError: El dia ya se encuentra ABIERTO.\n");
+        return;
+    }
+    printf("\n ============ ABRIR DIA =============\n");
+    printf("Ingrese la fecha de apertura para la tienda:\n");
+    
+    printf("Ingrese el dia (1-31): ");
+    tienda->arregloFechaAct[0] = inputEntero();
+    while (tienda->arregloFechaAct[0] < 1 || tienda->arregloFechaAct[0] > 31) {
+        printf("Error: Dia invalido. Ingrese nuevamente (1-31): ");
+        tienda->arregloFechaAct[0] = inputEntero();
+    }
+
+    printf("Ingrese el mes (1-12): ");
+    tienda->arregloFechaAct[1] = inputEntero();
+    while (tienda->arregloFechaAct[1] < 1 || tienda->arregloFechaAct[1] > 12) {
+        printf("Error: Mes invalido. Ingrese nuevamente (1-12): ");
+        tienda->arregloFechaAct[1] = inputEntero();
+    }
+
+    printf("Ingrese el anio: ");
+    tienda->arregloFechaAct[2] = inputEntero();
+    while (tienda->arregloFechaAct[2] < 2026 || tienda->arregloFechaAct[2] > 2100) {
+        printf("Error: Anio invalido. Ingrese nuevamente: ");
+        tienda->arregloFechaAct[2] = inputEntero();
+    }
+
+    /*Marcamos la tienda como abierta (1: Abierto)*/
+    tienda->diaAbierto = 1;
+
+    printf("\n ¡El dia %02d/%02d/%d ha sido abierto con exito! Operaciones habilitadas.\n",
+           tienda->arregloFechaAct[0], 
+           tienda->arregloFechaAct[1], 
+           tienda->arregloFechaAct[2]);
+}
+/*Funcion que cierra el dia de forma corecta*/
+
+void cerrarDia(struct Tienda *tienda) {
+    if (tienda == NULL) return;
+
+    if (tienda->diaAbierto == 2) {
+        printf("\nError: El dia ya se encuentra CERRADO\n");
+        return;
+    }
+
+    printf("\n ============ CERRAR DIA =============\n");
+    printf("Cerrando operaciones correspondientes al dia: %02d/%02d/%d\n",
+           tienda->arregloFechaAct[0], 
+           tienda->arregloFechaAct[1], 
+           tienda->arregloFechaAct[2]);
+
+    /* Se marca la tienda como cerrada */
+    tienda->diaAbierto = 2;
+    printf("\n ¡El dia ha sido cerrado correctamente!\n");
+}
 void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
     int opcion;
 
