@@ -3027,6 +3027,7 @@ void verMasVendidos(struct NodoCliente *abb) {
     printf("\n =====> Los pases mas vendidos tienen %d ventas <=====\n", mayor);
 }
 
+/*funcion que recibe el abb por lo tanto sirve para el menu*/
 void listarPases(struct NodoCliente *abb) {
     int idClienteListar;
     struct Cliente *cliente;
@@ -3337,7 +3338,7 @@ int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresad
 void menusIngresarClienteSala(struct Tienda *ibcomics) {
     struct Cliente *clienteEncontrado;
     struct Pase *paseEncontrado;
-    char *idRutCliente;
+    char idRutCliente[20];
     int idPase;
 
     if (ibcomics == NULL) {
@@ -3348,21 +3349,28 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
 
     if (ibcomics->diaAbierto == 1) {  /*Si el dia esta abierto*/
         printf("Ingrese ID o RUT del cliente (Ej. 12.345.678-9) = \n");
-        scanf("%14s", idRutCliente);
-        while (getchar() != '\n');
-        verificarPedirCliente(ibcomics, idRutCliente);
-        printf("\nPases del Cliente = \n");
+        fgets(idRutCliente, sizeof(idRutCliente), stdin);
+        idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
 
-        listarPases();
+        clienteEncontrado = verificarPedirCliente(ibcomics, idRutCliente);
+        printf("\nPases del Cliente = \n");
+        listarPasesDeCliente(clienteEncontrado);
 
         printf("Ingrese el ID del pase = \n");
         idPase = inputEntero();
         paseEncontrado = buscarPasePorId(clienteEncontrado->headPase, idPase);
+        if (paseEncontrado == NULL) {
+            printf("Error: No se encontro el pase con el ID %d.\n", idPase);
+            return;
+        }
 
-        ingresarClienteSala(ibcomics, clienteEncontrado, paseEncontrado);
+        if (ingresarClienteSala(ibcomics, clienteEncontrado, paseEncontrado) == 0) {
+            printf("Error: No se pudo ingresar.\n");
+            return;
+        }
         printf("\nIngreso exitoso !\n");
         printf("El cliente %s ha ingresado a la sala %s\n", clienteEncontrado->nombreCliente, clienteEncontrado->datosSala->nombreSala);
-        printf("s\nAforo Actual = %d   |   Aforo Maximo = %ds\n", clienteEncontrado->datosSala->aforoActual, clienteEncontrado->datosSala->aforoMax);
+        printf("\nAforo Actual = %d   |   Aforo Maximo = %ds\n", clienteEncontrado->datosSala->aforoActual, clienteEncontrado->datosSala->aforoMax);
 
     }
     printf("Ocurrio un error, o el dia esta cerrado . . .\n");
