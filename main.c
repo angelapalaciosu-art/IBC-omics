@@ -3249,26 +3249,29 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
 }
 /*-------------------Modularizar menu ingresarSacarClientes a las salas--------------------*/
 
-/*retorna 1 si toda la fecha de parteA  es igual a la de parteBc*/
-int fechaHoraIguales(int paseFecha[5], int salaFecha[5] ){
+/*retorna 1 si tanto el dia mes o anio corresponden a los de la fecha de apertura del dia*/
+int verificarCumpleFechaPase(struct Pase *pase, struct Tienda *ibcomics) {
     int i;
-    /* Pase Horario ;arregloFecha[5]; /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
-    /* Sala Horario;arregloFecha[5]; /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
-    for (i = 0; i < 5; i++) {
-        if (paseFecha[i] != salaFecha[i]) {
+
+    if (ibcomics == NULL || pase == NULL) {
+        return 0;
+    }
+    for (i = 0; i < 3; i++) { /*recorre el arreglo fecha de pase y tienda y compara dia mes anio*/
+        if (pase->arregloFecha[i] != ibcomics->arregloFechaAct[i]) {
             return 0;
         }
     }
     return 1;
 }
 
-int verificarCumpleFechaPase(struct Pase *pase, struct Sala *salaEncontrada) {
-
-    if (pase != NULL && salaEncontrada != NULL) {
-        return fechaHoraIguales(pase->arregloFecha, salaEncontrada->arregloFecha);
+/*retorna 1 si el horario del pase coincide con el de la sala*/
+int verificarHorarioPase(struct Pase *pase) {
+    if (pase != NULL && (strcmp(pase->horarioUso, pase->datosSala->horario) == 0)) {
+        return 1;
     }
     return 0;
 }
+
 int verificarPaseActivo(struct Pase *pase) {
     if (pase != NULL && pase->estado == 1) {
         return 1;
@@ -3286,19 +3289,19 @@ int verificarAforoMax(struct Sala *salaEncontrada) {
 int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresado, struct Pase *pase) {
     struct Sala *salaEncontrada;
 
-    if (ibcomics == NULL || clienteIngresado == NULL || pase == NULL ) {
+    if (ibcomics == NULL || clienteIngresado == NULL || pase == NULL || clienteIngresado->headPase == NULL) {  /*si el cliente no tiene pases*/
         return 0;
     }
 
-    if (ibcomics->diaAbierto == 2 ) {  /*La tienda está cerrada */
+    if (ibcomics->diaAbierto != 1 || clienteIngresado->datosSala != NULL) {  /*La tienda está cerrada o el cliente esta en otra sala*/
          return 0;
     }
-    if (buscarPasePorId(clienteIngresado->headPase, pase->idPase) != pase || pase->datosSala == NULL) { /*si el pase ingresado no esta o la sala*/
+    if (buscarPasePorId(clienteIngresado->headPase, pase->idPase) != pase || pase->datosSala == NULL) { /*si el pase ingresado no esta o la sala no existe*/
         return 0;
     }
     salaEncontrada = pase->datosSala;  /*el pase apunta a la sala que le corresponde*/
 
-    if (verificarPaseActivo(pase) == 0 || verificarCumpleFechaPase(pase, salaEncontrada) == 0 || verificarAforoMax(salaEncontrada) == 0) {
+    if (verificarPaseActivo(pase) == 0 || verificarCumpleFechaPase(pase, ibcomics) == 0 || verificarHorarioPase(pase) == 0 || verificarAforoMax(salaEncontrada) == 0) {
         return 0;   /*Si no se cumplen todas las condiciones*/
     }
     clienteIngresado->datosSala = salaEncontrada;
@@ -3306,6 +3309,7 @@ int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresad
     pase->estado = 2;   /* Utilizado */
     return 1;
 }
+
 
 void menusIngresarClienteSala(struct Tienda *ibcomics) {
     struct Cliente *clienteEncontrado;
@@ -3326,7 +3330,7 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
         verificarPedirCliente(ibcomics, idRutCliente);
         printf("\nPases del Cliente = \n");
 
-        mostrarDatosDelPasePorCliente
+        listarPases();
 
         printf("Ingrese el ID del pase = \n");
         idPase = inputEntero();
