@@ -2472,8 +2472,14 @@ struct NodoPase *crearNodoPase(void) {
 }
 
 struct Pase *crearPase(void) {
+    char *horario;
     struct Pase *pase = (struct Pase *) malloc(sizeof(struct Pase));
     if (pase == NULL) {
+        return NULL;
+    }
+    horario = (char *) malloc(sizeof(char) * 7);
+    if (horario == NULL) {
+        free(pase);
         return NULL;
     }
     pase->idPase = 0;
@@ -2485,6 +2491,11 @@ struct Pase *crearPase(void) {
     pase->arregloFecha[0] = 0;
     pase->arregloFecha[1] = 0;
     pase->arregloFecha[2] = 0;
+    pase->arregloFecha[3] = 0;
+    pase->arregloFecha[4] = 0;
+
+    horario[0] = '\0';
+    pase->horarioUso = horario;
     return pase;
 }
 
