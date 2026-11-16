@@ -3566,7 +3566,7 @@ int main(void) {
         printf("       SISTEMA PRINCIPAL - IBC - OMICS INC.\n");
         printf("==========================================================\n");
         printf("   [1] Abrir el dia\n");
-        printf("   [2] Ingresar cliente a sala (Control de entrada)\n");
+        printf("   [2] Ingresar cliente a sala\n");
         printf("   [3] Abrir Menu Principal de la Tienda\n");
         printf("   [4] Cerrar el dia\n");
         printf("   [5] Salir del sistema\n");
