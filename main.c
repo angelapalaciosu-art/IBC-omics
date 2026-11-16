@@ -224,7 +224,7 @@ struct Cliente *verificarPedirCliente(struct Tienda *ibcomics, char *texto) {
     }
     return buscarClientePorRutOIdArbol(ibcomics->raiz, texto);
 }
-
+/*Genera un ID aleatorio unico que no este repetido en el arbol de clientes*/
 int generarIdUnico(struct NodoCliente *raiz) {
     int nuevoId;
     int esUnico;
@@ -239,7 +239,7 @@ int generarIdUnico(struct NodoCliente *raiz) {
     }
     return nuevoId;
 }
-
+/*Resreva la memoria e inicializa una estrucura de clientes y sus pases*/
 struct Cliente *crearEstructuraCliente(int id, const char *nombre, const char *rut, int edad, const char *correo) {
     struct Cliente *nuevoCliente;
 
@@ -275,7 +275,7 @@ struct Cliente *crearEstructuraCliente(int id, const char *nombre, const char *r
 
     return nuevoCliente;
 }
-
+/* Encuentra el nodo padre adecuado para insertar un nuevo cliente en el ABB*/
 struct NodoCliente *encontrarPadreParaCliente(struct NodoCliente *raiz, int idNuevo) {
     struct NodoCliente *actual;
 
@@ -297,7 +297,7 @@ struct NodoCliente *encontrarPadreParaCliente(struct NodoCliente *raiz, int idNu
     }
     return NULL;
 }
-
+/*Inserta un nodo cliente dentro del árbol binario de búsqueda*/
 int insertarClienteEnArbol(struct NodoCliente **raiz, struct Cliente *nuevoCliente) {
     struct NodoCliente *nuevoNodo;
     struct NodoCliente *padre;
@@ -324,7 +324,7 @@ int insertarClienteEnArbol(struct NodoCliente **raiz, struct Cliente *nuevoClien
     }
     return 1;
 }
-
+/* Libera de forma segura toda la memoria asociada a un cliente y sus pases*/
 void liberarCliente(struct Cliente *cliente) {
     struct NodoPase *actual;
     struct NodoPase *siguiente;
@@ -348,7 +348,7 @@ void liberarCliente(struct Cliente *cliente) {
     if (cliente->correo) free(cliente->correo);
     free(cliente);
 }
-
+/* Remueve al cliente de las listas de espera de todas las salas de la tienda.*/
 int removerClienteDeListasDeEspera(struct Tienda *tienda, int idCliente) {
     int i;
     int totalRemovidos;
@@ -373,7 +373,7 @@ int removerClienteDeListasDeEspera(struct Tienda *tienda, int idCliente) {
     }
     return totalRemovidos;
 }
-
+/*Cuenta cuántos pases válidos posee un cliente registrado.*/
 int contarPasesCliente(struct Cliente *cliente) {
     int totalPases;
     struct NodoPase *actual;
@@ -392,7 +392,7 @@ int contarPasesCliente(struct Cliente *cliente) {
     }
     return totalPases;
 }
-
+/* Procesa la eliminación física de un nodo cliente dentro del ABB y sus dependencias.*/
 int procesarEliminacionClienteArbol(struct Tienda *tienda, int idEliminar, int *pasesBorrados, int *listasBorradas) {
     struct NodoCliente **raiz;
     struct NodoCliente *aEliminar;
@@ -458,7 +458,7 @@ int procesarEliminacionClienteArbol(struct Tienda *tienda, int idEliminar, int *
     }
     return 1;
 }
-
+/* Muestra por consola los datos detallados de un cliente específico.*/
 void mostrarInformacionCliente(struct Cliente *cliente) {
     if (cliente == NULL) return;
     printf(" ============ DATOS DEL CLIENTE ============\n");
@@ -551,8 +551,7 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
         }
     } while (opcionSeleccionada != 0);
 }
-
-/* [INSERCION]: REGISTRAR CLIENTE (Con nombre y edad validados, correo original)*/
+/*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
 void registrarCliente(struct NodoCliente **raiz) {
     int idGenerado;
     int edadCliente;
@@ -605,7 +604,7 @@ void registrarCliente(struct NodoCliente **raiz) {
         liberarCliente(nuevoCliente);
     }
 }
-
+/* Interfaz de consola para eliminar un cliente por ID o RUT*/
 void eliminarClienteInterfaz(struct Tienda *tienda) {
     int pasesBorrados;
     int listasBorradas;
@@ -636,7 +635,7 @@ void eliminarClienteInterfaz(struct Tienda *tienda) {
         printf("Error al intentar eliminar al cliente.\n");
     }
 }
-
+/*Menú principal de gestión de clientes*/
 void mostrarMenuClientes(struct Tienda *tienda) {
     int opcionMenu;
     int opcionValida;
