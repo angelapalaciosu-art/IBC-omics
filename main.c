@@ -2472,14 +2472,8 @@ struct NodoPase *crearNodoPase(void) {
 }
 
 struct Pase *crearPase(void) {
-    char *horario;
     struct Pase *pase = (struct Pase *) malloc(sizeof(struct Pase));
     if (pase == NULL) {
-        return NULL;
-    }
-    horario = (char *) malloc(sizeof(char) * 7);
-    if (horario == NULL) {
-        free(pase);
         return NULL;
     }
     pase->idPase = 0;
@@ -2493,9 +2487,7 @@ struct Pase *crearPase(void) {
     pase->arregloFecha[2] = 0;
     pase->arregloFecha[3] = 0;
     pase->arregloFecha[4] = 0;
-
-    horario[0] = '\0';
-    pase->horarioUso = horario;
+    pase->horarioUso = NULL;
     return pase;
 }
 
@@ -2564,7 +2556,7 @@ int agregarPaseACliente(struct Cliente *cliente, struct Pase *pase) {
 }
 
 /* Crea un pase completo con ID nuevo. Retorna NULL si falla la memoria */
-struct Pase *crearPaseCompleto(struct Tienda *tienda, int tipoPase, int valorPase, const char *fecha, struct Sala *sala) {
+struct Pase *crearPaseCompleto(struct Tienda *tienda, int tipoPase, int valorPase, int fechaUsoPase[], struct Sala *sala) {
     struct Pase *nuevo = crearPase();
     if (nuevo == NULL) {
         return NULL;
@@ -2573,7 +2565,22 @@ struct Pase *crearPaseCompleto(struct Tienda *tienda, int tipoPase, int valorPas
     nuevo->valor = valorPase;
     nuevo->estado = 1;
     nuevo->tipoPase = tipoPase;
-    nuevo->fechaUso = copiarTexto(fecha);  /*para reservar memoria*/
+    nuevo->arregloFecha[0] = fechaUsoPase[0]; /*Dia*/
+    nuevo->arregloFecha[1] = fechaUsoPase[1]; /*Mes*/
+    nuevo->arregloFecha[2] = fechaUsoPase[2]; /*Anio*/
+    nuevo->arregloFecha[3] = fechaUsoPase[3]; /*Hora*/
+    nuevo->arregloFecha[4] = fechaUsoPase[4]; /*Minuto*/
+    if (nuevo->arregloFecha[3] >= 8 && nuevo->arregloFecha[3] < 12) {
+        nuevo->horarioUso = copiarTexto("Maniana");
+    }else if (nuevo->arregloFecha[3] >= 12 && nuevo->arregloFecha[3] < 18) {
+        nuevo->horarioUso = copiarTexto("Tarde");
+    }else {
+        nuevo->horarioUso = copiarTexto("Noche");
+    }
+    if (nuevo->horarioUso == NULL) {
+        free(nuevo);
+        return NULL;
+    }
     nuevo->datosSala = sala;
     return nuevo;
 }
