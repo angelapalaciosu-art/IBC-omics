@@ -2600,6 +2600,59 @@ void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala) {
     desvincularPasesDeSala(raiz->der, sala);
 }
 
+void crearFechaPase(int fechaUsoPase[], struct Tienda *tienda) {
+    int dia, mes, anio, hora, minuto, maxDia;  /*maxDia es el maximo de dia que tendra un mes*/
+    do {
+        printf("Ingrese el anio de uso: ");
+        anio = inputEntero();
+        printf("\n");
+    }while (anio != tienda->arregloFechaAct[2] && !(tienda->arregloFechaAct[1] == 12 && anio == tienda->arregloFechaAct[2] + 1));
+
+    do {
+        printf("Ingrese el mes de uso(Solo puede ingresar hasta un mes despues de la fecha actual): ");
+        mes = inputEntero();
+        printf("\n");
+    }while (mes < 1 || mes > 12 || (anio != tienda->arregloFechaAct[2] && mes != 1) || (anio == tienda->arregloFechaAct[2] && mes != tienda->arregloFechaAct[1] && mes != tienda->arregloFechaAct[1]+ 1));
+
+    if (mes == 2) {
+        if (anio % 400 == 0 || (anio % 4 == 0 && anio % 100 != 0) ) {
+            maxDia = 29;
+        }else {
+            maxDia = 28;
+        }
+    }else if (mes == 4 || mes == 6 || mes == 9 || mes == 11) {
+        maxDia = 30;
+    }else {
+        maxDia = 31;
+    }
+
+    do {
+        printf("Ingrese el dia de Uso: ");
+        dia = inputEntero();
+        printf("\n");
+    }while (dia < 1 || dia > maxDia || (mes == tienda->arregloFechaAct[1] && dia < tienda->arregloFechaAct[0]));
+
+    do {
+        printf("Ingrese la hora de uso (8hrs - 21hrs): ");
+        hora = inputEntero();
+        printf("\n");
+    }while (hora < 8 || hora > 21);
+
+    do {
+        printf("Ingrese minuto de uso(00min-59min): ");
+        minuto = inputEntero();
+        printf("\n");
+    }while (minuto < 00 || minuto > 59);
+
+    fechaUsoPase[0] = dia;
+    fechaUsoPase[1] = mes;
+    fechaUsoPase[2] = anio;
+    fechaUsoPase[3] = hora;
+    fechaUsoPase[4] = minuto;
+
+    printf("\nPase creado con fecha: %2d/%2d/%2d, a las %2d:%2dhrs\n", fechaUsoPase[0], fechaUsoPase[1],fechaUsoPase[2], fechaUsoPase[3], fechaUsoPase[4]);
+}
+
 void comprarPases(struct Tienda *tienda, int precios[]) {
     int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, i, j, esIdValido,indice,idPaseFamiliar;
     char fechaUsoPase[20];
