@@ -2128,8 +2128,8 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     printf("Titulo encontrado: %s\n\n", tituloEncontrado->nombreTitulo);
 
     printf("Ingrese ID del cliente o RUT (Ej: 12.345.678-9) =\n");
-    scanf("%14s", idRutCliente);
-    while (getchar() != '\n');
+    fgets(idRutCliente, sizeof(idRutCliente), stdin);
+    idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
 
     clienteEnTienda = verificarPedirCliente(ibcomics,idRutCliente);
     if (clienteEnTienda == NULL) {
@@ -2175,8 +2175,8 @@ void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     }
     printf("Titulo encontrado: %s\n\n", tituloEncontrado->nombreTitulo);
     printf("Ingrese ID del cliente o RUT (Ej: 12.345.678-9) =\n");
-    scanf("%14s", idRutCliente);
-    while (getchar() != '\n');
+    fgets(idRutCliente, sizeof(idRutCliente), stdin);
+    idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
 
     /*no se verifica si el cliente está en tienda pq se asume que si está en una lista de espera ya está en la tienda*/
 
