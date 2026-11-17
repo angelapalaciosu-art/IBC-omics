@@ -1533,7 +1533,7 @@ void mostrarMenuSalas(struct Tienda *tienda) {
         switch (opcionMenu) {
             case 1:
                 printf("Ha seleccionado la opcion 1: Registrar nueva sala en el sistema \n");
-                salaOperar = crearYAgregarSala(tienda);
+                salaOperar = crearYAgregarSala(tienda, tamSalas);
                 if (salaOperar != NULL) {
                     printf("Sala registrada con exito! \n\n");
                 }
