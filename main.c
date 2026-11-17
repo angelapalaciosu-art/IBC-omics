@@ -543,10 +543,10 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
                 break;
 
             case 0:
-                printf("Saliendo del submenu...\n");
+                printf("Saliendo del submenu.\n");
                 break;
             default:
-                printf("\n   ¡ERROR! Opcion no valida. Intente nuevamente. \n");
+                printf("\n ¡ERROR! Opcion no valida. Intente nuevamente. \n");
                 break;
         }
     } while (opcionSeleccionada != 0);
@@ -705,7 +705,7 @@ void mostrarMenuClientes(struct Tienda *tienda) {
                 }
                 break;
             case 0:
-                printf("Saliendo del menu de clientes...\n");
+                printf("Saliendo del menu de clientes.\n");
                 break;
             default:
                 opcionValida = 0;
