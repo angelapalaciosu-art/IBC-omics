@@ -2648,9 +2648,59 @@ void crearFechaPase(int fechaUsoPase[], struct Tienda *tienda) {
     printf("\nPase creado con fecha: %2d/%2d/%2d, a las %2d:%2dhrs\n", fechaUsoPase[0], fechaUsoPase[1],fechaUsoPase[2], fechaUsoPase[3], fechaUsoPase[4]);
 }
 
+void comprobarPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *clienteComprador,int *esValidoPase) {
+    *esValidoPase = 1;
+    switch (*tipoPase) {
+        case 1:
+            *valorPase = precios[0];
+            break;
+        case 2:
+            *valorPase = precios[1];
+            if (clienteComprador->edad > 10 || clienteComprador->edad < 1) {
+                *esValidoPase = 0;
+                return;
+            }
+            *esValidoPase = 1;
+            break;
+        case 3:
+            *valorPase = precios[2];
+
+            break;
+        case 4:
+            *valorPase = precios[3];
+
+            break;
+        default:
+            break;
+    }
+
+}
+
+void seleccionarTipoPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *clienteComprador,int *esValidoPase){
+    do {
+        printf("\n");
+        printf("   Seleccione el tipo de pase que desea comprar : \n");
+        printf("\n");
+        printf("      Opcion [1]: Pase general \n");
+        printf("                  Valor del pase: %d\n", precios[0]);
+        printf("      Opcion [2]: Pase infantil (Maximo 10 anios) \n");
+        printf("                  Valor del pase: %d\n", precios[1]);
+        printf("      Opcion [3]: Pase familiar (4 integrantes) \n");
+        printf("                  Valor del pase: %d\n", precios[2]);
+        printf("      Opcion [4]: Pase prioritario \n");
+        printf("                  Valor del pase: %d\n", precios[3]);
+        printf("\n");
+        printf("   Por favor, ingrese una de las opciones disponibles : \n");
+        *tipoPase = inputEntero();
+    } while (*tipoPase < 1 || *tipoPase > 4);
+
+    comprobarPase(tipoPase,precios,valorPase,clienteComprador,esValidoPase);
+
+}
+
 void comprarPases(struct Tienda *tienda, int precios[]) {
-    int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, i, j, esIdValido,indice,idPaseFamiliar;
-    char fechaUsoPase[20];
+    int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, i, j, esIdValido,indice,idPaseFamiliar,esValidoPase;
+    int fechaUsoPase[5];
     int idClienteFamiliar[4];
     struct Cliente *clienteComprador;
     struct Cliente *clienteFamiliar;
@@ -2675,43 +2725,11 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
         printf("Error: No hay salas registradas. Registre una sala primero.\n");
         return;
     }
+    seleccionarTipoPase(&tipoPase,precios,&valorPase,clienteComprador,&esValidoPase);
 
-    do {
-        printf("\n");
-        printf("   Seleccione el tipo de pase que desea comprar : \n");
-        printf("\n");
-        printf("      Opcion [1]: Pase general \n");
-        printf("                  Valor del pase: %d\n", precios[0]);
-        printf("      Opcion [2]: Pase infantil (Maximo 10 anios) \n");
-        printf("                  Valor del pase: %d\n", precios[1]);
-        printf("      Opcion [3]: Pase familiar (4 integrantes) \n");
-        printf("                  Valor del pase: %d\n", precios[2]);
-        printf("      Opcion [4]: Pase prioritario \n");
-        printf("                  Valor del pase: %d\n", precios[3]);
-        printf("\n");
-        printf("   Por favor, ingrese una de las opciones disponibles : \n");
-        tipoPase = inputEntero();
-    } while (tipoPase < 1 || tipoPase > 4);
-
-    switch (tipoPase) {
-        case 1:
-            valorPase = precios[0];
-            break;
-        case 2:
-            valorPase = precios[1];
-            if (clienteComprador->edad > 10 || clienteComprador->edad < 1) {
-                printf("Error: El cliente no cumple con las condiciones de edad para este pase.\n");
-                return;
-            }
-            break;
-        case 3:
-            valorPase = precios[2];
-            break;
-        case 4:
-            valorPase = precios[3];
-            break;
-        default:
-            break;
+    if (esValidoPase == 0) {
+        printf("Error: El cliente no cumple con las condiciones de edad para este pase.\n");
+        return;
     }
 
     do {
@@ -2735,9 +2753,7 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
     }
     printf("Sala seleccionada con exito!\n");
 
-    printf("Ingrese la fecha de uso del pase = ");
-    scanf(" %19s",fechaUsoPase);
-
+    crearFechaPase(fechaUsoPase,tienda);
     printf("Valor del pase: %d\n", valorPase);
 
 
