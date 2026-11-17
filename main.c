@@ -3576,16 +3576,18 @@ int main(void) {
         ibcomics->diaAbierto = 0; // 0: No iniciado, 1: Abierto, 2: Cerrado
         ibcomics->totalClientes = 0;
     }
-    
+
     do {
         printf("\n==========================================================\n");
         printf("       SISTEMA PRINCIPAL - IBC - OMICS INC.\n");
         printf("==========================================================\n");
         printf("   [1] Abrir el dia\n");
         printf("   [2] Ingresar cliente a sala\n");
-        printf("   [3] Abrir Menu Principal de la Tienda\n");
-        printf("   [4] Cerrar el dia\n");
-        printf("   [5] Salir del sistema\n");
+        printf("   [3] Quitar cliente de sala\n");
+        printf("   [4] Quitar a TODOS los clientes de sala\n");
+        printf("   [5] Abrir Menu Principal de la Tienda\n");
+        printf("   [6] Cerrar el dia\n");
+        printf("   [7] Salir del sistema\n");
         printf("   Ingrese una opcion: ");
         opcionPrincipal = inputEntero();
 
@@ -3601,23 +3603,31 @@ int main(void) {
                 }
                 break;
             case 3:
+                menuSacarClienteSala(ibcomics);
+                break;
+            case 4:
+                menuSacarTodosClientesSala(ibcomics);
+                break;
+            case 5:
                 if (ibcomics->diaAbierto == 1) {
                     mostrarMenuPrincipal(ibcomics, preciosPases);
                 } else {
                     printf("\nError: Debe abrir el dia primero para acceder al menu principal.\n");
                 }
-                break;
-            case 4:
+
+            case 6:
                 cerrarDia(ibcomics);
                 break;
-            case 5:
+
+            case 7:
                 printf("\nSaliendo del sistema. Que tenga un excelente dia :)\n");
                 break;
+
             default:
                 printf("\nOpcion no valida. Intente nuevamente :)\n");
                 break;
         }
-    } while (opcionPrincipal != 5);
+    } while (opcionPrincipal != 7);
 
     free(ibcomics->salas);
     free(ibcomics);
