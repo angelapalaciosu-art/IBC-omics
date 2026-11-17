@@ -3431,14 +3431,13 @@ void menuSacarClienteSala(struct Tienda *ibcomics) {
 }
 void sacarTodosClientesSala(struct NodoCliente *raiz, struct Sala *salaQuitada) {
     if (raiz == NULL) {
-        return 0;
+        return ;
     }
     if (raiz->datosCliente->datosSala == salaQuitada) {
         sacarClienteDeSala(raiz->datosCliente);
     }
     sacarTodosClientesSala(raiz->izq, salaQuitada);
     sacarTodosClientesSala(raiz->der, salaQuitada);
-
 }
 
 void menuSacarTodosClientesSala(struct Tienda *ibcomics) {
