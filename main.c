@@ -2742,6 +2742,43 @@ void seleccionarSala(struct Tienda* tienda,int *salaSeleccionada) {
     } while (*salaSeleccionada < 1 || *salaSeleccionada > tienda->cantidadSalas);
 }
 
+struct Pase *crearCopiaPaseFamiliar(struct Pase *paseOriginal) {    //* Esta funcion hace una copia del pase creado para cada miembro familiar*//
+    struct Pase *paseCopia;
+
+    if (paseOriginal == NULL) {
+        return NULL;
+    }
+
+    paseCopia = crearPase();
+
+    if (paseCopia == NULL) {
+        return NULL;
+    }
+
+    *paseCopia = *paseOriginal; //*Se usan punteros para no apuntar la misma direccion de memoria*//
+    paseCopia->horarioUso = NULL;
+    if (paseOriginal->horarioUso != NULL) {
+        paseCopia->horarioUso = copiarTexto(paseOriginal->horarioUso);
+        if (paseCopia->horarioUso == NULL) {
+            free(paseCopia);
+            return NULL;
+        }
+    }
+    return paseCopia;
+}
+
+int crearPaseIndividual(struct Pase *nuevo, struct Cliente *clienteComprador) {
+    if (nuevo == NULL) {
+        return 0;
+    }
+    if (agregarPaseACliente(clienteComprador, nuevo) == 0) {
+        free(nuevo->horarioUso);
+        free(nuevo);
+        return 0;
+    }
+    return 1;
+}
+
 void comprarPases(struct Tienda *tienda, int precios[]) {
     int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, i, j, esIdValido,idPaseFamiliar,esValidoPase;
     int fechaUsoPase[5];
@@ -2778,6 +2815,7 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
 
     seleccionarSala(tienda,&salaSeleccionada);
     salaElegida = tienda->salas[salaSeleccionada - 1];
+
     if (salaElegida == NULL) {
         printf("Error: No se encontro la sala seleccionada.\n");
         return;
@@ -2787,10 +2825,10 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
     crearFechaPase(fechaUsoPase,tienda);
     printf("Valor del pase: %d\n", valorPase);
 
+    nuevo = crearPaseCompleto(tienda, tipoPase, valorPase, fechaUsoPase, salaElegida);
 
     if (tipoPase != 3) {
-        nuevo = crearPaseCompleto(tienda, tipoPase, valorPase, fechaUsoPase, salaElegida);
-        if (nuevo == NULL || agregarPaseACliente(clienteComprador, nuevo) == 0) {
+        if (crearPaseIndividual(nuevo, clienteComprador) == 0) {
             printf("Error: No se pudo crear el pase.\n");
             return;
         }
@@ -2846,7 +2884,7 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
             nuevo->idPase = idPaseFamiliar;
 
             if (agregarPaseACliente(clienteFamiliar, nuevo) == 0) {
-                free(nuevo->horarioUso);
+                free(nuevo->fechaUso);
                 free(nuevo);
 
                 printf("Error: No se pudo crear el pase familiar.\n");
