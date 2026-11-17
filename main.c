@@ -2698,8 +2698,23 @@ void seleccionarTipoPase(int *tipoPase, int precios[],int *valorPase,struct Clie
 
 }
 
+void seleccionarSala(struct Tienda* tienda,int *salaSeleccionada) {
+    int i;
+    do {
+        printf("\n");
+        printf("   Ingrese la sala que desea visitar : \n");
+        printf("\n");
+        for (i = 0 ; i < tienda->cantidadSalas; i++) {
+            printf("      Opcion [%d]: %s \n", i + 1, tienda->salas[i]->nombreSala);
+        }
+        printf("\n");
+        printf("   Por favor, ingrese una de las opciones disponibles : \n");
+        *salaSeleccionada = inputEntero();
+    } while (*salaSeleccionada < 1 || *salaSeleccionada > tienda->cantidadSalas);
+}
+
 void comprarPases(struct Tienda *tienda, int precios[]) {
-    int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, i, j, esIdValido,indice,idPaseFamiliar,esValidoPase;
+    int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, i, j, esIdValido,idPaseFamiliar,esValidoPase;
     int fechaUsoPase[5];
     int idClienteFamiliar[4];
     struct Cliente *clienteComprador;
@@ -2725,28 +2740,15 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
         printf("Error: No hay salas registradas. Registre una sala primero.\n");
         return;
     }
-    seleccionarTipoPase(&tipoPase,precios,&valorPase,clienteComprador,&esValidoPase);
 
+    seleccionarTipoPase(&tipoPase,precios,&valorPase,clienteComprador,&esValidoPase);
     if (esValidoPase == 0) {
         printf("Error: El cliente no cumple con las condiciones de edad para este pase.\n");
         return;
     }
 
-    do {
-        printf("\n");
-        printf("   Ingrese la sala que desea visitar : \n");
-        printf("\n");
-        for (indice = 0 ; indice < tienda->cantidadSalas; indice++) {
-            printf("      Opcion [%d]: %s \n", indice + 1, tienda->salas[indice]->nombreSala);
-        }
-        printf("\n");
-        printf("   Por favor, ingrese una de las opciones disponibles : \n");
-        salaSeleccionada = inputEntero();
-    } while (salaSeleccionada < 1 || salaSeleccionada > tienda->cantidadSalas);
-
-
+    seleccionarSala(tienda,&salaSeleccionada);
     salaElegida = tienda->salas[salaSeleccionada - 1];
-
     if (salaElegida == NULL) {
         printf("Error: No se encontro la sala seleccionada.\n");
         return;
@@ -2826,7 +2828,6 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
         }
     }
 }
-
 void verDatosPases(struct NodoCliente *clientes) {
     int idDelPase, idDelCliente;
     struct Cliente *cliente;
