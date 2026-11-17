@@ -1493,7 +1493,7 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
     if (nuevaSala == NULL) {
         return NULL;
     }
-    return agregarSala(tienda, nuevaSala);
+    return agregarSala(tienda, nuevaSala, tamSalas);
 }
 
 void mostrarMenuSalas(struct Tienda *tienda) {
