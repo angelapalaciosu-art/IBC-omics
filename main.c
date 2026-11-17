@@ -3419,6 +3419,42 @@ void menuSacarClienteSala(struct Tienda *ibcomics) {
     sacarClienteDeSala(clienteEncontrado);
 
 }
+void sacarTodosClientesSala(struct NodoCliente *raiz, struct Sala *salaQuitada) {
+    if (raiz == NULL) {
+        return 0;
+    }
+    if (raiz->datosCliente->datosSala == salaQuitada) {
+        sacarClienteDeSala(raiz->datosCliente);
+    }
+    sacarTodosClientesSala(raiz->izq, salaQuitada);
+    sacarTodosClientesSala(raiz->der, salaQuitada);
+
+}
+
+void menuSacarTodosClientesSala(struct Tienda *ibcomics) {
+    int idSala, sacar;
+    struct Sala *salaEncontrada;
+
+    printf("============ MENU SACAR TODOS LOS CLIENTES DE UNA SALA ============\n\n");
+    listarSalas(ibcomics);
+    printf("Ingrese ID de la sala que desea acceder\n");
+
+    idSala = inputEntero();
+    salaEncontrada = buscarSalaPorId(ibcomics, idSala);
+
+    if (salaEncontrada == NULL) {
+        printf("No se pudo encontrar la sala con ese ID\n")
+        return;
+    }
+
+    if (salaEncontrada->aforoActual <= 0) {
+        printf("La sala no tiene clientes dentro\n");
+        return;
+    }
+    sacarTodosClientesSala(ibcomics->raiz, salaEncontrada);
+    printf("\nSe sacaron a todos los clientes de la sala\n");
+}
+
 
 /* logica para abrir el dia y actualizar la fecha */
 int logicaAbrirDia(struct Tienda *tienda, int dia, int mes, int anio) {
