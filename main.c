@@ -3541,21 +3541,26 @@ int logicaAbrirDia(struct Tienda *tienda, int dia, int mes, int anio) {
 }
 
 /* logica para cerrar el dia actual en la tienda */
-int logicaCerrarDia(struct Tienda *tienda) {
-    if (tienda == NULL) return 0;
-    if (tienda->diaAbierto == 2 || tienda->diaAbierto == 0) return -1;
+int logicaCerrarDia(struct Tienda *ibcomics) {
+    int i;
+    if (ibcomics == NULL) return 0;
+    if (ibcomics->diaAbierto == 2 || ibcomics->diaAbierto == 0) return -1;
+    /*quitar a todos los clientes de todas las salas*/
+    for (i = 0; i < ibcomics->cantidadSalas; i++) {
+        sacarTodosClientesSala(ibcomics->raiz, ibcomics->salas[i]);
+    }
 
-    tienda->diaAbierto = 2;
+    ibcomics->diaAbierto = 2;
     return 1;
 }
 
 /* interfaz de usuario para pedir fecha y abrir el dia */
-void abrirDia(struct Tienda *tienda) {
+void abrirDia(struct Tienda *ibcomics) {
     int dia, mes, anio, resultado;
 
-    if (tienda == NULL) return;
+    if (ibcomics == NULL) return;
 
-    if (tienda->diaAbierto == 1) {
+    if (ibcomics->diaAbierto == 1) {
         printf("\nError: El dia ya se encuentra abierto\n");
         return;
     }
@@ -3582,35 +3587,35 @@ void abrirDia(struct Tienda *tienda) {
         anio = inputEntero();
     }
 
-    resultado = logicaAbrirDia(tienda, dia, mes, anio);
+    resultado = logicaAbrirDia(ibcomics, dia, mes, anio);
 
     if (resultado == 1) {
         printf("\nEl dia %02d/%02d/%d ha sido abierto con exito\n",
-               tienda->arregloFechaAct[0], 
-               tienda->arregloFechaAct[1], 
-               tienda->arregloFechaAct[2]);
+               ibcomics->arregloFechaAct[0],
+               ibcomics->arregloFechaAct[1],
+               ibcomics->arregloFechaAct[2]);
     } else {
         printf("\nError al intentar abrir el dia\n");
     }
 }
 
 /* interfaz de usuario para cerrar el dia */
-void cerrarDia(struct Tienda *tienda) {
+void cerrarDia(struct Tienda *ibcomics) {
     int resultado;
 
-    if (tienda == NULL) return;
-    if (tienda->diaAbierto == 2) {
+    if (ibcomics == NULL) return;
+    if (ibcomics->diaAbierto == 2) {
         printf("\nError: El dia ya se encuentra cerrado\n");
         return;
     }
 
     printf("\n ============ CERRAR DIA =============\n");
     printf("Cerrando operaciones del dia: %02d/%02d/%d\n",
-           tienda->arregloFechaAct[0], 
-           tienda->arregloFechaAct[1], 
-           tienda->arregloFechaAct[2]);
+           ibcomics->arregloFechaAct[0],
+           ibcomics->arregloFechaAct[1],
+           ibcomics->arregloFechaAct[2]);
 
-    resultado = logicaCerrarDia(tienda);
+    resultado = logicaCerrarDia(ibcomics);
 
     if (resultado == 1) {
         printf("\nEl dia ha sido cerrado correctamente\n");
