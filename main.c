@@ -3462,66 +3462,95 @@ void menuSacarClienteSala(struct Tienda *ibcomics) {
 
 }
 
-/* FUNCION QUE ABRE EL DIA PREGUNTANDO AL USUARIO LA FECHA ACTUAL Y VERIFICANDOLA*/
+/* logica para abrir el dia y actualizar la fecha */
+int logicaAbrirDia(struct Tienda *tienda, int dia, int mes, int anio) {
+    if (tienda == NULL) return 0;
+    if (tienda->diaAbierto == 1) return -1;
+
+    tienda->arregloFechaAct[0] = dia;
+    tienda->arregloFechaAct[1] = mes;
+    tienda->arregloFechaAct[2] = anio;
+    tienda->diaAbierto = 1;
+    return 1;
+}
+
+/* logica para cerrar el dia actual en la tienda */
+int logicaCerrarDia(struct Tienda *tienda) {
+    if (tienda == NULL) return 0;
+    if (tienda->diaAbierto == 2 || tienda->diaAbierto == 0) return -1;
+
+    tienda->diaAbierto = 2;
+    return 1;
+}
+
+/* interfaz de usuario para pedir fecha y abrir el dia */
 void abrirDia(struct Tienda *tienda) {
+    int dia, mes, anio, resultado;
+
     if (tienda == NULL) return;
 
     if (tienda->diaAbierto == 1) {
-        printf("\nError: El dia ya se encuentra ABIERTO.\n");
+        printf("\nError: El dia ya se encuentra abierto\n");
         return;
     }
 
     printf("\n ============ ABRIR DIA =============\n");
-    printf("Ingrese la fecha de apertura para la tienda:\n");
-    
     printf("Ingrese el dia (1-31): ");
-    tienda->arregloFechaAct[0] = inputEntero();
-    while (tienda->arregloFechaAct[0] < 1 || tienda->arregloFechaAct[0] > 31) {
-        printf("Error: Dia invalido. Ingrese nuevamente (1-31): ");
-        tienda->arregloFechaAct[0] = inputEntero();
+    dia = inputEntero();
+    while (dia < 1 || dia > 31) {
+        printf("Error: Ingrese nuevamente (1-31): ");
+        dia = inputEntero();
     }
 
     printf("Ingrese el mes (1-12): ");
-    tienda->arregloFechaAct[1] = inputEntero();
-    while (tienda->arregloFechaAct[1] < 1 || tienda->arregloFechaAct[1] > 12) {
-        printf("Error: Mes invalido. Ingrese nuevamente (1-12): ");
-        tienda->arregloFechaAct[1] = inputEntero();
+    mes = inputEntero();
+    while (mes < 1 || mes > 12) {
+        printf("Error: Ingrese nuevamente (1-12): ");
+        mes = inputEntero();
     }
 
     printf("Ingrese el anio: ");
-    tienda->arregloFechaAct[2] = inputEntero();
-    while (tienda->arregloFechaAct[2] < 2026 || tienda->arregloFechaAct[2] > 2100) {
-        printf("Error: Anio invalido. Ingrese nuevamente: ");
-        tienda->arregloFechaAct[2] = inputEntero();
+    anio = inputEntero();
+    while (anio < 2026 || anio > 2100) {
+        printf("Error: Ingrese nuevamente: ");
+        anio = inputEntero();
     }
 
-    /*Marcamos la tienda como abierta (1: Abierto)*/
-    tienda->diaAbierto = 1;
+    resultado = logicaAbrirDia(tienda, dia, mes, anio);
 
-    printf("\n ¡El dia %02d/%02d/%d ha sido abierto con exito! Operaciones habilitadas.\n",
-           tienda->arregloFechaAct[0], 
-           tienda->arregloFechaAct[1], 
-           tienda->arregloFechaAct[2]);
+    if (resultado == 1) {
+        printf("\nEl dia %02d/%02d/%d ha sido abierto con exito\n",
+               tienda->arregloFechaAct[0], 
+               tienda->arregloFechaAct[1], 
+               tienda->arregloFechaAct[2]);
+    } else {
+        printf("\nError al intentar abrir el dia\n");
+    }
 }
-/*Funcion que cierra el dia de forma corecta*/
 
+/* interfaz de usuario para cerrar el dia */
 void cerrarDia(struct Tienda *tienda) {
-    if (tienda == NULL) return;
+    int resultado;
 
+    if (tienda == NULL) return;
     if (tienda->diaAbierto == 2) {
-        printf("\nError: El dia ya se encuentra CERRADO\n");
+        printf("\nError: El dia ya se encuentra cerrado\n");
         return;
     }
 
     printf("\n ============ CERRAR DIA =============\n");
-    printf("Cerrando operaciones correspondientes al dia: %02d/%02d/%d\n",
+    printf("Cerrando operaciones del dia: %02d/%02d/%d\n",
            tienda->arregloFechaAct[0], 
            tienda->arregloFechaAct[1], 
            tienda->arregloFechaAct[2]);
 
-    /* Se marca la tienda como cerrada */
-    tienda->diaAbierto = 2;
-    printf("\n ¡El dia ha sido cerrado correctamente!\n");
+    resultado = logicaCerrarDia(tienda);
+
+    if (resultado == 1) {
+        printf("\nEl dia ha sido cerrado correctamente\n");
+    } else {
+        printf("\nError: El dia no pudo cerrarse\n");
+    }
 }
 void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4]) {
     int opcionSeleccionada;
