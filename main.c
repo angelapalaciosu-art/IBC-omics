@@ -337,7 +337,6 @@ void liberarCliente(struct Cliente *cliente) {
     while (actual != NULL) {
         siguiente = actual->sig;
         if (actual->datosPase != NULL) {
-            free(actual->datosPase->fechaUso);
             free(actual->datosPase);
         }
         free(actual);
