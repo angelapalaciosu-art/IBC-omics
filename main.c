@@ -3452,7 +3452,7 @@ void menuSacarTodosClientesSala(struct Tienda *ibcomics) {
     salaEncontrada = buscarSalaPorId(ibcomics, idSala);
 
     if (salaEncontrada == NULL) {
-        printf("No se pudo encontrar la sala con ese ID\n")
+        printf("No se pudo encontrar la sala con ese ID\n");
         return;
     }
 
