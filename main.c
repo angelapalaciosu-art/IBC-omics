@@ -100,7 +100,7 @@ struct Tienda {
     struct NodoCliente *raiz;
     int diaAbierto;   /*1: Abierto / 2: Cerrado*/
     int arregloFechaAct[3];  /*[0]: Dia / [1]: Mes / [2]: Anio */
-    int totalClientes;
+    int totalClientes;  /*dentro de la tienda en el dia*/
 };
 /* =========================================================================
    UTILIDADES
@@ -1324,6 +1324,7 @@ int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
 
     if (tienda->raiz != NULL) {
         desvincularPasesDeSala(tienda->raiz, salaEliminar);
+        tienda->totalClientes -= salaEliminar->aforoActual;
     }
 
     while (i < tienda->cantidadSalas - 1) {
@@ -3381,21 +3382,18 @@ int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresad
     }
 
     salaEncontrada = pase->datosSala;
-    if (salaEncontrada == NULL) return 0;
-
-    /* VALIDACIÓN ESTRICTA DE AFORO */
-    if (salaEncontrada->aforoActual >= salaEncontrada->aforoMax) {
-        printf("Error: La sala ha alcanzado su aforo máximo.\n");
+    if (salaEncontrada == NULL) {
         return 0;
     }
 
-    if (verificarPaseActivo(pase) == 0 || verificarCumpleFechaPase(pase, ibcomics) == 0 || verificarHorarioPase(pase) == 0) {
+    if (verificarPaseActivo(pase) == 0 || verificarCumpleFechaPase(pase, ibcomics) == 0 || verificarHorarioPase(pase) == 0 || verificarAforoMax(salaEncontrada) == 0) {
         return 0;
     }
 
     clienteIngresado->datosSala = salaEncontrada;
     salaEncontrada->aforoActual++;
-    pase->estado = 2; /*Marcar pase como UTILIZADO para evitar reutilización*/
+    ibcomics->totalClientes++;
+    pase->estado = 2; /*utilizado*/
     return 1;
 }
 void menusIngresarClienteSala(struct Tienda *ibcomics) {
@@ -3447,9 +3445,10 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
 }
 /*hora en la que termina el horario de la sala*/
 
-void sacarClienteDeSala(struct Cliente *cliente) {
+void sacarClienteDeSala(struct Tienda *ibcomics, struct Cliente *cliente) {
     cliente->datosSala->aforoActual--;
     cliente->datosSala = NULL;
+    ibcomics->totalClientes--;
 }
 
 
@@ -3473,18 +3472,18 @@ void menuSacarClienteSala(struct Tienda *ibcomics) {
         return;
     }
     printf("El cliente %s salio de la sala %s\n", clienteEncontrado->nombreCliente, clienteEncontrado->datosSala->nombreSala);
-    sacarClienteDeSala(clienteEncontrado);
+    sacarClienteDeSala(ibcomics,clienteEncontrado);
 
 }
-void sacarTodosClientesSala(struct NodoCliente *raiz, struct Sala *salaQuitada) {
+void sacarTodosClientesSala(struct Tienda *ibcomics, struct NodoCliente *raiz, struct Sala *salaQuitada) {
     if (raiz == NULL) {
         return ;
     }
     if (raiz->datosCliente->datosSala == salaQuitada) {
-        sacarClienteDeSala(raiz->datosCliente);
+        sacarClienteDeSala(ibcomics, raiz->datosCliente);
     }
-    sacarTodosClientesSala(raiz->izq, salaQuitada);
-    sacarTodosClientesSala(raiz->der, salaQuitada);
+    sacarTodosClientesSala(ibcomics,raiz->izq, salaQuitada);
+    sacarTodosClientesSala(ibcomics,raiz->der, salaQuitada);
 }
 
 void menuSacarTodosClientesSala(struct Tienda *ibcomics) {
@@ -3507,7 +3506,7 @@ void menuSacarTodosClientesSala(struct Tienda *ibcomics) {
         printf("La sala no tiene clientes dentro\n");
         return;
     }
-    sacarTodosClientesSala(ibcomics->raiz, salaEncontrada);
+    sacarTodosClientesSala(ibcomics,ibcomics->raiz, salaEncontrada);
     printf("\nSe sacaron a todos los clientes de la sala\n");
 }
 
@@ -3531,7 +3530,7 @@ int logicaCerrarDia(struct Tienda *ibcomics) {
     if (ibcomics->diaAbierto == 2 || ibcomics->diaAbierto == 0) return -1;
     /*quitar a todos los clientes de todas las salas*/
     for (i = 0; i < ibcomics->cantidadSalas; i++) {
-        sacarTodosClientesSala(ibcomics->raiz, ibcomics->salas[i]);
+        sacarTodosClientesSala(ibcomics,ibcomics->raiz, ibcomics->salas[i]);
     }
 
     ibcomics->diaAbierto = 2;
