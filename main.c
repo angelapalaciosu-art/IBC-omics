@@ -2846,7 +2846,7 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
             nuevo->idPase = idPaseFamiliar;
 
             if (agregarPaseACliente(clienteFamiliar, nuevo) == 0) {
-                free(nuevo->fechaUso);
+                free(nuevo->horarioUso);
                 free(nuevo);
 
                 printf("Error: No se pudo crear el pase familiar.\n");
