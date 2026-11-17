@@ -3319,33 +3319,34 @@ int verificarAforoMax(struct Sala *salaEncontrada) {
     }
     return 0;
 }
-
-
 int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresado, struct Pase *pase) {
     struct Sala *salaEncontrada;
 
-    if (ibcomics == NULL || clienteIngresado == NULL || pase == NULL || clienteIngresado->headPase == NULL) {  /*si el cliente no tiene pases*/
+    if (ibcomics == NULL || clienteIngresado == NULL || pase == NULL) {/*si el cliente no tiene pases*/
+        return 0;
+    }
+    if (ibcomics->diaAbierto != 1 || clienteIngresado->datosSala != NULL) {/*La tienda está cerrada o el cliente esta en otra sala*/
+        return 0; 
+    }
+
+    salaEncontrada = pase->datosSala;
+    if (salaEncontrada == NULL) return 0;
+
+    /* VALIDACIÓN ESTRICTA DE AFORO */
+    if (salaEncontrada->aforoActual >= salaEncontrada->aforoMax) {
+        printf("Error: La sala ha alcanzado su aforo máximo.\n");
         return 0;
     }
 
-    if (ibcomics->diaAbierto != 1 || clienteIngresado->datosSala != NULL) {  /*La tienda está cerrada o el cliente esta en otra sala*/
-         return 0;
-    }
-    if (buscarPasePorId(clienteIngresado->headPase, pase->idPase) != pase || pase->datosSala == NULL) { /*si el pase ingresado no esta o la sala no existe*/
+    if (verificarPaseActivo(pase) == 0 || verificarCumpleFechaPase(pase, ibcomics) == 0 || verificarHorarioPase(pase) == 0) {
         return 0;
     }
-    salaEncontrada = pase->datosSala;  /*el pase apunta a la sala que le corresponde*/
 
-    if (verificarPaseActivo(pase) == 0 || verificarCumpleFechaPase(pase, ibcomics) == 0 || verificarHorarioPase(pase) == 0 || verificarAforoMax(salaEncontrada) == 0) {
-        return 0;   /*Si no se cumplen todas las condiciones*/
-    }
     clienteIngresado->datosSala = salaEncontrada;
     salaEncontrada->aforoActual++;
-    pase->estado = 2;   /* Utilizado */
+    pase->estado = 2; /*Marcar pase como UTILIZADO para evitar reutilización*/
     return 1;
 }
-
-
 void menusIngresarClienteSala(struct Tienda *ibcomics) {
     struct Cliente *clienteEncontrado;
     struct Pase *paseEncontrado;
