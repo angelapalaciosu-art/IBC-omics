@@ -3430,6 +3430,37 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
     printf("Ocurrio un error, o el dia esta cerrado.\n");
     return;
 }
+/*hora en la que termina el horario de la sala*/
+
+void sacarClienteDeSala(struct Cliente *cliente) {
+    cliente->datosSala->aforoActual--;
+    cliente->datosSala = NULL;
+}
+
+
+/*menu manual para quitar al cliente de la sala (por si quiere salir antes del cierre)*/
+void menuSacarClienteSala(struct Tienda *ibcomics) {
+    struct Cliente *clienteEncontrado;
+    char idRutCliente[50];
+
+    printf(" ============ MENU SACAR CLIENTE DE SALA ============\n\n");
+    printf("Ingrese ID o RUT del cliente (Ej. 12.345.678-9) = \n");
+    fgets(idRutCliente, sizeof(idRutCliente), stdin);
+    idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
+
+    clienteEncontrado = verificarPedirCliente(ibcomics, idRutCliente);
+    if (clienteEncontrado == NULL) {
+        printf("Error: No se encontro al cliente ingresado\n");
+        return;
+    }
+    if (clienteEncontrado->datosSala == NULL) {
+        printf("Error: El cliente no se encuentra en ninguna sala\n");
+        return;
+    }
+    printf("El cliente %s salio de la sala %s\n", clienteEncontrado->nombreCliente, clienteEncontrado->datosSala->nombreSala);
+    sacarClienteDeSala(clienteEncontrado);
+
+}
 
 /* FUNCION QUE ABRE EL DIA PREGUNTANDO AL USUARIO LA FECHA ACTUAL Y VERIFICANDOLA*/
 void abrirDia(struct Tienda *tienda) {
