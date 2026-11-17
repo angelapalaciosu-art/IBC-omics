@@ -3209,25 +3209,6 @@ void modificarDatosPase(struct Tienda *tienda) {
     printf("Saliendo del menu modificar pase...\n");
 }
 
-/*Funcion que cierra el dia de forma corecta*/
-void cerrarDia(struct Tienda *tienda) {
-    if (tienda == NULL) return;
-
-    if (tienda->diaAbierto == 2) {
-        printf("\nError: El dia ya se encuentra CERRADO\n");
-        return;
-    }
-
-    printf("\n ============ CERRAR DIA =============\n");
-    printf("Cerrando operaciones correspondientes al dia: %02d/%02d/%d\n",
-           tienda->arregloFechaAct[0], 
-           tienda->arregloFechaAct[1], 
-           tienda->arregloFechaAct[2]);
-
-    /* Se marca la tienda como cerrada */
-    tienda->diaAbierto = 2;
-    printf("\n ¡El dia ha sido cerrado correctamente!\n");
-}
 void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
     int opcion;
 
