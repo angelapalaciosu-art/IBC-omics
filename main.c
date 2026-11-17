@@ -2987,7 +2987,6 @@ void eliminarPases(struct NodoCliente *abb) {
     if (actual->sig != NULL) {
         nodoEliminar = actual->sig;
         actual->sig = nodoEliminar->sig;
-        free(nodoEliminar->datosPase->fechaUso);
         free(nodoEliminar->datosPase);
         free(nodoEliminar);
         printf("Pase eliminado con exito!\n");
