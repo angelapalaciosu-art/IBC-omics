@@ -1352,24 +1352,8 @@ int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
 }
 /* Esta funcion cuenta la cantidad de personas en una sala */
 int contarPersonasEnSala(struct NodoCliente *raiz, struct Sala *sala) {
-    int cantidad = 0, tienePase = 0;
-    struct NodoPase *rec;
+    return sala->aforoActual;
 
-    if (raiz != NULL && sala != NULL) {
-        if (raiz->datosCliente != NULL) {
-            rec = raiz->datosCliente->headPase;
-            while (rec != NULL && tienePase == 0) {
-                if (rec->datosPase != NULL && rec->datosPase->datosSala == sala && rec->datosPase->estado == 1) {
-                    tienePase = 1;
-                }
-                rec = rec->sig;
-            }
-            cantidad = tienePase;
-        }
-        cantidad += contarPersonasEnSala(raiz->izq, sala);
-        cantidad += contarPersonasEnSala(raiz->der, sala);
-    }
-    return cantidad;
 }
 /* Esta funcion cuenta la cantidad de titulos en una sala */
 int contarTitulosEnSala(struct Sala *sala) {
