@@ -3652,9 +3652,7 @@ void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4]) {
         }
     } while (opcionSeleccionada != 7);
 }
-/* =========================================================================
-   FUNCION PRINCIPAL (MAIN)
-   ========================================================================= */
+
 int main(void) {
     int opcionPrincipal;
     int preciosPases[4];
@@ -3678,6 +3676,7 @@ int main(void) {
         printf("\n==========================================================\n");
         printf("       SISTEMA PRINCIPAL - IBC - OMICS INC.\n");
         printf("==========================================================\n");
+        printf("   >>> Clientes dentro de la tienda: %d <<<\n\n", ibcomics->totalClientes);
         printf("   [1] Abrir el dia\n");
         printf("   [2] Ingresar cliente a sala\n");
         printf("   [3] Quitar cliente de sala\n");
