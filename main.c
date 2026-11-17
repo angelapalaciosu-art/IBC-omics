@@ -23,6 +23,7 @@ int contarCantidadClientesEnListaEspera(struct NodoListaEspera *head);
 int eliminarClienteDeListaEspera(struct NodoListaEspera **head, int idBuscado);
 void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala);
 void liberarCliente(struct Cliente *cliente);
+int vaciarListaEspera(struct NodoListaEspera **head);
 /* =========================================================================
    ESTRUCTURAS GLOBALES DEL PROYECTO
    ========================================================================= */
@@ -813,7 +814,7 @@ struct NodoTitulo *crearNodoTitulo(struct Titulo *titulo) {
     return nuevoNodo;
 }
 /* Esta funcion crea una sala  y su nodo fantasma de titulos */
-struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario, int aforoMax, int cantTrabajadores, int aforoActual) {
+struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario, int aforoMax, int cantTrabajadores) {
     struct Sala *nuevaSala;
     if (nombreSala == NULL || horario == NULL || tematica < 1 || tematica > 6) {
         return NULL;
@@ -823,17 +824,24 @@ struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario
         return NULL;
     }
     nuevaSala->nombreSala = (char *) malloc(strlen(nombreSala) + 1);
-    strcpy(nuevaSala->nombreSala, nombreSala);
-
     nuevaSala->horario = (char *) malloc(strlen(horario) + 1);
+    nuevaSala->headNodoTitulo = crearNodoTitulo(NULL);
+    
+    if(nuevaSala->nombreSala == NULL || nuevaSala->horario == NULL || nuevaSala->headNodoTitulo == NULL){
+        free(nuevaSala->nombreSala);
+        free(nuevaSala->horario);
+        free(nuevaSala->headNodoTitulo);
+        free(nuevaSala);
+        return NULL;
+    }
+    strcpy(nuevaSala->nombreSala, nombreSala);
     strcpy(nuevaSala->horario, horario);
 
-    nuevaSala->headNodoTitulo = crearNodoTitulo(NULL);
     nuevaSala->idSala = idSala;
     nuevaSala->tematica = tematica;
     nuevaSala->aforoMax = aforoMax;
+    nuevaSala->aforoActual = 0;
     nuevaSala->cantTrabajadores = cantTrabajadores;
-    nuevaSala->aforoActual = aforoActual;
     return nuevaSala;
 }
 /*cambia el estado de una lista de espera*/
@@ -856,8 +864,11 @@ struct Titulo *crearTitulo(int idTitulo, char *nombreTitulo, int tipoTitulo, int
     }
     nuevoTitulo = (struct Titulo *) malloc(sizeof(struct Titulo));
     if (nuevoTitulo == NULL) return NULL;
-
     nuevoTitulo->nombreTitulo = (char *) malloc(strlen(nombreTitulo) + 1);
+    if (nuevoTitulo->nombreTitulo == NULL){
+        free(nuevoTitulo);
+        return NULL;
+    }
     strcpy(nuevoTitulo->nombreTitulo, nombreTitulo);
     nuevoTitulo->headListaEspera = NULL;
     nuevoTitulo->idTitulo = idTitulo;
@@ -1089,7 +1100,6 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
         printf("\nError: No existe el titulo que se quiere modificar.\n");
         return;
     }
-
     do {
         printf("\n");
         printf(" ============ MENU MODIFICAR TITULO ============\n");
@@ -1146,6 +1156,10 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                 printf("Clasificacion registrada: %d \n", tituloModificar->clasificacionEdad);
                 printf("Ingrese la nueva clasificacion = ");
                 tituloModificar->clasificacionEdad = inputEntero();
+                while (tituloModificar->clasificacionEdad < 0){
+                    printf("Error: La clasificacion no puede ser negativa. Ingrese la nueva clasificacion = ");
+                    tituloModificar->clasificacionEdad = inputEntero();
+                }
                 printf("Clasificacion modificada con exito! Nueva clasificacion: %d \n\n", tituloModificar->clasificacionEdad);
                 break;
             case 4:
@@ -1153,6 +1167,10 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                 printf("Precio registrado: %d \n", tituloModificar->precio);
                 printf("Ingrese el nuevo precio = ");
                 tituloModificar->precio = inputEntero();
+                while(tituloModificar->precio < 0){
+                    printf("Error: El precio no puede ser negativo. Ingrese el nuevo precio = ");
+                    tituloModificar->precio = inputEntero();
+                }
                 printf("Precio modificado con exito! Nuevo precio: %d \n\n", tituloModificar->precio);
                 break;;
             case 5:
@@ -1160,8 +1178,12 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                 printf("Ejemplares registrados: %d \n", tituloModificar->cantidadEjemplares);
                 printf("Ingrese la nueva cantidad = ");
                 tituloModificar->cantidadEjemplares = inputEntero();
+                while(tituloModificar->cantidadEjemplares < 0){
+                    printf("Error: La cantidad de ejemplares no puede ser negativa. Ingrese la nueva cantidad = ");
+                    tituloModificar->cantidadEjemplares = inputEntero();
+                }
                 printf("Cantidad modificada con exito! Nueva cantidad de ejemplares: %d \n\n", tituloModificar->cantidadEjemplares);
-                break;;
+                break;
             case 6:
                 printf("Ha seleccionado la opcion 6: Modificar estado \n");
                 printf("Estado registrado: %d \n", tituloModificar->estado);
@@ -1199,6 +1221,7 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
         }
     } while (opcionModificar != 0);
 }
+
 /* Esta funcion muestra el menu para modificar los datos de una sala */
 void menuModificarSala(struct Sala *salaModificar) {
     int opcionModificar;
@@ -1255,6 +1278,10 @@ void menuModificarSala(struct Sala *salaModificar) {
                 printf("Aforo maximo registrado: %d \n", salaModificar->aforoMax);
                 printf("Ingrese el nuevo aforo maximo = ");
                 salaModificar->aforoMax = inputEntero();
+                while(salaModificar->aforoMax <= 0){
+                    printf("Error: Aforo debe ser mayor a 0. Ingrese el nuevo aforo maximo = ");
+                    salaModificar->aforoMax = inputEntero();
+                }
                 printf("Aforo modificado con exito! Nuevo aforo maximo: %d \n\n", salaModificar->aforoMax);
                 break;
             case 4:
@@ -1262,6 +1289,10 @@ void menuModificarSala(struct Sala *salaModificar) {
                 printf("Trabajadores registrados: %d \n", salaModificar->cantTrabajadores);
                 printf("Ingrese la nueva cantidad de trabajadores = ");
                 salaModificar->cantTrabajadores = inputEntero();
+                while(salaModificar->cantTrabajadores <= 0){
+                    printf("Error: Trabajadores deben ser mayor a 0. Ingrese la nueva cantidad de trabajadores = ");
+                    salaModificar->cantTrabajadores = inputEntero();
+                }
                 printf("Cantidad modificada con exito! Nueva cantidad de trabajadores: %d \n\n", salaModificar->cantTrabajadores);
                 break;
             case 0:
@@ -1278,7 +1309,6 @@ void menuModificarSala(struct Sala *salaModificar) {
 int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
     int i;
     struct NodoTitulo *rec, *siguiente;
-    struct NodoListaEspera *recEspera, *siguienteEspera;
 
     if (tienda == NULL || tienda->salas == NULL || salaEliminar == NULL) {
         return 0;
@@ -1292,7 +1322,9 @@ int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
         return 0;
     }
 
-    desvincularPasesDeSala(tienda->raiz, salaEliminar);
+    if (tienda->raiz != NULL) {
+        desvincularPasesDeSala(tienda->raiz, salaEliminar);
+    }
 
     while (i < tienda->cantidadSalas - 1) {
         tienda->salas[i] = tienda->salas[i + 1];
@@ -1305,15 +1337,7 @@ int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
     while (rec != NULL) {
         siguiente = rec->sig;
         if (rec->datosTitulo != NULL) {
-            if (rec->datosTitulo->headListaEspera != NULL) {
-                recEspera = rec->datosTitulo->headListaEspera->sig;
-                while (recEspera != rec->datosTitulo->headListaEspera) {
-                    siguienteEspera = recEspera->sig;
-                    free(recEspera);
-                    recEspera = siguienteEspera;
-                }
-                free(rec->datosTitulo->headListaEspera);
-            }
+            vaciarListaEspera(&(rec->datosTitulo->headListaEspera));
             free(rec->datosTitulo->nombreTitulo);
             free(rec->datosTitulo);
         }
@@ -1610,15 +1634,7 @@ int eliminarTitulo(struct Tienda *tienda, struct Titulo *tituloEliminar) {
                     rec->sig->ant = rec->ant;
                 }
                 /* supuesto: lista de espera circular con nodo fantasma, igual que en eliminarSala */
-                if (tituloEliminar->headListaEspera != NULL) {
-                    recEspera = tituloEliminar->headListaEspera->sig;
-                    while (recEspera != tituloEliminar->headListaEspera) {
-                        siguienteEspera = recEspera->sig;
-                        free(recEspera);
-                        recEspera = siguienteEspera;
-                    }
-                    free(tituloEliminar->headListaEspera);
-                }
+                vaciarListaEspera(&(tituloEliminar->headListaEspera));
                 free(tituloEliminar->nombreTitulo);
                 free(tituloEliminar);
                 free(rec);
@@ -2592,6 +2608,9 @@ struct Pase *crearPaseCompleto(struct Tienda *tienda, int tipoPase, int valorPas
 /*resolver que el puntero datoSala no queden apuntando a una sala ya eliminada*/
 void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala) {
     struct NodoPase *rec;
+       if (raiz == NULL){
+        return;
+    }   
     if (raiz->datosCliente != NULL && raiz->datosCliente->headPase != NULL) {
         rec = raiz->datosCliente->headPase->sig;
         while (rec != NULL) {
