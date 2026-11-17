@@ -3365,6 +3365,10 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
         idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
 
         clienteEncontrado = verificarPedirCliente(ibcomics, idRutCliente);
+        if (clienteEncontrado == NULL) {
+            printf("Error: No se encontro al cliente ingresado.\n");
+            return;
+        }
         printf("\nPases del Cliente = \n");
         listarPasesDeCliente(clienteEncontrado);
 
@@ -3382,11 +3386,13 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
         }
         printf("\nIngreso exitoso !\n");
         printf("El cliente %s ha ingresado a la sala %s\n", clienteEncontrado->nombreCliente, clienteEncontrado->datosSala->nombreSala);
-        printf("\nAforo Actual = %d   |   Aforo Maximo = %ds\n", clienteEncontrado->datosSala->aforoActual, clienteEncontrado->datosSala->aforoMax);
+        printf("\nAforo Actual = %d   |   Aforo Maximo = %d\n", clienteEncontrado->datosSala->aforoActual, clienteEncontrado->datosSala->aforoMax);
 
     }
-    printf("Ocurrio un error, o el dia esta cerrado.\n");
-    return;
+    else {
+        printf("Ocurrio un error, o el dia esta cerrado.\n");
+        return;
+    }
 }
 /*hora en la que termina el horario de la sala*/
 
