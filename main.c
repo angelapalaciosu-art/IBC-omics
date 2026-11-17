@@ -337,14 +337,25 @@ void liberarCliente(struct Cliente *cliente) {
     while (actual != NULL) {
         siguiente = actual->sig;
         if (actual->datosPase != NULL) {
+            /* Liberar memoria dinámica interna del pase si fue asignada */
+            if (actual->datosPase->horarioUso != NULL) {
+                free(actual->datosPase->horarioUso);
+            }
             free(actual->datosPase);
         }
         free(actual);
         actual = siguiente;
     }
-    if (cliente->headPase) free(cliente->headPase);
-    if (cliente->nombreCliente) free(cliente->nombreCliente);
-    if (cliente->correo) free(cliente->correo);
+    
+    if (cliente->headPase) {
+        free(cliente->headPase);
+    }
+    if (cliente->nombreCliente) {
+        free(cliente->nombreCliente);
+    }
+    if (cliente->correo) {
+        free(cliente->correo);
+    }
     free(cliente);
 }
 /* Remueve al cliente de las listas de espera de todas las salas de la tienda.*/
