@@ -582,23 +582,26 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
                 printf("¡Edad modificada con exito! Nueva edad: %d \n\n", clienteModificar->edad);
                 break;
 
-            case 3:
+            case 3:{
+                char correoTemporal[100]; /* Ampliado para evitar buffer overflow */
                 printf("Correo actual: %s \n", clienteModificar->correo);
                 printf("Ingrese el nuevo correo: ");
                 fgets(correoTemporal, sizeof(correoTemporal), stdin);
                 correoTemporal[strcspn(correoTemporal, "\n")] = '\0';
 
-                if (strlen(correoTemporal) > 0) {
-                    if (clienteModificar->correo != NULL) {
-                        free(clienteModificar->correo);
-                    }
-                    clienteModificar->correo = copiarTexto(correoTemporal);
-                    printf("¡Correo modificado con exito! Nuevo correo: %s \n\n", clienteModificar->correo);
-                } else {
-                    printf("Error: El correo no puede estar vacio.\n\n");
+                while (!validarCorreo(correoTemporal)) {
+                    printf("Error: Formato de correo invalido. Ingrese nuevamente: ");
+                    fgets(correoTemporal, sizeof(correoTemporal), stdin);
+                    correoTemporal[strcspn(correoTemporal, "\n")] = '\0';
                 }
-                break;
 
+                if (clienteModificar->correo != NULL) {
+                    free(clienteModificar->correo);
+                }
+                clienteModificar->correo = copiarTexto(correoTemporal);
+                printf("¡Correo modificado con exito! Nuevo correo: %s \n\n", clienteModificar->correo);
+                break;
+            }
             case 0:
                 printf("Saliendo del submenu.\n");
                 break;
