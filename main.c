@@ -3842,12 +3842,12 @@ int main(void) {
                 menuSacarTodosClientesSala(ibcomics);
                 break;
             case 5:
-                if (ibcomics->diaAbierto == 1) {
-                    mostrarMenuPrincipal(ibcomics, preciosPases, tamSalas);
-                } else {
-                    printf("\nError: Debe abrir el dia primero para acceder al menu principal.\n");
-                }
-
+             if (ibcomics->diaAbierto == 1) {
+                 mostrarMenuPrincipal(ibcomics, preciosPases, tamSalas);
+             } else {
+                 printf("\nError: Debe abrir el dia primero para acceder al menu principal.\n");
+             }
+               break;   
             case 6:
                 cerrarDia(ibcomics);
                 break;
