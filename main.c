@@ -647,16 +647,16 @@ void registrarCliente(struct NodoCliente **raiz) {
         edadCliente = inputEntero();
     }
 
+    /* Pide el correo completo y valida automáticamente usando tu función validarCorreo */
     printf("Ingrese el correo del cliente (ej: usuario@correo.com): ");
     fgets(correoCliente, sizeof(correoCliente), stdin);
     correoCliente[strcspn(correoCliente, "\n")] = '\0';
 
-    /* Ciclo que se repite hasta que el usuario escriba un correo válido */
     while (!validarCorreo(correoCliente)) {
-        printf("Error: Formato invalido (debe ser usuario@dominio.com sin espacios). Ingrese nuevamente: ");
+        printf("Error: Formato invalido (debe incluir '@' y un dominio sin espacios). Ingrese nuevamente: ");
         fgets(correoCliente, sizeof(correoCliente), stdin);
         correoCliente[strcspn(correoCliente, "\n")] = '\0';
-    };
+    }
 
     idGenerado = generarIdUnico(*raiz);
     nuevoCliente = crearEstructuraCliente(idGenerado, nombreCliente, rutCliente, edadCliente, correoCliente);
@@ -665,8 +665,8 @@ void registrarCliente(struct NodoCliente **raiz) {
         printf("\n¡Se ha anadido con exito al cliente!\n");
         printf("Nombre : %s\n", nuevoCliente->nombreCliente);
         printf("RUT    : %s\n", nuevoCliente->rutCliente);
-        printf("Edad   : %d años\n", nuevoCliente->edad);     /* Muestra la edad */
-        printf("Correo : %s\n", nuevoCliente->correo);       /* Muestra el correo */
+        printf("Edad   : %d años\n", nuevoCliente->edad);     
+        printf("Correo : %s\n", nuevoCliente->correo);       
         printf("ID asignado automaticamente: %d\n\n", nuevoCliente->idCliente);
     } else {
         printf("Error al registrar el cliente en el arbol.\n");
