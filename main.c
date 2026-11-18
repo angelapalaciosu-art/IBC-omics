@@ -476,9 +476,9 @@ void listarClientes(struct NodoCliente *raiz) {
 /* MENU MODIFICAR CLIENTE con validaciones respectovas */
 void menuModificarCliente(struct Cliente *clienteModificar) {
     int opcionSeleccionada;
-    char bufferTemporal[50];
-    char correoTemporal[50]; /* Declarada al inicio para cumplir estrictamente con ANSI C */
-
+    char bufferTemporal[120];
+    char correoTemporal[120]; 
+   
     if (clienteModificar == NULL) {
         printf("\nError: El cliente a modificar no existe.\n");
         return;
@@ -561,10 +561,10 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
 void registrarCliente(struct NodoCliente **raiz) {
     int idGenerado;
     int edadCliente;
-    char nombreCliente[50];
+    char nombreCliente[120];
     char rutTemporal[30];
     char rutCliente[13];
-    char correoCliente[100];
+    char correoCliente[120];
     struct Cliente *nuevoCliente;
 
     printf(" ============ MENU REGISTRAR CLIENTE ============\n\n");
