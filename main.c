@@ -222,13 +222,7 @@ struct Cliente *buscarClientePorRutOIdArbol(struct NodoCliente *raiz, char *rutI
     }
     return buscarClientePorID(raiz, atoi(rutId));
 }
-/*Verfica y pide a un cliente  ap partir de la tienda*/
-struct Cliente *verificarPedirCliente(struct Tienda *ibcomics, char *texto) {
-    if (ibcomics == NULL) {
-        return NULL;
-    }
-    return buscarClientePorRutOIdArbol(ibcomics->raiz, texto);
-}
+
 /*Genera un ID aleatorio unico que no este repetido en el arbol de clientes*/
 int generarIdUnico(struct NodoCliente *raiz) {
     int nuevoId;
@@ -650,7 +644,7 @@ void eliminarClienteInterfaz(struct Tienda *tienda) {
     fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
     entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
 
-    clienteAOperar = verificarPedirCliente(tienda, entradaBusqueda);
+    clienteAOperar = buscarClientePorRutOIdArbol(tienda->raiz, entradaBusqueda);
     if (clienteAOperar == NULL) {
         printf("Error: No se pudo encontrar al cliente ingresado.\n\n");
         return;
@@ -705,7 +699,7 @@ void mostrarMenuClientes(struct Tienda *tienda) {
                 fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
                 entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
 
-                clienteActual = verificarPedirCliente(tienda, entradaBusqueda);
+                clienteActual = buscarClientePorRutOIdArbol(tienda->raiz, entradaBusqueda);
                 if (clienteActual != NULL) {
                     printf("¡Cliente encontrado con exito!\n");
                     
@@ -726,7 +720,7 @@ void mostrarMenuClientes(struct Tienda *tienda) {
                 fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
                 entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
 
-                clienteActual = verificarPedirCliente(tienda, entradaBusqueda);
+                clienteActual = buscarClientePorRutOIdArbol(tienda->raiz, entradaBusqueda);
                 if (clienteActual != NULL) {
                     mostrarInformacionCliente(clienteActual);
                 } else {
@@ -1136,16 +1130,6 @@ void listarSalas(struct Tienda *tienda) {
         printf("   [%d] %s | Horario: %s | Aforo: %d \n", tienda->salas[i]->idSala,
                tienda->salas[i]->nombreSala, tienda->salas[i]->horario, tienda->salas[i]->aforoMax);
     }
-}
-/*pide el id del titulo hasta que exista*/
-struct Titulo *verificarPedirTitulo(struct Tienda *ibcomics, int idTitulo) {
-    struct Titulo *tituloEncontrado = NULL;
-
-    if (ibcomics == NULL || idTitulo <= 0) {
-        return NULL;
-    }
-    tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTitulo);  /*busca si el titulo está en alguna sala*/
-    return tituloEncontrado;
 }
 
 /* Esta funcion muestra el menu para modificar los datos de un titulo */
@@ -2020,14 +2004,6 @@ struct Cliente *buscarClientePorRutOIdListaEspera(struct NodoListaEspera *head, 
 }
 
 /*Busca al cliente dentro de la lista de espera para que no esté repetido*/
-struct Cliente *verificarPedirClienteListaEspera(struct Titulo *titulo, char *texto) {
-    struct Cliente *clienteEncontrado;
-    if (titulo == NULL) {
-        return NULL;
-    }
-    clienteEncontrado = buscarClientePorRutOIdListaEspera(titulo->headListaEspera, texto);
-    return clienteEncontrado;
-}
 
 
 /*------------------------------MOSTRAR--------------------------------------*/
@@ -2198,7 +2174,7 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     printf("Ingrese el ID del titulo que desea buscar: \n");
     idTituloBuscado = inputEntero();
 
-    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
     if (tituloEncontrado == NULL) {
         printf("El titulo no se encuentra en la tienda\n");
         return;
@@ -2209,13 +2185,13 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     fgets(idRutCliente, sizeof(idRutCliente), stdin);
     idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
 
-    clienteEnTienda = verificarPedirCliente(ibcomics,idRutCliente);
+    clienteEnTienda = buscarClientePorRutOIdArbol(ibcomics->raiz,idRutCliente);
     if (clienteEnTienda == NULL) {
         printf("Error: El cliente no se encuentra registrado en la tienda\n");
         return;
     }
 
-    clienteEnFila = verificarPedirClienteListaEspera(tituloEncontrado, idRutCliente);
+    clienteEnFila = buscarClientePorRutOIdListaEspera(tituloEncontrado->headListaEspera, idRutCliente);
     if (clienteEnFila != NULL) {
         printf("Error: El cliente ya se encuentra dentro de la lista de espera\n");
         return;
@@ -2247,7 +2223,7 @@ void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     printf("Ingrese el ID del titulo que desea buscar: \n");
     idTituloBuscado = inputEntero();
 
-    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
     if (tituloEncontrado == NULL) {
         printf("El titulo no se encuentra en la tienda\n");
         return;
@@ -2259,7 +2235,7 @@ void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
 
     /*no se verifica si el cliente está en tienda pq se asume que si está en una lista de espera ya está en la tienda*/
 
-    clienteEncontrado = verificarPedirClienteListaEspera(tituloEncontrado, idRutCliente);
+    clienteEncontrado = buscarClientePorRutOIdListaEspera(tituloEncontrado->headListaEspera, idRutCliente);
     if (clienteEncontrado == NULL) {
         printf("Error: No se encontro al cliente en la lista de espera.\n");
         return;
@@ -2286,7 +2262,7 @@ void MenuCalcularTiempoEstimadoEsperaDias(struct Tienda *ibcomics) {
 
     idTituloBuscado = inputEntero();
 
-    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
     if (tituloEncontrado == NULL) {
         printf("El titulo no se encuentra en la tienda\n");
         return;
@@ -2320,7 +2296,7 @@ void MenuContarCantidadClientesEnListaEspera(struct Tienda *ibcomics) {
 
     idTituloBuscado = inputEntero();
 
-    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
     if (tituloEncontrado == NULL) {
         printf("El titulo no se encuentra en la tienda\n");
         return;
@@ -2352,6 +2328,8 @@ void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
     printf("\n");
 
     do {
+        printf("Salas Disponibles: \n");
+        listarSalas(ibcomics);
         printf("\n Ingrese ID de la sala que desea buscar: \n");
         idSala = inputEntero();
 
@@ -2388,7 +2366,7 @@ void menuListarClientesListaEspera(struct Tienda *ibcomics) {
 
     idTituloBuscado = inputEntero();
 
-    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
     if (tituloEncontrado == NULL) {
         printf("El titulo no se encuentra en la tienda\n");
         return;
@@ -2421,7 +2399,7 @@ void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
 
     idTituloBuscado = inputEntero();
 
-    tituloEncontrado = verificarPedirTitulo(ibcomics, idTituloBuscado);
+    tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
     if (tituloEncontrado == NULL) {
         printf("El titulo no se encuentra en la tienda\n");
         return;
@@ -3576,7 +3554,7 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
         fgets(idRutCliente, sizeof(idRutCliente), stdin);
         idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
 
-        clienteEncontrado = verificarPedirCliente(ibcomics, idRutCliente);
+        clienteEncontrado = buscarClientePorRutOIdArbol(ibcomics->raiz, idRutCliente);
         if (clienteEncontrado == NULL) {
             printf("Error: No se encontro al cliente ingresado.\n");
             return;
@@ -3622,7 +3600,7 @@ void menuSacarClienteSala(struct Tienda *ibcomics) {
     fgets(idRutCliente, sizeof(idRutCliente), stdin);
     idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
 
-    clienteEncontrado = verificarPedirCliente(ibcomics, idRutCliente);
+    clienteEncontrado = buscarClientePorRutOIdArbol(ibcomics->raiz, idRutCliente);
     if (clienteEncontrado == NULL) {
         printf("Error: No se encontro al cliente ingresado\n");
         return;
