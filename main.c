@@ -851,9 +851,10 @@ struct NodoTitulo *crearNodoTitulo(struct Titulo *titulo) {
 }
 /*Esta función determina el HORARIO dependiendo de la hora y minuto*/
 char *determinarHorario(int arregloFecha[]){
-    int hora = arregloFecha[3];
-    int minuto = arregloFecha[4];
-    
+    int hora, minuto;
+
+   hora = arregloFecha[3];
+   minuto = arregloFecha[4];
     if(minuto < 0 || minuto > 59){
         return NULL;
     }
