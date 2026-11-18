@@ -3554,7 +3554,7 @@ void sacarTodosClientesSala(struct Tienda *ibcomics, struct NodoCliente *raiz, s
 }
 
 void menuSacarTodosClientesSala(struct Tienda *ibcomics) {
-    int idSala, sacar;
+    int idSala;
     struct Sala *salaEncontrada;
 
     printf("============ MENU SACAR TODOS LOS CLIENTES DE UNA SALA ============\n\n");
