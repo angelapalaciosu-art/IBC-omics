@@ -3221,18 +3221,42 @@ void poblarPrecios(int arregloPrecios[]) {
     arregloPrecios[2] = 17000;
     arregloPrecios[3] = 10000;
 }
-
+void cambiarPreciosArreglo(int arregloPrecios[], int precioGeneral, int precioInfantil, int precioFamiliar, int precioPrioritario) {
+    arregloPrecios[0] = precioGeneral;
+    arregloPrecios[1] = precioInfantil;
+    arregloPrecios[2] = precioFamiliar;
+    arregloPrecios[3] = precioPrioritario;
+}
 void cambiarPrecios(int arregloPrecios[]) {
+    int precioGeneral, precioInfantil, precioFamiliar, precioPrioritario;
     printf(" ============ MENU CAMBIAR PRECIOS ============\n");
     printf("\n");
-    printf("Ingrese el nuevo precio General = ");
-    arregloPrecios[0] = inputEntero();
-    printf("Ingrese el nuevo precio Infantil = ");
-    arregloPrecios[1] = inputEntero();
-    printf("Ingrese el nuevo precio Familiar = ");
-    arregloPrecios[2] = inputEntero();
-    printf("Ingrese el nuevo precio Prioritario = ");
-    arregloPrecios[3] = inputEntero();
+    do {
+        printf("Ingrese [0] para salir del menu\n");
+        printf("Ingrese el nuevo precio General = ");
+        precioGeneral = inputEntero();
+        if (precioGeneral == 0) {
+            return;
+        }
+        printf("Ingrese el nuevo precio Infantil = ");
+        precioInfantil = inputEntero();
+        if (precioInfantil == 0) {
+            return;
+        }
+        printf("Ingrese el nuevo precio Familiar = ");
+        precioFamiliar = inputEntero();
+        if (precioFamiliar == 0) {
+            return;
+        }
+        printf("Ingrese el nuevo precio Prioritario = ");
+        precioPrioritario = inputEntero();
+        if (precioPrioritario == 0) {
+            return;
+        }
+    }while (precioGeneral < 0 || precioInfantil < 0|| precioFamiliar < 0 || precioPrioritario < 0 || (precioFamiliar == arregloPrecios[2] && precioGeneral == arregloPrecios[0] && arregloPrecios[1] == precioInfantil && arregloPrecios[3] == precioPrioritario));
+
+    cambiarPreciosArreglo(arregloPrecios,precioGeneral,precioInfantil,precioFamiliar,precioPrioritario);
+
     printf("Precios actualizados con exito!\n");
 }
 
