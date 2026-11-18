@@ -429,7 +429,9 @@ int procesarEliminacionClienteArbol(struct Tienda *tienda, int idEliminar, int *
     if (aEliminar == NULL) {
         return 0;
     }
-
+   if(aEliminar->datosCliente->datosSala !=NULL){
+      sacarClienteDeSala(tienda, aEliminar->datosCliente);
+   }
     *listasBorradas = removerClienteDeListasDeEspera(tienda, idEliminar);
     *pasesBorrados = contarPasesCliente(aEliminar->datosCliente);
 
