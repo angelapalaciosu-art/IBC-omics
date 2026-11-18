@@ -24,6 +24,7 @@ int eliminarClienteDeListaEspera(struct NodoListaEspera **head, int idBuscado);
 void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala);
 void liberarCliente(struct Cliente *cliente);
 int vaciarListaEspera(struct NodoListaEspera **head);
+char *determinarHorario(int arregloFecha[]);
 /* =========================================================================
    ESTRUCTURAS GLOBALES DEL PROYECTO
    ========================================================================= */
@@ -89,7 +90,6 @@ struct Sala {
     int arregloFecha[5];  /*[0]: Dia / [1]: Mes / [2]: Anio / [3]: Hora / [4]: Minuto*/
     int aforoMax;
     int aforoActual; /*personas dentro de la sala*/
-    int cantTrabajadores;
     struct NodoTitulo *headNodoTitulo;
 };
 
@@ -813,18 +813,47 @@ struct NodoTitulo *crearNodoTitulo(struct Titulo *titulo) {
     nuevoNodo->sig = NULL;
     return nuevoNodo;
 }
-/* Esta funcion crea una sala  y su nodo fantasma de titulos */
-struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario, int aforoMax, int cantTrabajadores) {
-    struct Sala *nuevaSala;
-    if (nombreSala == NULL || horario == NULL || tematica < 1 || tematica > 6) {
+/*Esta función determina el HORARIO dependiendo de la hora y minuto*/
+char *determinarHorario(int arregloFecha[]){
+    int hora = arregloFecha[3];
+    int minuto = arregloFecha[4];
+    
+    if(minuto < 0 || minuto > 59){
         return NULL;
     }
+    if(hora >= 8 && hora <= 11){
+        return "Maniana";
+    }
+    if(hora >= 12 && hora <= 17){
+        return "Tarde";
+    }
+    if(hora >= 18 && hora <= 20){
+        return "Noche";
+    }
+    return NULL;
+}
+/* Esta funcion crea una sala  y su nodo fantasma de titulos */
+struct Sala *crearSala(int idSala, char *nombreSala, int tematica, int arregloFecha[], int aforoMax) {
+    struct Sala *nuevaSala;
+    char *calculoHorario;
+    int i;
+    
+    if (nombreSala == NULL || arregloFecha == NULL || tematica < 1 || tematica > 6) {
+        return NULL;
+    }
+    
+    calculoHorario = determinarHorario(arregloFecha);
+    if(calculoHorario == NULL){
+        return NULL;
+    }
+    
     nuevaSala = (struct Sala *) malloc(sizeof(struct Sala));
     if (nuevaSala == NULL) {
         return NULL;
     }
+    
     nuevaSala->nombreSala = (char *) malloc(strlen(nombreSala) + 1);
-    nuevaSala->horario = (char *) malloc(strlen(horario) + 1);
+    nuevaSala->horario = (char *) malloc(strlen(calculoHorario) + 1);
     nuevaSala->headNodoTitulo = crearNodoTitulo(NULL);
     
     if(nuevaSala->nombreSala == NULL || nuevaSala->horario == NULL || nuevaSala->headNodoTitulo == NULL){
@@ -834,14 +863,18 @@ struct Sala *crearSala(int idSala, char *nombreSala, int tematica, char *horario
         free(nuevaSala);
         return NULL;
     }
+    
+    for(i = 0; i < 5; i++){
+        nuevaSala->arregloFecha[i] = arregloFecha[i];
+    }
+    
     strcpy(nuevaSala->nombreSala, nombreSala);
-    strcpy(nuevaSala->horario, horario);
+    strcpy(nuevaSala->horario, calculoHorario);
 
     nuevaSala->idSala = idSala;
     nuevaSala->tematica = tematica;
     nuevaSala->aforoMax = aforoMax;
     nuevaSala->aforoActual = 0;
-    nuevaSala->cantTrabajadores = cantTrabajadores;
     return nuevaSala;
 }
 /*cambia el estado de una lista de espera*/
@@ -1062,7 +1095,6 @@ void mostrarDatosSala(struct Sala *sala) {
     }
     printf("Horario: %s \n", sala->horario);
     printf("Aforo maximo: %d \n", sala->aforoMax);
-    printf("Trabajadores: %d \n", sala->cantTrabajadores);
     printf("Titulos de la sala:\n");
     listarTitulos(sala);
     printf("\n");
@@ -1226,6 +1258,7 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
 void menuModificarSala(struct Sala *salaModificar) {
     int opcionModificar;
     char nuevoTexto[100];
+    char *calculoHorario, *temp;
 
     if (salaModificar == NULL) {
         printf("\nError: No existe la sala que se quiere modificar.\n");
@@ -1241,7 +1274,6 @@ void menuModificarSala(struct Sala *salaModificar) {
         printf("      Opcion [1]: Modificar nombre \n");
         printf("      Opcion [2]: Modificar horario \n");
         printf("      Opcion [3]: Modificar aforo maximo \n");
-        printf("      Opcion [4]: Modificar cantidad de trabajadores \n");
         printf("\n");
         printf("      Opcion [0]: Salir de Menu \n");
         printf("\n");
@@ -1263,14 +1295,33 @@ void menuModificarSala(struct Sala *salaModificar) {
                 break;
             case 2:
                 printf("Ha seleccionado la opcion 2: Modificar horario \n");
-                printf("Horario registrado: %s \n", salaModificar->horario);
-                printf("Ingrese el nuevo horario = ");
-                fgets(nuevoTexto, 100, stdin);
-                nuevoTexto[strcspn(nuevoTexto, "\n")] = '\0';
-                if (strlen(nuevoTexto) > 0) {
-                    salaModificar->horario = (char *) realloc(salaModificar->horario, strlen(nuevoTexto) + 1);
-                    strcpy(salaModificar->horario, nuevoTexto);
-                    printf("Horario modificado con exito! Nuevo horario: %s \n\n", salaModificar->horario);
+                printf("Horario registrado: %s (%02d:%02d hrs)\n", salaModificar->horario, salaModificar->arregloFecha[3], 
+                salaModificar->arregloFecha[4]);
+                printf("Ingrese la nueva hora (8-20)= ");
+                salaModificar->arregloFecha[3] = inputEntero();
+                while(salaModificar->arregloFecha[3] < 8 || salaModificar->arregloFecha[3] > 20){
+                    printf("Error: La hora debe estar entre 8 y 20. Ingrese la nueva hora (8-20) = ");
+                    salaModificar->arregloFecha[3] = inputEntero();
+                }
+                printf("Ingrese el nuevo minuto (0-59)= ");
+                salaModificar->arregloFecha[4] = inputEntero();
+                while(salaModificar->arregloFecha[4] < 0 || salaModificar->arregloFecha[4] > 59){
+                    printf("Error: Los minutos deben estar entre 00 y 59. Ingrese el nuevo minuto (0-59) = ");
+                    salaModificar->arregloFecha[4] = inputEntero();
+                }
+                calculoHorario = determinarHorario(salaModificar->arregloFecha);
+                if (calculoHorario != NULL){
+                    temp = (char *) realloc(salaModificar->horario, strlen(calculoHorario) + 1);
+                    if (temp != NULL){
+                        salaModificar->horario = temp;
+                        strcpy(salaModificar->horario, calculoHorario);
+                        printf("Horario modificado con exito! Nuevo horario: %s (%02d:%02d hrs)\n\n", 
+                        salaModificar->horario, 
+                        salaModificar->arregloFecha[3], 
+                        salaModificar->arregloFecha[4]);
+                    } else {
+                        printf("Error: No se pudo asignar el nuevo horario. \n\n");
+                    }
                 }
                 break;
             case 3:
@@ -1283,17 +1334,6 @@ void menuModificarSala(struct Sala *salaModificar) {
                     salaModificar->aforoMax = inputEntero();
                 }
                 printf("Aforo modificado con exito! Nuevo aforo maximo: %d \n\n", salaModificar->aforoMax);
-                break;
-            case 4:
-                printf("Ha seleccionado la opcion 4: Modificar cantidad de trabajadores \n");
-                printf("Trabajadores registrados: %d \n", salaModificar->cantTrabajadores);
-                printf("Ingrese la nueva cantidad de trabajadores = ");
-                salaModificar->cantTrabajadores = inputEntero();
-                while(salaModificar->cantTrabajadores <= 0){
-                    printf("Error: Trabajadores deben ser mayor a 0. Ingrese la nueva cantidad de trabajadores = ");
-                    salaModificar->cantTrabajadores = inputEntero();
-                }
-                printf("Cantidad modificada con exito! Nueva cantidad de trabajadores: %d \n\n", salaModificar->cantTrabajadores);
                 break;
             case 0:
                 printf("Saliendo del menu...\n");
@@ -1409,8 +1449,9 @@ struct Tienda *ordenarSalasPorTitulos(struct Tienda *tienda) {
 }
 
 struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
-    int idSala, tematica, aforoMax, cantTrabajadores;
-    char nombreSala[100], horario[100];
+    int idSala, tematica, aforoMax;
+    int arregloFecha[5];
+    char nombreSala[100];
     struct Sala *nuevaSala;
 
     if (tienda == NULL || tienda->salas == NULL) {
@@ -1451,13 +1492,22 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
         tematica = inputEntero();
     }
 
-    printf("Ingrese el horario = ");
-    fgets(horario, 100, stdin);
-    horario[strcspn(horario, "\n")] = '\0';
-    while (strlen(horario) == 0) {
-        printf("Error: El horario no puede estar vacio. Ingrese el horario = ");
-        fgets(horario, 100, stdin);
-        horario[strcspn(horario, "\n")] = '\0';
+    arregloFecha[0] = tienda->arregloFechaAct[0];
+    arregloFecha[1] = tienda->arregloFechaAct[1];
+    arregloFecha[2] = tienda->arregloFechaAct[2];
+    
+    printf("Ingrese la hora de funcionamiento (8-20) = ");
+    arregloFecha[3] = inputEntero();
+    while(arregloFecha[3] < 8 || arregloFecha[3] > 20){
+        printf("Error: Hora debe estar entre 8 y 20. Ingrese la hora de funcionamiento (8-20) = ");
+        arregloFecha[3] = inputEntero();
+    }
+    
+    printf("Ingrese los minutos de funcionamiento (0-59) = ");
+    arregloFecha[4] = inputEntero();
+    while(arregloFecha[4] < 0 || arregloFecha[4] > 59){
+        printf("Error: Minutos deben estar entre 0 y 59. Ingrese los minutos de funcionamiento (0-59) = ");
+        arregloFecha[4] = inputEntero();
     }
 
     printf("Ingrese el aforo maximo = ");
@@ -1467,14 +1517,7 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
         aforoMax = inputEntero();
     }
 
-    printf("Ingrese la cantidad de trabajadores = ");
-    cantTrabajadores = inputEntero();
-    while (cantTrabajadores < 0) {
-        printf("Error: La cantidad no puede ser negativa. Ingrese la cantidad de trabajadores = ");
-        cantTrabajadores = inputEntero();
-    }
-
-    nuevaSala = crearSala(idSala, nombreSala, tematica, horario, aforoMax, cantTrabajadores);
+    nuevaSala = crearSala(idSala, nombreSala, tematica, arregloFecha, aforoMax);
     if (nuevaSala == NULL) {
         return NULL;
     }
@@ -1601,7 +1644,6 @@ void mostrarMenuSalas(struct Tienda *tienda, int tamSalas) {
 int eliminarTitulo(struct Tienda *tienda, struct Titulo *tituloEliminar) {
     int i;
     struct NodoTitulo *rec;
-    struct NodoListaEspera *recEspera, *siguienteEspera;
 
     if (tienda == NULL || tienda->salas == NULL || tituloEliminar == NULL) {
         return 0;
