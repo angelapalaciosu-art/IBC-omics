@@ -401,6 +401,13 @@ int contarPasesCliente(struct Cliente *cliente) {
     }
     return totalPases;
 }
+
+void sacarClienteDeSala(struct Tienda *ibcomics, struct Cliente *cliente) {
+    cliente->datosSala->aforoActual--;
+    cliente->datosSala = NULL;
+    ibcomics->totalClientes--;
+}
+
 /* Procesa la eliminación física de un nodo cliente dentro del ABB y sus dependencias.*/
 int procesarEliminacionClienteArbol(struct Tienda *tienda, int idEliminar, int *pasesBorrados, int *listasBorradas) {
     struct NodoCliente **raiz;
@@ -3583,14 +3590,6 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
         printf("Aforo actual = %d  |  Aforo maximo = %d\n", clienteEncontrado->datosSala->aforoActual, clienteEncontrado->datosSala->aforoMax);
     }
 }
-/*hora en la que termina el horario de la sala*/
-
-void sacarClienteDeSala(struct Tienda *ibcomics, struct Cliente *cliente) {
-    cliente->datosSala->aforoActual--;
-    cliente->datosSala = NULL;
-    ibcomics->totalClientes--;
-}
-
 
 /*menu manual para quitar al cliente de la sala (por si quiere salir antes del cierre)*/
 void menuSacarClienteSala(struct Tienda *ibcomics) {
