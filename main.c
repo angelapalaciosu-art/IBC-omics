@@ -198,11 +198,11 @@ int validarCorreo(const char *correo) {
             puntoDespuesArroba = i;
         }
     }
-    /* Debe tener exactamente una arroba, algo antes, algo entre la arroba y el punto, y algo despues del punto */
+    
     if (arroba != 1) return 0;
-    if (posArroba <= 0) return 0;                             /* Nada antes de '@' */
-    if (puntoDespuesArroba <= posArroba + 1) return 0;         /* Nada entre '@' y '.' */
-    if (correo[puntoDespuesArroba + 1] == '\0') return 0;      /* Nada despues del '.' */
+    if (posArroba <= 0) return 0;                             
+    if (puntoDespuesArroba <= posArroba + 1) return 0;         
+    if (correo[puntoDespuesArroba + 1] == '\0') return 0;      
 
     return 1;
 }
