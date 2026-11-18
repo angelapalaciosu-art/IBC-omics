@@ -217,6 +217,10 @@ struct Cliente *crearEstructuraCliente(int id, const char *nombre, const char *r
 
     nuevoCliente->idCliente = id;
     nuevoCliente->edad = edad;
+      if (rut == NULL || strlen(rut) > 12) {
+       free(nuevoCliente);
+       return NULL;
+      }
     strcpy(nuevoCliente->rutCliente, rut);
 
     nuevoCliente->nombreCliente = copiarTexto(nombre);
