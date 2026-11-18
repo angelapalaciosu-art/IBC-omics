@@ -678,6 +678,12 @@ void mostrarMenuClientes(struct Tienda *tienda) {
                 registrarCliente(raizClientes);
                 break;
             case 2:
+                // 1. Validar si el árbol de clientes está vacío
+                if (tienda->raiz == NULL) {
+                    printf("Error: No existe ningun cliente registrado en el sistema.\n\n");
+                    break;
+                }
+                
                 printf(" ============ MENU MODIFICAR CLIENTE ============\n");
                 printf("Ingrese el ID o RUT del cliente: ");
                 fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
@@ -686,6 +692,10 @@ void mostrarMenuClientes(struct Tienda *tienda) {
                 clienteActual = verificarPedirCliente(tienda, entradaBusqueda);
                 if (clienteActual != NULL) {
                     printf("¡Cliente encontrado con exito!\n");
+                    
+                    // 2. Mostrar los datos actuales para guiar el cambio
+                    mostrarInformacionCliente(clienteActual); 
+                    
                     menuModificarCliente(clienteActual);
                 } else {
                     printf("Error: No se pudo encontrar al cliente ingresado.\n\n");
