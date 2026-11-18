@@ -1352,7 +1352,7 @@ int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
     return 1;
 }
 /* Esta funcion cuenta la cantidad de personas en una sala */
-int contarPersonasEnSala(struct NodoCliente *raiz, struct Sala *sala) {
+int contarPersonasEnSala( struct Sala *sala) {
     return sala->aforoActual;
 
 }
@@ -1380,7 +1380,7 @@ struct Tienda *ordenarSalasPorPersonas(struct Tienda *tienda) {
     }
     for (i = 0; i < tienda->cantidadSalas - 1; i++) {
         for (j = 0; j < tienda->cantidadSalas - 1 - i; j++) {
-            if (contarPersonasEnSala(tienda->raiz, tienda->salas[j]) < contarPersonasEnSala(tienda->raiz, tienda->salas[j + 1])) {
+            if (contarPersonasEnSala(tienda->salas[j]) < contarPersonasEnSala(tienda->salas[j + 1])) {
                 aux = tienda->salas[j];
                 tienda->salas[j] = tienda->salas[j + 1];
                 tienda->salas[j + 1] = aux;
