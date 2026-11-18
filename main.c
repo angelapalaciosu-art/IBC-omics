@@ -145,6 +145,20 @@ int validarNombreSoloLetrasYEspacios(const char *cadenaNombre) {
     }
     return 1;
 }
+/* Lee un texto y elimina los caracteres sobrantes si supera el arreglo */
+void leerTexto(char texto[], int tamano) {
+    if (fgets(texto, tamano, stdin) != NULL) {
+
+        if (strchr(texto, '\n') != NULL) {
+            texto[strcspn(texto, "\n")] = '\0';
+        } else {
+            int caracter;
+
+            /* Limpia los caracteres que quedaron pendientes */
+            while ((caracter = getchar()) != '\n' && caracter != EOF);
+        }
+    }
+}
 /* =========================================================================
    MODULO DE CLIENTES Y ARBOL 
    ========================================================================= */
@@ -569,28 +583,23 @@ void registrarCliente(struct NodoCliente **raiz) {
 
     printf(" ============ MENU REGISTRAR CLIENTE ============\n\n");
 
-    printf("Ingrese el primer nombre y primer apellido(Ej: Nicolas Vidal): ");
-    fgets(nombreCliente, sizeof(nombreCliente), stdin);
-    nombreCliente[strcspn(nombreCliente, "\n")] = '\0';
+    printf("Ingrese el primer nombre y primer apellido (Ej: Nicolas Vidal): ");
+      leerTexto(nombreCliente, sizeof(nombreCliente));
 
-    while (!validarNombreSoloLetrasYEspacios(nombreCliente)) {
-        printf("Error: Ingrese un nombre valido: ");
-        fgets(nombreCliente, sizeof(nombreCliente), stdin);
-        nombreCliente[strcspn(nombreCliente, "\n")] = '\0';
-    }
+   while (!validarNombreSoloLetrasYEspacios(nombreCliente)) {
+       printf("Error: Ingrese un nombre valido: ");
+       leerTexto(nombreCliente, sizeof(nombreCliente));
+   }
 
     printf("Ingrese el RUT del cliente (Ej: 12.345.678-9): ");
+   leerTexto(rutTemporal, sizeof(rutTemporal));
 
-    fgets(rutTemporal, sizeof(rutTemporal), stdin);
-    rutTemporal[strcspn(rutTemporal, "\n")] = '\0';
+   while (strlen(rutTemporal) == 0 || strlen(rutTemporal) > 12) {
+       printf("Error: RUT vacio o demasiado largo. Ingrese nuevamente: ");
+       leerTexto(rutTemporal, sizeof(rutTemporal));
+   }
 
-    while (strlen(rutTemporal) == 0 || strlen(rutTemporal) > 12) {
-        printf("Error: RUT vacio o demasiado largo. Ingrese nuevamente: ");
-        fgets(rutTemporal, sizeof(rutTemporal), stdin);
-        rutTemporal[strcspn(rutTemporal, "\n")] = '\0';
-    }
-
-    strcpy(rutCliente, rutTemporal);
+   strcpy(rutCliente, rutTemporal);
 
     if (buscarClientePorRut(*raiz, rutCliente) != NULL) {
         printf("Error: Ya existe un cliente registrado con ese RUT.\n");
@@ -606,14 +615,12 @@ void registrarCliente(struct NodoCliente **raiz) {
     }
 
     printf("Ingrese el correo del cliente: ");
-    fgets(correoCliente, sizeof(correoCliente), stdin);
-    correoCliente[strcspn(correoCliente, "\n")] = '\0';
+   leerTexto(correoCliente, sizeof(correoCliente));
 
-    while (strlen(correoCliente) == 0) {
-        printf("Error: El correo no puede estar vacio: ");
-        fgets(correoCliente, sizeof(correoCliente), stdin);
-        correoCliente[strcspn(correoCliente, "\n")] = '\0';
-    }
+   while (strlen(correoCliente) == 0) {
+       printf("Error: El correo no puede estar vacio: ");
+       leerTexto(correoCliente, sizeof(correoCliente));
+   }
 
     idGenerado = generarIdUnico(*raiz);
 
