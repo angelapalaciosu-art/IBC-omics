@@ -512,13 +512,11 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
             case 1:
                 printf("Nombre actual: %s \n", clienteModificar->nombreCliente);
                 printf("Ingrese el nuevo nombre (solo letras sin tildes y espacios): ");
-                fgets(bufferTemporal, sizeof(bufferTemporal), stdin);
-                bufferTemporal[strcspn(bufferTemporal, "\n")] = '\0';
+                leerTexto(bufferTemporal, sizeof(bufferTemporal));
 
                 while (!validarNombreSoloLetrasYEspacios(bufferTemporal)) {
                     printf("Error: Use solo letras (sin tildes) y espacios. Ingrese nuevamente: ");
-                    fgets(bufferTemporal, sizeof(bufferTemporal), stdin);
-                    bufferTemporal[strcspn(bufferTemporal, "\n")] = '\0';
+                    leerTexto(bufferTemporal, sizeof(bufferTemporal));
                 }
 
                 if (clienteModificar->nombreCliente != NULL) {
