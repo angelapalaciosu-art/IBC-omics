@@ -569,7 +569,7 @@ void registrarCliente(struct NodoCliente **raiz) {
 
     printf(" ============ MENU REGISTRAR CLIENTE ============\n\n");
 
-    printf("Ingrese el nombre completo: ");
+    printf("Ingrese el primer nombre y primer apellido(Ej: Nicolas Vidal): ");
     fgets(nombreCliente, sizeof(nombreCliente), stdin);
     nombreCliente[strcspn(nombreCliente, "\n")] = '\0';
 
