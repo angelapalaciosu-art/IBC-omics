@@ -3791,7 +3791,7 @@ void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4], int tamS
         printf("      Opcion [4]: Ingresar al Menu Lista de espera \n");
         printf("      Opcion [5]: Ingresar al Menu Pases \n");
         printf("      Opcion [6]: Cambiar precios de los pases \n");
-        printf("      Opcion [7]: Salir al menu principal (Jornada)\n");
+        printf("      Opcion [7]: Salir al menu principal \n");
         printf("   Ingrese una opcion valida: ");
         opcionSeleccionada = inputEntero();
 
