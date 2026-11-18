@@ -106,45 +106,14 @@ struct Tienda {
    UTILIDADES
    ========================================================================= */
 /* inputEntero contra puntos, guiones y letras usando fgets */
-/* inputEntero robusto contra EOF, desbordamientos y contaminación de buffer */
-/* inputEntero simple en ANSI C sin clearerr ni exit */
 int inputEntero(void) {
-    char buffer[100];
-    int numero;
-    int i;
-    int esValido;
-
-    while (1) {
-        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
-            /* Si llega EOF (Ctrl+D o fin de archivo), retornamos 0para que los menús salgan de forma ordenada sin bucle infinito */
-            return 0;
-        }
-        buffer[strcspn(buffer, "\n")] = '\0';
-
-        if (buffer[0] == '\0') {
-            printf("ERROR: Ingrese un numero valido: ");
-            continue;
-        }
-
-        esValido = 1;
-        for (i = 0; buffer[i] != '\0'; i++) {
-            if (i == 0 && buffer[i] == '-') {
-                continue;
-            }
-            if (buffer[i] < '0' || buffer[i] > '9') {
-                esValido = 0;
-                break;
-            }
-        }
-
-        if (!esValido) {
-            printf("ERROR: Ingrese un numero valido (sin puntos, letras ni simbolos): ");
-            continue;
-        }
-
-        numero = atoi(buffer);
-        return numero;
+    int numero, caracterLeido;
+    while (scanf("%d", &numero) != 1) {
+        printf("ERROR: Ingrese un numero valido: ");
+        while ((caracterLeido = getchar()) != '\n' && caracterLeido != EOF);
     }
+    while ((caracterLeido = getchar()) != '\n' && caracterLeido != EOF);
+    return numero;
 }
 /* Reserva memoria y devuelve una copia del texto */
 char *copiarTexto(const char *textoOriginal) {
@@ -174,36 +143,6 @@ int validarNombreSoloLetrasYEspacios(const char *cadenaNombre) {
             return 0;
         }
     }
-    return 1;
-}
-/* Valida que el correo tenga un formato basico: texto@texto.texto (sin espacios) */
-int validarCorreo(const char *correo) {
-    int i;
-    int arroba = 0;
-    int puntoDespuesArroba = 0;
-    int posArroba = -1;
-
-    if (correo == NULL || correo[0] == '\0') {
-        return 0;
-    }
-
-    for (i = 0; correo[i] != '\0'; i++) {
-        if (correo[i] == ' ') {
-            return 0; /* No se permiten espacios */
-        }
-        if (correo[i] == '@') {
-            arroba++;
-            posArroba = i;
-        } else if (arroba == 1 && correo[i] == '.') {
-            puntoDespuesArroba = i;
-        }
-    }
-    
-    if (arroba != 1) return 0;
-    if (posArroba <= 0) return 0;                             
-    if (puntoDespuesArroba <= posArroba + 1) return 0;         
-    if (correo[puntoDespuesArroba + 1] == '\0') return 0;      
-
     return 1;
 }
 /* =========================================================================
@@ -582,15 +521,15 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
                 printf("¡Edad modificada con exito! Nueva edad: %d \n\n", clienteModificar->edad);
                 break;
 
-            case 3:{
-                char correoTemporal[100]; /* Ampliado para evitar buffer overflow */
+            case 3: {
+                char correoTemporal[100];
                 printf("Correo actual: %s \n", clienteModificar->correo);
                 printf("Ingrese el nuevo correo: ");
                 fgets(correoTemporal, sizeof(correoTemporal), stdin);
                 correoTemporal[strcspn(correoTemporal, "\n")] = '\0';
 
-                while (!validarCorreo(correoTemporal)) {
-                    printf("Error: Formato de correo invalido. Ingrese nuevamente: ");
+                while (strlen(correoTemporal) == 0) {
+                    printf("Error: El correo no puede estar vacio. Ingrese nuevamente: ");
                     fgets(correoTemporal, sizeof(correoTemporal), stdin);
                     correoTemporal[strcspn(correoTemporal, "\n")] = '\0';
                 }
@@ -611,6 +550,8 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
         }
     } while (opcionSeleccionada != 0);
 }
+/*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
+/*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
 /*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
 void registrarCliente(struct NodoCliente **raiz) {
     int idGenerado;
@@ -647,13 +588,12 @@ void registrarCliente(struct NodoCliente **raiz) {
         edadCliente = inputEntero();
     }
 
-    /* Pide el correo completo y valida automáticamente usando tu función validarCorreo */
-    printf("Ingrese el correo del cliente (ej: usuario@correo.com): ");
+    /* Captura directa del correo usando fgets y copia de texto sin validaciones extra */
+    printf("Ingrese el correo del cliente: ");
     fgets(correoCliente, sizeof(correoCliente), stdin);
-    correoCliente[strcspn(correoCliente, "\n")] = '\0';
-
-    while (!validarCorreo(correoCliente)) {
-        printf("Error: Formato invalido (debe incluir '@' y un dominio sin espacios). Ingrese nuevamente: ");
+    correoClient[strcspn(correoCliente, "\n")] = '\0';
+    while (strlen(correoCliente) == 0) {
+        printf("Error: El correo no puede estar vacio. Ingrese nuevamente: ");
         fgets(correoCliente, sizeof(correoCliente), stdin);
         correoCliente[strcspn(correoCliente, "\n")] = '\0';
     }
@@ -665,7 +605,7 @@ void registrarCliente(struct NodoCliente **raiz) {
         printf("\n¡Se ha anadido con exito al cliente!\n");
         printf("Nombre : %s\n", nuevoCliente->nombreCliente);
         printf("RUT    : %s\n", nuevoCliente->rutCliente);
-        printf("Edad   : %d años\n", nuevoCliente->edad);     
+        printf("Edad   : %d anos\n", nuevoCliente->edad);     
         printf("Correo : %s\n", nuevoCliente->correo);       
         printf("ID asignado automaticamente: %d\n\n", nuevoCliente->idCliente);
     } else {
