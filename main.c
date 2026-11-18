@@ -2153,7 +2153,7 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
         return;
     }
     if (tituloEncontrado->estadoListaEspera != 1) {  /*1: Activo*/
-        printf("Error: La lista de espera se encuentra suspendida\n");
+        printf("Error: La lista de espera se encuentra suspendida, (solo se activa si el titulo esta agotado o en preventa)\n");
         return;
     }
     nuevoNodo = crearNodoListasEspera(clienteEnTienda);
@@ -2162,6 +2162,7 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
         return;
     }
     enlazarNodoListaEspera(&(tituloEncontrado->headListaEspera), nuevoNodo);
+    printf("\nCliente agregado a la lista de espera \n");
     mostrarInformacionCliente(clienteEnTienda);
 }
 
@@ -2336,7 +2337,7 @@ void menuListarClientesListaEspera(struct Tienda *ibcomics) {
     }
 
     printf("El titulo ha sido encontrado! \n");
-    printf("Nombre: %s", tituloEncontrado->nombreTitulo);
+    printf("Nombre: %s\n", tituloEncontrado->nombreTitulo);
     if (tituloEncontrado->estadoListaEspera == 1) {
         printf("Estado de la lista de espera: Activa \n");
     }
@@ -2371,15 +2372,13 @@ void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
     printf("El titulo ha sido encontrado! \n");
     printf("Nombre: %s", tituloEncontrado->nombreTitulo);
 
-    if (tituloEncontrado->headListaEspera != NULL) {
-        resultado = vaciarListaEspera(&(tituloEncontrado->headListaEspera));
-
-        if (resultado == 1) {
-            printf("La Lista de espera del titulo %s ha sido vaciada con exito !! \n", tituloEncontrado->nombreTitulo);
-        } else {
-                printf("Error: La Lista de espera no pudo vaciarse \n");
-        }
+    resultado = contarCantidadClientesEnListaEspera(tituloEncontrado->headListaEspera);
+    if (resultado == 0) {
+        printf("La lista de espera de este titulo ya se encuentra vacia.\n");
+        return;
     }
+    vaciarListaEspera(&(tituloEncontrado->headListaEspera));
+    printf("Se vacio la lista de espera de %s (%d cliente(s) removidos).\n", tituloEncontrado->nombreTitulo, resultado);
 }
 
 /*------------------MENU LISTA ESPERA---------------*/
@@ -3438,27 +3437,36 @@ int verificarAforoMax(struct Sala *salaEncontrada) {
     }
     return 0;
 }
+/* rtorna el motivo por el que no se puede ingresasr */
+char *motivoRechazoIngreso(struct Tienda *ibcomics, struct Cliente *cliente, struct Pase *pase) {
+    if (cliente->datosSala != NULL) {
+        return "El cliente ya se encuentra dentro de una sala";
+    }
+    if (pase->datosSala == NULL) {
+        return "La sala del pase fue eliminada.";
+    }
+    if (verificarPaseActivo(pase) == 0) {
+        return "El pase no esta activo";
+    }
+    if (verificarCumpleFechaPase(pase, ibcomics) == 0) {
+        return "La fecha del pase no es la del dia abierto";
+    }
+    if (verificarHorarioPase(pase) == 0) {
+        return "El horario del pase no coincide con el de la sala";
+    }
+    if (verificarAforoMax(pase->datosSala) == 0) {
+        return "La sala esta llena";
+    }
+    return NULL;
+}
+
 int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresado, struct Pase *pase) {
-    struct Sala *salaEncontrada;
-
-    if (ibcomics == NULL || clienteIngresado == NULL || pase == NULL) {/*si el cliente no tiene pases*/
-        return 0;
-    }
-    if (ibcomics->diaAbierto != 1 || clienteIngresado->datosSala != NULL) {/*La tienda está cerrada o el cliente esta en otra sala*/
-        return 0; 
-    }
-
-    salaEncontrada = pase->datosSala;
-    if (salaEncontrada == NULL) {
+    if (motivoRechazoIngreso(ibcomics, clienteIngresado, pase) != NULL) {
         return 0;
     }
 
-    if (verificarPaseActivo(pase) == 0 || verificarCumpleFechaPase(pase, ibcomics) == 0 || verificarHorarioPase(pase) == 0 || verificarAforoMax(salaEncontrada) == 0) {
-        return 0;
-    }
-
-    clienteIngresado->datosSala = salaEncontrada;
-    salaEncontrada->aforoActual++;
+    clienteIngresado->datosSala = pase->datosSala;
+    pase->datosSala->aforoActual++;
     ibcomics->totalClientes++;
     pase->estado = 2; /*utilizado*/
     return 1;
@@ -3468,6 +3476,7 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
     struct Pase *paseEncontrado;
     char idRutCliente[20];
     int idPase;
+    char *motivo;
 
     if (ibcomics == NULL) {
         return;
@@ -3475,7 +3484,8 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
     printf(" ============ MENU INGRESAR CLIENTE A SALA ============\n");
     printf("\n");
 
-    if (ibcomics->diaAbierto == 1) {  /*Si el dia esta abierto*/
+    if (ibcomics->diaAbierto == 1) {
+        /*Si el dia esta abierto*/
         printf("Ingrese ID o RUT del cliente (Ej. 12.345.678-9) = \n");
         fgets(idRutCliente, sizeof(idRutCliente), stdin);
         idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
@@ -3496,18 +3506,15 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
             return;
         }
 
-        if (ingresarClienteSala(ibcomics, clienteEncontrado, paseEncontrado) == 0) {
-            printf("Error: No se pudo ingresar.\n");
+        motivo = motivoRechazoIngreso(ibcomics, clienteEncontrado, paseEncontrado);
+        if (motivo != NULL) {
+            printf("Error: %s\n", motivo);
             return;
         }
-        printf("\nIngreso exitoso !\n");
+        ingresarClienteSala(ibcomics, clienteEncontrado, paseEncontrado);
+        printf("\nIngreso exitoso!\n");
         printf("El cliente %s ha ingresado a la sala %s\n", clienteEncontrado->nombreCliente, clienteEncontrado->datosSala->nombreSala);
-        printf("\nAforo Actual = %d   |   Aforo Maximo = %d\n", clienteEncontrado->datosSala->aforoActual, clienteEncontrado->datosSala->aforoMax);
-
-    }
-    else {
-        printf("Ocurrio un error, o el dia esta cerrado.\n");
-        return;
+        printf("Aforo actual = %d  |  Aforo maximo = %d\n", clienteEncontrado->datosSala->aforoActual, clienteEncontrado->datosSala->aforoMax);
     }
 }
 /*hora en la que termina el horario de la sala*/
