@@ -176,7 +176,36 @@ int validarNombreSoloLetrasYEspacios(const char *cadenaNombre) {
     }
     return 1;
 }
+/* Valida que el correo tenga un formato basico: texto@texto.texto (sin espacios) */
+int validarCorreo(const char *correo) {
+    int i;
+    int arroba = 0;
+    int puntoDespuesArroba = 0;
+    int posArroba = -1;
 
+    if (correo == NULL || correo[0] == '\0') {
+        return 0;
+    }
+
+    for (i = 0; correo[i] != '\0'; i++) {
+        if (correo[i] == ' ') {
+            return 0; /* No se permiten espacios */
+        }
+        if (correo[i] == '@') {
+            arroba++;
+            posArroba = i;
+        } else if (arroba == 1 && correo[i] == '.') {
+            puntoDespuesArroba = i;
+        }
+    }
+    /* Debe tener exactamente una arroba, algo antes, algo entre la arroba y el punto, y algo despues del punto */
+    if (arroba != 1) return 0;
+    if (posArroba <= 0) return 0;                             /* Nada antes de '@' */
+    if (puntoDespuesArroba <= posArroba + 1) return 0;         /* Nada entre '@' y '.' */
+    if (correo[puntoDespuesArroba + 1] == '\0') return 0;      /* Nada despues del '.' */
+
+    return 1;
+}
 /* =========================================================================
    MODULO DE CLIENTES Y ARBOL 
    ========================================================================= */
