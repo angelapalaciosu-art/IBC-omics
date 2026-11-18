@@ -2791,7 +2791,7 @@ void seleccionarSala(struct Tienda* tienda,int *salaSeleccionada) {
     } while (*salaSeleccionada < 1 || *salaSeleccionada > tienda->cantidadSalas);
 }
 
-struct Pase *crearCopiaPaseFamiliar(struct Pase *paseOriginal) {    //* Esta funcion hace una copia del pase creado para cada miembro familiar*//
+struct Pase *crearCopiaPaseFamiliar(struct Pase *paseOriginal) {    /* Esta funcion hace una copia del pase creado para cada miembro familiar*/
     struct Pase *paseCopia;
 
     if (paseOriginal == NULL) {
@@ -2804,7 +2804,7 @@ struct Pase *crearCopiaPaseFamiliar(struct Pase *paseOriginal) {    //* Esta fun
         return NULL;
     }
 
-    *paseCopia = *paseOriginal; //*Se usan punteros para no apuntar la misma direccion de memoria*//
+    *paseCopia = *paseOriginal; /*Se usan punteros para no apuntar la misma direccion de memoria*/
     paseCopia->horarioUso = NULL;
     if (paseOriginal->horarioUso != NULL) {
         paseCopia->horarioUso = copiarTexto(paseOriginal->horarioUso);
@@ -3827,7 +3827,7 @@ int main(void) {
         ibcomics->raiz = NULL;
         ibcomics->salas = crearArregloSalas(tamSalas);
         ibcomics->cantidadSalas = 0;
-        ibcomics->diaAbierto = 0; // 0: No iniciado, 1: Abierto, 2: Cerrado
+        ibcomics->diaAbierto = 0; /* 0: No iniciado, 1: Abierto, 2: Cerrado*/
         ibcomics->totalClientes = 0;
     }
 
