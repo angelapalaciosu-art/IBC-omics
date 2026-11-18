@@ -607,8 +607,10 @@ void registrarCliente(struct NodoCliente **raiz) {
 
     if (insertarClienteEnArbol(raiz, nuevoCliente)) {
         printf("\n¡Se ha anadido con exito al cliente!\n");
-        printf("Nombre: %s\n", nuevoCliente->nombreCliente);
-        printf("RUT: %s\n", nuevoCliente->rutCliente);
+        printf("Nombre : %s\n", nuevoCliente->nombreCliente);
+        printf("RUT    : %s\n", nuevoCliente->rutCliente);
+        printf("Edad   : %d años\n", nuevoCliente->edad);     /* Muestra la edad */
+        printf("Correo : %s\n", nuevoCliente->correo);       /* Muestra el correo */
         printf("ID asignado automaticamente: %d\n\n", nuevoCliente->idCliente);
     } else {
         printf("Error al registrar el cliente en el arbol.\n");
