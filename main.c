@@ -690,7 +690,7 @@ void mostrarMenuClientes(struct Tienda *tienda) {
                 registrarCliente(raizClientes);
                 break;
             case 2:
-                // 1. Validar si el árbol de clientes está vacío
+                /* 1. Validar si el árbol de clientes está vacío*/
                 if (tienda->raiz == NULL) {
                     printf("Error: No existe ningun cliente registrado en el sistema.\n\n");
                     break;
@@ -705,7 +705,7 @@ void mostrarMenuClientes(struct Tienda *tienda) {
                 if (clienteActual != NULL) {
                     printf("¡Cliente encontrado con exito!\n");
                     
-                    // 2. Mostrar los datos actuales para guiar el cambio
+                    /* 2. Mostrar los datos actuales para guiar el cambio*/
                     mostrarInformacionCliente(clienteActual); 
                     
                     menuModificarCliente(clienteActual);
