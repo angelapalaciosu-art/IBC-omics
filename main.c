@@ -2764,12 +2764,109 @@ int crearPaseIndividual(struct Pase *nuevo, struct Cliente *clienteComprador) {
     return 1;
 }
 
+int agregarCLienteFamiliar(struct Tienda *tienda, int idClienteFamiliar[4]) {
+    int i, j, idCliente, esIdValido;
+
+    do {
+        esIdValido = 1;
+
+        printf("\n");
+        printf("Para salir ingrese 0\n");
+
+        for (i = 0; i < 4; i++) {
+            printf("Ingrese el id del cliente integrante %d = ", i + 1);
+            idCliente = inputEntero();
+
+            if (idCliente == 0) {
+                return 0;
+            }
+
+            if (buscarClientePorID(tienda->raiz, idCliente) == NULL) {
+                printf("Error: No se pudo encontrar al cliente con el ID %d.\n", idCliente);
+                printf("Por favor, registrelo primero desde el menu de clientes.\n");
+                esIdValido = 0;
+                break;
+            }
+            for (j = 0; j < i; j++) {
+                if (idClienteFamiliar[j] == idCliente) {
+                    printf("Error: El cliente ya fue ingresado, registre un nuevo cliente.\n");
+                    esIdValido = 0;
+                    break;
+                }
+            }
+            if (!esIdValido) {
+                break;
+            }
+            idClienteFamiliar[i] = idCliente;
+        }
+    } while (esIdValido == 0);
+
+    return 1;
+}
+
+int crearPasesFamiliares(struct Tienda *tienda, struct Pase *nuevo,int idClienteFamiliar[4]) {
+    struct Cliente *cliente;
+    struct Pase *pases[4];
+    struct NodoPase *nodos[4];
+    struct NodoPase *nodoActual;
+    int i,j;
+
+    for (i = 0; i < 4; i++) {
+        pases[i] = NULL;
+        nodos[i] = NULL;
+    }
+    pases[0] = nuevo;
+
+    for (i = 1; i < 4; i++) {
+        pases[i] = crearCopiaPaseFamiliar(nuevo);
+        if (pases[i] == NULL) {
+            break;
+        }
+    }
+    if (i == 4) {
+        for (i = 0; i < 4; i++) {
+            nodos[i] = crearNodoPase();
+            if (nodos[i] == NULL) {
+                break;
+            }
+            nodos[i]->datosPase = pases[i];
+        }
+    }
+
+    if (i==4) {
+        for (i = 0; i < 4; i++) {
+            cliente = buscarClientePorID(tienda->raiz, idClienteFamiliar[i]);
+            if (cliente == NULL|| cliente->headPase == NULL) {
+                break;
+            }
+        }
+    }
+    if (i != 4) {
+        for (j = 0; j < 4; j++) {
+            free(nodos[j]);
+            if (pases[j] != NULL) {
+                free(pases[j]->horarioUso);
+                free(pases[j]);
+            }
+        }
+        return 0;
+    }
+    for (i = 0; i < 4; i++) {
+        cliente = buscarClientePorID(tienda->raiz, idClienteFamiliar[i]);
+        nodoActual = cliente->headPase;
+        while (nodoActual->sig != NULL) {
+            nodoActual = nodoActual->sig;
+        }
+        nodoActual->sig = nodos[i];
+    }
+    return 1;
+}
+
 void comprarPases(struct Tienda *tienda, int precios[]) {
-    int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, i, j, esIdValido,idPaseFamiliar,esValidoPase;
+    int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, esValidoPase;
     int fechaUsoPase[5];
     int idClienteFamiliar[4];
     struct Cliente *clienteComprador;
-    struct Cliente *clienteFamiliar;
     struct Sala *salaElegida;
     struct Pase *nuevo;
 
@@ -2811,74 +2908,32 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
     printf("Valor del pase: %d\n", valorPase);
 
     nuevo = crearPaseCompleto(tienda, tipoPase, valorPase, fechaUsoPase, salaElegida);
+    if (nuevo == NULL) {
+        printf("Error al crear el pase, volviendo al menu\n");
+        return;
+    }
 
     if (tipoPase != 3) {
         if (crearPaseIndividual(nuevo, clienteComprador) == 0) {
             printf("Error: No se pudo crear el pase.\n");
             return;
         }
-        printf("Pase creado con exito!\n");
-        printf("ID del pase: %d\n", nuevo->idPase);
     } else {
-        do {
-            esIdValido = 1;
-            printf("\n");
-            printf("Para salir ingrese 0\n");
-            for (i = 0; i < 4; i++) {
-                printf("Ingrese el id del cliente integrante %d = ", i + 1);
-                idClienteCompra = inputEntero();
-                if (idClienteCompra == 0) {
-                    return;
-                }
+        if (agregarCLienteFamiliar(tienda,idClienteFamiliar)==0) {
+            free(nuevo->horarioUso);
+            free(nuevo);
+            printf("Error al elegir clientes\n");
+            return;
+        }
 
-                if (buscarClientePorID(tienda->raiz, idClienteCompra) == NULL) {
-                    printf("Error: No se pudo encontrar al cliente con el ID %d.\n", idClienteCompra);
-                    printf("Por favor, registrelo primero desde el Menu de Clientes.\n");
-                    esIdValido = 0;
-                    break;
-                }
-                idClienteFamiliar[i] = idClienteCompra;
-
-                for (j = 0; j < i; j++) {
-                    if (idClienteFamiliar[i] == idClienteFamiliar[j]) {
-                        printf("Error: El cliente ya fue ingresado, registre un nuevo cliente.\n");
-                        esIdValido = 0;
-                        break;
-                    }
-                }
-                if (!esIdValido) {
-                    break;
-                }
-            }
-        } while (esIdValido == 0);
-
-        idPaseFamiliar = crearIdPase(tienda->raiz);
-        /* Cada integrante recibe su propio pase (evita double free al liberar clientes) */
-        for (i = 0; i < 4; i++) {
-            clienteFamiliar = buscarClientePorID(tienda->raiz, idClienteFamiliar[i]);
-
-            if (clienteFamiliar == NULL) {
-                printf("Error: No se pudo encontrar al cliente.\n");
-                return;
-            }
-            nuevo = crearPaseCompleto(tienda, tipoPase, valorPase, fechaUsoPase, salaElegida);
-            if (nuevo == NULL) {
-                printf("Error: No se pudo crear el pase familiar.\n");
-                return;
-            }
-            nuevo->idPase = idPaseFamiliar;
-
-            if (agregarPaseACliente(clienteFamiliar, nuevo) == 0) {
-                free(nuevo->fechaUso);
-                free(nuevo);
-
-                printf("Error: No se pudo crear el pase familiar.\n");
-                return;
-            }
-            printf("Pase familiar creado con exito!\n");
-            printf("ID del pase: %d\n", nuevo->idPase);
+        if (crearPasesFamiliares(tienda,nuevo,idClienteFamiliar)== 0) {
+            printf("Error al crear pases familiares\n");
+            return;
         }
     }
+    printf("\n");
+    printf("Pase creado con exito!\n");
+    printf("ID del pase: %d\n", nuevo->idPase);
 }
 void verDatosPases(struct NodoCliente *clientes) {
     int idDelPase, idDelCliente;
