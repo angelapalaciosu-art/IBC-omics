@@ -106,6 +106,8 @@ struct Tienda {
    UTILIDADES
    ========================================================================= */
 /* inputEntero contra puntos, guiones y letras usando fgets */
+/* inputEntero robusto contra EOF, desbordamientos y contaminación de buffer */
+/* inputEntero simple en ANSI C sin clearerr ni exit */
 int inputEntero(void) {
     char buffer[100];
     int numero;
@@ -114,8 +116,8 @@ int inputEntero(void) {
 
     while (1) {
         if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
-            printf("ERROR: Ingrese un numero valido: ");
-            continue;
+            /* Si llega EOF (Ctrl+D o fin de archivo), retornamos 0para que los menús salgan de forma ordenada sin bucle infinito */
+            return 0;
         }
         buffer[strcspn(buffer, "\n")] = '\0';
 
@@ -123,6 +125,7 @@ int inputEntero(void) {
             printf("ERROR: Ingrese un numero valido: ");
             continue;
         }
+
         esValido = 1;
         for (i = 0; buffer[i] != '\0'; i++) {
             if (i == 0 && buffer[i] == '-') {
@@ -133,15 +136,16 @@ int inputEntero(void) {
                 break;
             }
         }
+
         if (!esValido) {
             printf("ERROR: Ingrese un numero valido (sin puntos, letras ni simbolos): ");
             continue;
         }
+
         numero = atoi(buffer);
         return numero;
     }
 }
-
 /* Reserva memoria y devuelve una copia del texto */
 char *copiarTexto(const char *textoOriginal) {
     char *copia;
