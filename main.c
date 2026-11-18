@@ -3196,8 +3196,7 @@ void cambiarPrecios(int arregloPrecios[]) {
 
 void modificarDatosPase(struct Tienda *tienda) {
     int idClienteModificar, idPaseModificar, opcionModificar, i;
-    int nuevoValor, nuevoEstado, nuevaSala;
-    char fecha[20];
+    int nuevoValor, nuevoEstado, nuevaSala,nuevaFecha[5],esIgual=1;
     struct Cliente *cliente;
     struct Pase *pase;
     struct Sala *nueva_sala;
@@ -3269,14 +3268,19 @@ void modificarDatosPase(struct Tienda *tienda) {
 
         case 3:
             printf("\n");
-            printf("Ingrese la nueva fecha (ejemplo: 29/08/2026)=");
-            scanf(" %19s", fecha);
-            if (pase->fechaUso != NULL && strcmp(pase->fechaUso, fecha) == 0) {
+            crearFechaPase(nuevaFecha,tienda);
+            for (i = 0; i < 5 ; i++) {
+                if (pase->arregloFecha[i] != nuevaFecha[i]) {
+                    esIgual = 0;
+                    break;
+                }
+            }
+            if (esIgual==1) {
                 printf("Error: La fecha nueva es igual a la anterior.\n");
-            } else {
-                /* Se reasigna memoria para que el nuevo texto siempre quepa */
-                free(pase->fechaUso);
-                pase->fechaUso = copiarTexto(fecha); /*hay que reservar memoria con la funcion, porque la nueva fecha puede tener largo distinto*/
+            }else {
+                for (i = 0; i < 5; i++) {
+                    pase->arregloFecha[i] = nuevaFecha[i];
+                }
                 printf("Fecha modificada con exito!\n");
             }
             break;
