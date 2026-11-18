@@ -3243,6 +3243,14 @@ void modificarDatosPase(struct Tienda *tienda) {
             printf("\n");
             printf("Ingrese el nuevo valor del pase = ");
             nuevoValor = inputEntero();
+            if (nuevoValor < 0) {
+                printf("Error al ingresar nuevo valor, debe ser positivo\n");
+                break;
+            }
+            if (nuevoValor == pase->valor) {
+                printf("Error, el nuevo valor es igual al anterior\n");
+                break;
+            }
             printf("\n");
             pase->valor = nuevoValor;
             printf("Valor modificado con exito!\n");
