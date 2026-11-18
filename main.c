@@ -3929,7 +3929,6 @@ int main(void) {
         }
     } while (opcionPrincipal != 7);
 
-    free(ibcomics->salas);
-    free(ibcomics);
+    liberarTienda(ibcomics);
     return 0;
 }
