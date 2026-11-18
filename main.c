@@ -3130,13 +3130,17 @@ void eliminarPases(struct NodoCliente *abb) {
     id_pase = inputEntero();
 
     actual = cliente->headPase;
-    while (actual->sig != NULL && actual->sig->datosPase->idPase != id_pase) {
+    while (actual->sig != NULL) {
+        if (actual->sig->datosPase != NULL && actual->sig->datosPase->idPase == id_pase) {
+            break;
+        }
         actual = actual->sig;
     }
 
     if (actual->sig != NULL) {
         nodoEliminar = actual->sig;
         actual->sig = nodoEliminar->sig;
+        free(nodoEliminar->datosPase->horarioUso);
         free(nodoEliminar->datosPase);
         free(nodoEliminar);
         printf("Pase eliminado con exito!\n");
