@@ -3700,17 +3700,41 @@ int logicaAbrirDia(struct Tienda *tienda, int dia, int mes, int anio) {
     tienda->diaAbierto = 1;
     return 1;
 }
-
+/* Funcion para vencer pases no utilizados del dia que cierra */
+void vencerPasesNoUtilizadosEnNodo(struct NodoCliente *raiz, int fechaCierre[3]) {
+    struct NodoPase *actual;
+    if (raiz == NULL) {
+        return;
+    }
+    if (raiz->datosCliente != NULL && raiz->datosCliente->headPase != NULL) {
+        actual = raiz->datosCliente->headPase->sig;
+        while (actual != NULL) {
+            if (actual->datosPase != NULL && actual->datosPase->estado == 1) { /* Si esta Activo */
+                /* Comparamos si la fecha del pase coincide con la fecha del dia que se cierra */
+                if (actual->datosPase->arregloFecha[0] == fechaCierre[0] &&
+                    actual->datosPase->arregloFecha[1] == fechaCierre[1] &&
+                    actual->datosPase->arregloFecha[2] == fechaCierre[2]) {
+                    actual->datosPase->estado = 4; /* Cambiar a estado 4: Vencido */
+                }
+            }
+            actual = actual->sig;
+        }
+    }
+    vencerPasesNoUtilizadosEnNodo(raiz->izq, fechaCierre);
+    vencerPasesNoUtilizadosEnNodo(raiz->der, fechaCierre);
+}
 /* logica para cerrar el dia actual en la tienda */
 int logicaCerrarDia(struct Tienda *ibcomics) {
     int i;
     if (ibcomics == NULL) return 0;
     if (ibcomics->diaAbierto == 2 || ibcomics->diaAbierto == 0) return -1;
+   
     /*quitar a todos los clientes de todas las salas*/
     for (i = 0; i < ibcomics->cantidadSalas; i++) {
         sacarTodosClientesSala(ibcomics,ibcomics->raiz, ibcomics->salas[i]);
     }
-
+   
+   vencerPasesNoUtilizadosEnNodo(ibcomics->raiz, ibcomics->arregloFechaAct);
     ibcomics->diaAbierto = 2;
     return 1;
 }
