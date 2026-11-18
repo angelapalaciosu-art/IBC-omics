@@ -1481,7 +1481,7 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
     return agregarSala(tienda, nuevaSala, tamSalas);
 }
 
-void mostrarMenuSalas(struct Tienda *tienda) {
+void mostrarMenuSalas(struct Tienda *tienda, int tamSalas) {
     int opcionMenu, opcionValida, idOperar;
     char nombreOperar[100];
     struct Sala *salaOperar = NULL;
@@ -3661,7 +3661,7 @@ void cerrarDia(struct Tienda *ibcomics) {
         printf("\nError: El dia no pudo cerrarse\n");
     }
 }
-void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4]) {
+void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4], int tamSalas) {
     int opcionSeleccionada;
 
     do {
@@ -3684,7 +3684,7 @@ void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4]) {
                 mostrarMenuClientes(ibcomics);
                 break;
             case 2:
-                mostrarMenuSalas(ibcomics);
+                mostrarMenuSalas(ibcomics, tamSalas);
                 break;
             case 3:
                 mostrarMenuTitulos(ibcomics);
@@ -3761,7 +3761,7 @@ int main(void) {
                 break;
             case 5:
                 if (ibcomics->diaAbierto == 1) {
-                    mostrarMenuPrincipal(ibcomics, preciosPases);
+                    mostrarMenuPrincipal(ibcomics, preciosPases, tamSalas);
                 } else {
                     printf("\nError: Debe abrir el dia primero para acceder al menu principal.\n");
                 }
