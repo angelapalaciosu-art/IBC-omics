@@ -480,7 +480,7 @@ void mostrarInformacionCliente(struct Cliente *cliente) {
     printf(" ID     : %d \n", cliente->idCliente);
     printf(" Nombre : %s \n", cliente->nombreCliente);
     printf(" RUT    : %s \n", cliente->rutCliente);
-    printf(" Edad   : %d anos \n", cliente->edad);
+    printf(" Edad   : %d anios \n", cliente->edad);
     printf(" Correo : %s \n", cliente->correo);
     printf(" ===========================================\n\n");
 }
