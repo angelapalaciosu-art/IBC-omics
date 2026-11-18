@@ -3724,8 +3724,8 @@ void cerrarDia(struct Tienda *ibcomics) {
     int resultado;
 
     if (ibcomics == NULL) return;
-    if (ibcomics->diaAbierto == 2) {
-        printf("\nError: El dia ya se encuentra cerrado\n");
+    if (ibcomics->diaAbierto != 1) { 
+        printf("\nError: El dia ya se encuentra cerrado o no ha sido abierto.\n");
         return;
     }
 
