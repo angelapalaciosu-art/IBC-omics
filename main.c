@@ -343,6 +343,38 @@ void liberarCliente(struct Cliente *cliente) {
     }
     free(cliente);
 }
+/* Función recursiva para liberar el ABB de clientes y sus pases */
+void liberarArbolClientes(struct NodoCliente *raiz) {
+    if (raiz == NULL) {
+        return;
+    }
+    liberarArbolClientes(raiz->izq);
+    liberarArbolClientes(raiz->der);
+    liberarCliente(raiz->datosCliente);
+    free(raiz);
+}
+
+/* Función para liberar toda la tienda, salas, títulos y clientes */
+void liberarTienda(struct Tienda *ibcomics) {
+    int i;
+    if (ibcomics == NULL) return;
+
+    /* Liberar todo el árbol de clientes (ABB) y sus pases */
+    liberarArbolClientes(ibcomics->raiz);
+
+    /* Liberar todas las salas registradas, sus títulos y listas de espera */
+    if (ibcomics->salas != NULL) {
+        for (i = 0; i < ibcomics->cantidadSalas; i++) {
+            if (ibcomics->salas[i] != NULL) {
+                eliminarSala(ibcomics, ibcomics->salas[i]);
+            }
+        }
+        free(ibcomics->salas);
+    }
+
+    /* Liberar la estructura principal de la tienda */
+    free(ibcomics);
+}
 /* Remueve al cliente de las listas de espera de todas las salas de la tienda.*/
 int removerClienteDeListasDeEspera(struct Tienda *tienda, int idCliente) {
     int i;
