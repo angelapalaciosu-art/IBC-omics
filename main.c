@@ -553,28 +553,40 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
 /*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
 /*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
 /*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
+
 void registrarCliente(struct NodoCliente **raiz) {
     int idGenerado;
     int edadCliente;
     char nombreCliente[50];
+    char rutTemporal[30];
     char rutCliente[13];
     char correoCliente[100];
     struct Cliente *nuevoCliente;
 
     printf(" ============ MENU REGISTRAR CLIENTE ============\n\n");
 
-    printf("Ingrese el nombre completo (solo letras sin tildes y espacios): ");
+    printf("Ingrese el nombre completo: ");
     fgets(nombreCliente, sizeof(nombreCliente), stdin);
     nombreCliente[strcspn(nombreCliente, "\n")] = '\0';
+
     while (!validarNombreSoloLetrasYEspacios(nombreCliente)) {
-        printf("Error: Use solo letras (sin tildes) y espacios. Ingrese nuevamente: ");
+        printf("Error: Ingrese un nombre valido: ");
         fgets(nombreCliente, sizeof(nombreCliente), stdin);
         nombreCliente[strcspn(nombreCliente, "\n")] = '\0';
     }
 
     printf("Ingrese el RUT del cliente (Ej: 12.345.678-9): ");
-    fgets(rutCliente, sizeof(rutCliente), stdin);
-    rutCliente[strcspn(rutCliente, "\n")] = '\0';
+
+    fgets(rutTemporal, sizeof(rutTemporal), stdin);
+    rutTemporal[strcspn(rutTemporal, "\n")] = '\0';
+
+    while (strlen(rutTemporal) == 0 || strlen(rutTemporal) > 12) {
+        printf("Error: RUT vacio o demasiado largo. Ingrese nuevamente: ");
+        fgets(rutTemporal, sizeof(rutTemporal), stdin);
+        rutTemporal[strcspn(rutTemporal, "\n")] = '\0';
+    }
+
+    strcpy(rutCliente, rutTemporal);
 
     if (buscarClientePorRut(*raiz, rutCliente) != NULL) {
         printf("Error: Ya existe un cliente registrado con ese RUT.\n");
@@ -583,36 +595,48 @@ void registrarCliente(struct NodoCliente **raiz) {
 
     printf("Ingrese la edad del cliente (1-120): ");
     edadCliente = inputEntero();
+
     while (edadCliente < 1 || edadCliente > 120) {
         printf("Error: Ingrese una edad valida (1-120): ");
         edadCliente = inputEntero();
     }
 
-    /* Captura directa del correo usando fgets y copia de texto sin validaciones extra */
     printf("Ingrese el correo del cliente: ");
     fgets(correoCliente, sizeof(correoCliente), stdin);
     correoCliente[strcspn(correoCliente, "\n")] = '\0';
+
     while (strlen(correoCliente) == 0) {
-        printf("Error: El correo no puede estar vacio. Ingrese nuevamente: ");
+        printf("Error: El correo no puede estar vacio: ");
         fgets(correoCliente, sizeof(correoCliente), stdin);
         correoCliente[strcspn(correoCliente, "\n")] = '\0';
     }
 
     idGenerado = generarIdUnico(*raiz);
-    nuevoCliente = crearEstructuraCliente(idGenerado, nombreCliente, rutCliente, edadCliente, correoCliente);
+
+    nuevoCliente = crearEstructuraCliente(
+        idGenerado, nombreCliente, rutCliente,
+        edadCliente, correoCliente
+    );
+
+    if (nuevoCliente == NULL) {
+        printf("Error: No se pudo reservar memoria para el cliente.\n");
+        return;
+    }
 
     if (insertarClienteEnArbol(raiz, nuevoCliente)) {
         printf("\n¡Se ha anadido con exito al cliente!\n");
         printf("Nombre : %s\n", nuevoCliente->nombreCliente);
         printf("RUT    : %s\n", nuevoCliente->rutCliente);
-        printf("Edad   : %d anos\n", nuevoCliente->edad);     
-        printf("Correo : %s\n", nuevoCliente->correo);       
-        printf("ID asignado automaticamente: %d\n\n", nuevoCliente->idCliente);
+        printf("Edad   : %d anos\n", nuevoCliente->edad);
+        printf("Correo : %s\n", nuevoCliente->correo);
+        printf("ID asignado automaticamente: %d\n\n",
+               nuevoCliente->idCliente);
     } else {
         printf("Error al registrar el cliente en el arbol.\n");
         liberarCliente(nuevoCliente);
     }
 }
+
 /* Interfaz de consola para eliminar un cliente por ID o RUT*/
 void eliminarClienteInterfaz(struct Tienda *tienda) {
     int pasesBorrados;
