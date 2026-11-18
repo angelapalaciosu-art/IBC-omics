@@ -541,8 +541,7 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
                 char correoTemporal[100];
                 printf("Correo actual: %s \n", clienteModificar->correo);
                 printf("Ingrese el nuevo correo: ");
-                fgets(correoTemporal, sizeof(correoTemporal), stdin);
-                correoTemporal[strcspn(correoTemporal, "\n")] = '\0';
+                leerTexto(correoTemporal, sizeof(correoTemporal));
 
                 while (strlen(correoTemporal) == 0) {
                     printf("Error: El correo no puede estar vacio. Ingrese nuevamente: ");
@@ -662,8 +661,7 @@ void eliminarClienteInterfaz(struct Tienda *tienda) {
         return;
     }
     printf("Ingrese el ID o RUT del cliente a eliminar: ");
-    fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
-    entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
+    leerTexto(entradaBusqueda, sizeof(entradaBusqueda));
 
     clienteAOperar = buscarClientePorRutOIdArbol(tienda->raiz, entradaBusqueda);
     if (clienteAOperar == NULL) {
@@ -717,8 +715,7 @@ void mostrarMenuClientes(struct Tienda *tienda) {
                 
                 printf(" ============ MENU MODIFICAR CLIENTE ============\n");
                 printf("Ingrese el ID o RUT del cliente: ");
-                fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
-                entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
+                leerTexto(entradaBusqueda, sizeof(entradaBusqueda));
 
                 clienteActual = buscarClientePorRutOIdArbol(tienda->raiz, entradaBusqueda);
                 if (clienteActual != NULL) {
@@ -738,8 +735,7 @@ void mostrarMenuClientes(struct Tienda *tienda) {
             case 4:
                 printf(" ============ MENU BUSCAR CLIENTE (ID o RUT) ============\n");
                 printf("Ingrese el ID o RUT del cliente: ");
-                fgets(entradaBusqueda, sizeof(entradaBusqueda), stdin);
-                entradaBusqueda[strcspn(entradaBusqueda, "\n")] = '\0';
+                leerTexto(entradaBusqueda, sizeof(entradaBusqueda));
 
                 clienteActual = buscarClientePorRutOIdArbol(tienda->raiz, entradaBusqueda);
                 if (clienteActual != NULL) {
