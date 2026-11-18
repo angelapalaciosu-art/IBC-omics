@@ -614,7 +614,7 @@ void registrarCliente(struct NodoCliente **raiz) {
     int edadCliente;
     char nombreCliente[50];
     char rutCliente[13];
-    char correoCliente[50];
+    char correoCliente[100];
     struct Cliente *nuevoCliente;
 
     printf(" ============ MENU REGISTRAR CLIENTE ============\n\n");
@@ -644,9 +644,16 @@ void registrarCliente(struct NodoCliente **raiz) {
         edadCliente = inputEntero();
     }
 
-    printf("Ingrese el correo del cliente: ");
+    printf("Ingrese el correo del cliente (ej: usuario@correo.com): ");
     fgets(correoCliente, sizeof(correoCliente), stdin);
     correoCliente[strcspn(correoCliente, "\n")] = '\0';
+
+    /* Ciclo que se repite hasta que el usuario escriba un correo válido */
+    while (!validarCorreo(correoCliente)) {
+        printf("Error: Formato invalido (debe ser usuario@dominio.com sin espacios). Ingrese nuevamente: ");
+        fgets(correoCliente, sizeof(correoCliente), stdin);
+        correoCliente[strcspn(correoCliente, "\n")] = '\0';
+    };
 
     idGenerado = generarIdUnico(*raiz);
     nuevoCliente = crearEstructuraCliente(idGenerado, nombreCliente, rutCliente, edadCliente, correoCliente);
