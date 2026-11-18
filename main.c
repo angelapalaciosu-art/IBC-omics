@@ -2338,7 +2338,7 @@ void MenuContarCantidadClientesEnListaEspera(struct Tienda *ibcomics) {
 void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
     struct Titulo *tituloEncontrado = NULL;
     struct Sala *salaEncontrada = NULL;
-    int opcionSeleccionada = 0;
+    int idSala = 0;
 
     if (ibcomics == NULL) {
         return;
@@ -2348,24 +2348,14 @@ void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
     printf("\n");
 
     do {
-        printf(" Opciones disponibles : \n");
-        printf(" === [1] SuperHeroe / [2] Manga y Anime / [3] Novela Grafica  ===\n");
-        printf(" === [4] Comic Independiente / [5] Infantil y Humor Grafico / [6] Coleccionista ===\n");
+        printf("\n Ingrese ID de la sala que desea buscar: \n");
+        idSala = inputEntero();
 
-        printf("\n Ingrese la sala que desea buscar: \n");
-        opcionSeleccionada = inputEntero();
-
-        if (opcionSeleccionada < 1 || opcionSeleccionada > 6) {
-            printf("Error: Opcion fuera de rango (1-6). Intente nuevamente.\n\n");
+        salaEncontrada = buscarSalaPorId(ibcomics,idSala);
+        if (salaEncontrada == NULL) {
+            printf("Error: No hay ninguna sala registrada con ese ID\n\n");
         }
-        /*sala encontrada sigue como null y vuelve a repetir la pregunta*/
-        else {
-            salaEncontrada = buscarSalaPorTematica(ibcomics, opcionSeleccionada);
 
-            if (salaEncontrada == NULL) {
-                printf("Error: No hay ninguna sala registrada con esa tematica. Intente nuevamente.\n\n");
-            }
-        }
     }while (salaEncontrada == NULL);
 
     printf("Sala encontrada con exito!\n");
@@ -3842,7 +3832,7 @@ int main(void) {
         printf("\n==========================================================\n");
         printf("       SISTEMA PRINCIPAL - IBC - OMICS INC.\n");
         printf("==========================================================\n");
-        printf("   >>> Clientes dentro de la tienda: %d <<<\n\n", ibcomics->totalClientes);
+        printf("   >>> Clientes dentro de la tienda hoy: %d <<<\n\n", ibcomics->totalClientes);
         printf("   [1] Abrir el dia\n");
         printf("   [2] Ingresar cliente a sala\n");
         printf("   [3] Quitar cliente de sala\n");
