@@ -498,6 +498,7 @@ void listarClientes(struct NodoCliente *raiz) {
 void menuModificarCliente(struct Cliente *clienteModificar) {
     int opcionSeleccionada;
     char bufferTemporal[50];
+    char correoTemporal[50]; /* Declarada al inicio para cumplir estrictamente con ANSI C */
 
     if (clienteModificar == NULL) {
         printf("\nError: El cliente a modificar no existe.\n");
@@ -548,9 +549,18 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
             case 3:
                 printf("Correo actual: %s \n", clienteModificar->correo);
                 printf("Ingrese el nuevo correo: ");
-                fgets(clienteModificar->correo, 50, stdin);
-                clienteModificar->correo[strcspn(clienteModificar->correo, "\n")] = '\0';
-                printf("¡Correo modificado con exito! Nuevo correo: %s \n\n", clienteModificar->correo);
+                fgets(correoTemporal, sizeof(correoTemporal), stdin);
+                correoTemporal[strcspn(correoTemporal, "\n")] = '\0';
+
+                if (strlen(correoTemporal) > 0) {
+                    if (clienteModificar->correo != NULL) {
+                        free(clienteModificar->correo);
+                    }
+                    clienteModificar->correo = copiarTexto(correoTemporal);
+                    printf("¡Correo modificado con exito! Nuevo correo: %s \n\n", clienteModificar->correo);
+                } else {
+                    printf("Error: El correo no puede estar vacio.\n\n");
+                }
                 break;
 
             case 0:
