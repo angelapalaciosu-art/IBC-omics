@@ -591,7 +591,7 @@ void registrarCliente(struct NodoCliente **raiz) {
     /* Captura directa del correo usando fgets y copia de texto sin validaciones extra */
     printf("Ingrese el correo del cliente: ");
     fgets(correoCliente, sizeof(correoCliente), stdin);
-    correoClient[strcspn(correoCliente, "\n")] = '\0';
+    correoCliente[strcspn(correoCliente, "\n")] = '\0';
     while (strlen(correoCliente) == 0) {
         printf("Error: El correo no puede estar vacio. Ingrese nuevamente: ");
         fgets(correoCliente, sizeof(correoCliente), stdin);
