@@ -26,7 +26,7 @@ void liberarCliente(struct Cliente *cliente);
 int vaciarListaEspera(struct NodoListaEspera **head);
 char *determinarHorario(int arregloFecha[]);
 int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar);
-
+void sacarTodosClientesSala(struct Tienda *ibcomics, struct NodoCliente *raiz, struct Sala *salaQuitada);
 /* ESTRUCTURAS */
 struct Pase {
     int idPase;
@@ -356,23 +356,21 @@ void liberarArbolClientes(struct NodoCliente *raiz) {
 
 /* Función para liberar toda la tienda, salas, títulos y clientes */
 void liberarTienda(struct Tienda *ibcomics) {
-    int i;
     if (ibcomics == NULL) return;
 
-    /* Liberar todo el árbol de clientes (ABB) y sus pases */
+    /* 1. Liberar el arbol de clientes y dejar la raiz en NULL */
     liberarArbolClientes(ibcomics->raiz);
+    ibcomics->raiz = NULL;
 
-    /* Liberar todas las salas registradas, sus títulos y listas de espera */
+    /* 2. Liberar las salas siempre sacando la primera */
     if (ibcomics->salas != NULL) {
-        for (i = 0; i < ibcomics->cantidadSalas; i++) {
-            if (ibcomics->salas[i] != NULL) {
-                eliminarSala(ibcomics, ibcomics->salas[i]);
-            }
+        while (ibcomics->cantidadSalas > 0) {
+            eliminarSala(ibcomics, ibcomics->salas[0]);
         }
         free(ibcomics->salas);
     }
 
-    /* Liberar la estructura principal de la tienda */
+    /* 3. Liberar la tienda */
     free(ibcomics);
 }
 /* Remueve al cliente de las listas de espera de todas las salas de la tienda.*/
@@ -1406,6 +1404,7 @@ void menuModificarSala(struct Sala *salaModificar) {
 }
 
 /* Esta funcion elimina una sala del arreglo y libera la memoria de la sala */
+/* Esta funcion elimina una sala del arreglo y libera la memoria de la sala */
 int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
     int i;
     struct NodoTitulo *rec, *siguiente;
@@ -1423,8 +1422,10 @@ int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
     }
 
     if (tienda->raiz != NULL) {
+        /* saca a los clientes que estan dentro (ajusta aforoActual y totalClientes) */
+        sacarTodosClientesSala(tienda, tienda->raiz, salaEliminar);
+        /* los pases que apuntaban a esta sala quedan sin sala */
         desvincularPasesDeSala(tienda->raiz, salaEliminar);
-        tienda->totalClientes -= salaEliminar->aforoActual;
     }
 
     while (i < tienda->cantidadSalas - 1) {
@@ -2730,7 +2731,7 @@ void crearFechaPase(int fechaUsoPase[], struct Tienda *tienda) {
         printf("Ingrese la hora de uso (8hrs - 21hrs): ");
         hora = inputEntero();
         printf("\n");
-    }while (hora < 8 || hora > 21);
+    }while (hora < 8 || hora > 20);
 
     do {
         printf("Ingrese minuto de uso(00min-59min): ");
@@ -3234,11 +3235,45 @@ void verMasVendidos(struct NodoCliente *abb) {
     printf("\n =====> Los pases mas vendidos tienen %d ventas <=====\n", mayor);
 }
 
+void poblarTextoPase(char **Estado, int tipo, int estado, char **Tipo ) {
+    switch (tipo) {
+        case 1:
+            *Tipo = "General";
+            break;
+        case 2:
+            *Tipo = "Infantil";
+            break;
+        case 3:
+            *Tipo = "Familiar";
+            break;
+        case 4:
+            *Tipo = "Prioritario";
+            break;
+    }
+
+    switch (estado) {
+        case 1:
+            *Estado = "Activo";
+            break;
+        case 2:
+            *Estado = "Utilizado";
+            break;
+        case 3:
+            *Estado = "Anulado";
+            break;
+        case 4:
+            *Estado = "Vencido";
+            break;
+    }
+}
+
 /*funcion que recibe el abb por lo tanto sirve para el menu*/
 void listarPases(struct NodoCliente *abb) {
     int idClienteListar;
     struct Cliente *cliente;
     struct NodoPase *actual;
+    char * Estado;
+    char * Tipo;
 
     printf(" ============ MENU LISTAR PASES DEL CLIENTE ============\n");
     printf("\n");
@@ -3249,14 +3284,14 @@ void listarPases(struct NodoCliente *abb) {
         printf("Error: El cliente no tiene pases o no fue encontrado.\n");
         return;
     }
-
     printf("\n");
     actual = cliente->headPase->sig;
     while (actual != NULL) {
         if (actual->datosPase != NULL) {
-            printf("   [%d] Valor: $%d | Estado: %d | Tipo: %d\n",
+            poblarTextoPase(&Estado, actual->datosPase->tipoPase, actual->datosPase->estado,&Tipo);
+            printf("   [%d] Valor: $%d | Estado: %s | Tipo: %s\n",
                    actual->datosPase->idPase, actual->datosPase->valor,
-                   actual->datosPase->estado, actual->datosPase->tipoPase);
+                   Estado, Tipo);
         }
         actual = actual->sig;
     }
