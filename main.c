@@ -1720,7 +1720,7 @@ int eliminarTitulo(struct Tienda *tienda, struct Titulo *tituloEliminar) {
                 if (rec->sig != NULL) {
                     rec->sig->ant = rec->ant;
                 }
-                /* supuesto: lista de espera circular con nodo fantasma, igual que en eliminarSala */
+
                 vaciarListaEspera(&(tituloEliminar->headListaEspera));
                 free(tituloEliminar->nombreTitulo);
                 free(tituloEliminar);
