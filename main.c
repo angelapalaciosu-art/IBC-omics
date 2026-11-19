@@ -2731,7 +2731,7 @@ void crearFechaPase(int fechaUsoPase[], struct Tienda *tienda) {
         printf("Ingrese la hora de uso (8hrs - 21hrs): ");
         hora = inputEntero();
         printf("\n");
-    }while (hora < 8 || hora > 21);
+    }while (hora < 8 || hora > 20);
 
     do {
         printf("Ingrese minuto de uso(00min-59min): ");
