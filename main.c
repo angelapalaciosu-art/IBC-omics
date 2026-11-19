@@ -356,23 +356,21 @@ void liberarArbolClientes(struct NodoCliente *raiz) {
 
 /* Función para liberar toda la tienda, salas, títulos y clientes */
 void liberarTienda(struct Tienda *ibcomics) {
-    int i;
     if (ibcomics == NULL) return;
 
-    /* Liberar todo el árbol de clientes (ABB) y sus pases */
+    /* 1. Liberar el arbol de clientes y dejar la raiz en NULL */
     liberarArbolClientes(ibcomics->raiz);
+    ibcomics->raiz = NULL;
 
-    /* Liberar todas las salas registradas, sus títulos y listas de espera */
+    /* 2. Liberar las salas siempre sacando la primera */
     if (ibcomics->salas != NULL) {
-        for (i = 0; i < ibcomics->cantidadSalas; i++) {
-            if (ibcomics->salas[i] != NULL) {
-                eliminarSala(ibcomics, ibcomics->salas[i]);
-            }
+        while (ibcomics->cantidadSalas > 0) {
+            eliminarSala(ibcomics, ibcomics->salas[0]);
         }
         free(ibcomics->salas);
     }
 
-    /* Liberar la estructura principal de la tienda */
+    /* 3. Liberar la tienda */
     free(ibcomics);
 }
 /* Remueve al cliente de las listas de espera de todas las salas de la tienda.*/
