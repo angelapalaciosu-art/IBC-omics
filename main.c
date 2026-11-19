@@ -25,9 +25,9 @@ void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala);
 void liberarCliente(struct Cliente *cliente);
 int vaciarListaEspera(struct NodoListaEspera **head);
 char *determinarHorario(int arregloFecha[]);
-/* =========================================================================
-   ESTRUCTURAS GLOBALES DEL PROYECTO
-   ========================================================================= */
+int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar);
+
+/* ESTRUCTURAS */
 struct Pase {
     int idPase;
     int tipoPase; /* 1:General / 2:Infantil / 3:Familiar / 4:Prioritario  */
