@@ -26,7 +26,7 @@ void liberarCliente(struct Cliente *cliente);
 int vaciarListaEspera(struct NodoListaEspera **head);
 char *determinarHorario(int arregloFecha[]);
 int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar);
-
+void sacarTodosClientesSala(struct Tienda *ibcomics, struct NodoCliente *raiz, struct Sala *salaQuitada);
 /* ESTRUCTURAS */
 struct Pase {
     int idPase;
@@ -1404,6 +1404,7 @@ void menuModificarSala(struct Sala *salaModificar) {
 }
 
 /* Esta funcion elimina una sala del arreglo y libera la memoria de la sala */
+/* Esta funcion elimina una sala del arreglo y libera la memoria de la sala */
 int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
     int i;
     struct NodoTitulo *rec, *siguiente;
@@ -1421,8 +1422,10 @@ int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
     }
 
     if (tienda->raiz != NULL) {
+        /* saca a los clientes que estan dentro (ajusta aforoActual y totalClientes) */
+        sacarTodosClientesSala(tienda, tienda->raiz, salaEliminar);
+        /* los pases que apuntaban a esta sala quedan sin sala */
         desvincularPasesDeSala(tienda->raiz, salaEliminar);
-        tienda->totalClientes -= salaEliminar->aforoActual;
     }
 
     while (i < tienda->cantidadSalas - 1) {
