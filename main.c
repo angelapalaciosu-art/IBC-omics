@@ -2682,6 +2682,8 @@ void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala) {
         while (rec != NULL) {
             if (rec->datosPase != NULL && rec->datosPase->datosSala == sala) {
                 rec->datosPase->datosSala = NULL;
+               if(rec->datosPase->estado ==1){
+                  rec->datosPase->estado=3;
             }
             rec = rec->sig;
         }
