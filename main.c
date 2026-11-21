@@ -3449,7 +3449,7 @@ void modificarDatosPaseMenu(struct Tienda *tienda) {
 
             nueva_sala = tienda->salas[nuevaSala - 1];
             if (nueva_sala == NULL) {
-                printf(""Error: La sala seleccionada no es valida.\n"");
+                printf("Error: La sala seleccionada no es valida.\n");
             } else if (nueva_sala == pase->datosSala) {
                 printf("Error: La sala nueva es igual a la anterior.\n");
             } else {
