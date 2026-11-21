@@ -3523,11 +3523,11 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
         switch (opcion) {
             case 1:
                 printf("Ha seleccionado la opcion 1: Ver datos de mi pase \n");
-                verDatosPases(ibcomics->raiz);
+                verDatosPasesMenu(ibcomics->raiz);
                 break;
             case 2:
                 printf("Ha seleccionado la opcion 2: Comprar pase(s) \n");
-                comprarPases(ibcomics, preciosPases);
+                comprarPasesMenu(ibcomics, preciosPases);
                 break;
             case 3:
                 printf("Ha seleccionado la opcion 3: Anular mi pase \n");
@@ -3535,23 +3535,23 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
                 break;
             case 4:
                 printf("Ha seleccionado la opcion 4: Cantidad de Pases comprados por cliente \n");
-                verCantidad(ibcomics->raiz);
+                verCantidadMenu(ibcomics->raiz);
                 break;
             case 5:
                 printf("Ha seleccionado la opcion 5: Eliminar pase(s) \n");
-                eliminarPases(ibcomics->raiz);
+                eliminarPasesMenu(ibcomics->raiz);
                 break;
             case 6:
                 printf("Ha seleccionado la opcion 6: Cambiar datos del pase \n");
-                modificarDatosPase(ibcomics);
+                modificarDatosPaseMenu(ibcomics);
                 break;
             case 7:
                 printf("Ha seleccionado la opcion 7: Ver pases mas vendidos \n");
-                verMasVendidos(ibcomics->raiz);
+                verMasVendidosMenu(ibcomics->raiz);
                 break;
             case 8:
                 printf("Ha seleccionado la opcion 8: Listar pases del cliente \n");
-                listarPases(ibcomics->raiz);
+                listarPasesMenu(ibcomics->raiz);
                 break;
             case 9:
                 printf("Saliendo del menu...\n");
@@ -3891,7 +3891,7 @@ void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4], int tamS
                 menuPases(ibcomics, preciosPases);
                 break;
             case 6:
-                cambiarPrecios(preciosPases);
+                cambiarPreciosMenu(preciosPases);
                 break;
             case 7:
                 printf("\nSaliendo del menu de la tienda...\n");
