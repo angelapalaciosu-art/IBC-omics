@@ -2556,7 +2556,6 @@ struct Pase *crearPase(void) {
     pase->arregloFecha[2] = 0;
     pase->arregloFecha[3] = 0;
     pase->arregloFecha[4] = 0;
-    pase->horarioUso = NULL;
     return pase;
 }
 
@@ -2714,10 +2713,10 @@ void crearFechaPase(int fechaUsoPase[], struct Tienda *tienda) {
     }while (hora < 8 || hora > 20);
 
     do {
-        printf("Ingrese minuto de uso(00min-59min): ");
+        printf("Ingrese minuto de uso(00 min - 59 min): ");
         minuto = inputEntero();
         printf("\n");
-    }while (minuto < 00 || minuto > 59);
+    }while (minuto < 0 || minuto > 59);
 
     fechaUsoPase[0] = dia;
     fechaUsoPase[1] = mes;
@@ -2740,7 +2739,6 @@ void comprobarPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *c
                 *esValidoPase = 0;
                 return;
             }
-            *esValidoPase = 1;
             break;
         case 3:
             *valorPase = precios[2];
