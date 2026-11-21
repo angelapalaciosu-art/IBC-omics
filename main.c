@@ -1254,8 +1254,8 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                 printf("Precio registrado: %d \n", tituloModificar->precio);
                 printf("Ingrese el nuevo precio = ");
                 tituloModificar->precio = inputEntero();
-                while(tituloModificar->precio < 0){
-                    printf("Error: El precio no puede ser negativo. Ingrese el nuevo precio = ");
+                while(tituloModificar->precio <= 0){
+                    printf("Error: El precio debe ser mayor a 0. Ingrese el nuevo precio = ");
                     tituloModificar->precio = inputEntero();
                 }
                 printf("Precio modificado con exito! Nuevo precio: %d \n\n", tituloModificar->precio);
