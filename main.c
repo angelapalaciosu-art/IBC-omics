@@ -2452,7 +2452,7 @@ void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
     }
 
     printf("El titulo ha sido encontrado! \n");
-    printf("Nombre: %s", tituloEncontrado->nombreTitulo);
+    printf("Nombre: %s\n", tituloEncontrado->nombreTitulo);
 
     resultado = contarCantidadClientesEnListaEspera(tituloEncontrado->headListaEspera);
     if (resultado == 0) {
