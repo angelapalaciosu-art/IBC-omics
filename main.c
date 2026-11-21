@@ -1262,7 +1262,7 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                     tituloModificar->precio = inputEntero();
                 }
                 printf("Precio modificado con exito! Nuevo precio: %d \n\n", tituloModificar->precio);
-                break;;
+                break;
             case 5:
                 printf("Ha seleccionado la opcion 5: Modificar cantidad de ejemplares \n");
                 printf("Ejemplares registrados: %d \n", tituloModificar->cantidadEjemplares);
