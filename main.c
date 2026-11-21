@@ -2580,11 +2580,9 @@ int buscarPaseEnCLientes(struct NodoCliente *abb, int idBuscado) {
         return 0;
     }
     if (abb->datosCliente != NULL && abb->datosCliente->headPase != NULL) {
-        if (abb->datosCliente->headPase->sig != NULL) {
-            if (buscarPasePorId(abb->datosCliente->headPase, idBuscado) != NULL) {
+         if (buscarPasePorId(abb->datosCliente->headPase, idBuscado) != NULL) {
                 return 1;
-            }
-        }
+         }
     }
     if (buscarPaseEnCLientes(abb->izq, idBuscado)) return 1;
     if (buscarPaseEnCLientes(abb->der, idBuscado)) return 1;
