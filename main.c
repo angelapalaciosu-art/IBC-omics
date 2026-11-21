@@ -3929,7 +3929,7 @@ int main(void) {
     
    if (ibcomics->salas == NULL) {
         printf("ERROR: no se puede asignar memoria para salas.\n");
-      free(ibcimics);
+      free(ibciOmics);
        return 1;
     }
    
