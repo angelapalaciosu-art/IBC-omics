@@ -514,8 +514,7 @@ void listarClientes(struct NodoCliente *raiz) {
 /* MENU MODIFICAR CLIENTE con validaciones respectovas */
 void menuModificarCliente(struct Cliente *clienteModificar) {
     int opcionSeleccionada;
-    char bufferTemporal[120];
-    char correoTemporal[120]; 
+    char bufferTemporal[120]; 
    
     if (clienteModificar == NULL) {
         printf("\nError: El cliente a modificar no existe.\n");
@@ -2730,7 +2729,6 @@ void comprobarPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *c
             *valorPase = precios[0];
             break;
         case 2:
-            *valorPase = precios[1];
             if (clienteComprador->edad > 10 || clienteComprador->edad < 1) {
                 *esValidoPase = 0;
                 return;
@@ -3238,8 +3236,6 @@ void listarPasesMenu(struct NodoCliente *abb) {
     int idClienteListar;
     struct Cliente *cliente;
     struct NodoPase *actual;
-    char * Estado;
-    char * Tipo;
 
     printf(" ============ MENU LISTAR PASES DEL CLIENTE ============\n");
     printf("\n");
@@ -3307,7 +3303,7 @@ void cambiarPreciosMenu(int arregloPrecios[]) {
 
 void modificarDatosPaseMenu(struct Tienda *tienda) {
     int idClienteModificar, idPaseModificar, opcionModificar, i;
-    int nuevoValor, nuevoEstado, nuevaSala,nuevaFecha[5],esIgual=1;
+    int nuevoValor, nuevaSala,nuevaFecha[5],esIgual=1;
     struct Cliente *cliente;
     struct Pase *pase;
     struct Sala *nueva_sala;
