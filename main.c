@@ -572,8 +572,7 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
 
                 while (strlen(correoTemporal) == 0) {
                     printf("Error: El correo no puede estar vacio. Ingrese nuevamente: ");
-                    fgets(correoTemporal, sizeof(correoTemporal), stdin);
-                    correoTemporal[strcspn(correoTemporal, "\n")] = '\0';
+                    leerTexto(correoTemporal, sizeof(correoTemporal));
                 }
 
                 if (clienteModificar->correo != NULL) {
@@ -1214,8 +1213,7 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                 printf("Ha seleccionado la opcion 1: Modificar nombre \n");
                 printf("Nombre registrado: %s \n", tituloModificar->nombreTitulo);
                 printf("Ingrese el nuevo nombre = ");
-                fgets(nuevoNombre, 100, stdin);
-                nuevoNombre[strcspn(nuevoNombre, "\n")] = '\0';
+                leerTexto(nuevoNombre, sizeof(nuevoNombre));
                 tituloExistente = buscarTituloEnSalas(tienda, nuevoNombre);
                 if (strlen(nuevoNombre) == 0) {
                     printf("Error: El nombre no puede estar vacio.\n\n");
@@ -1342,8 +1340,7 @@ void menuModificarSala(struct Sala *salaModificar) {
                 printf("Ha seleccionado la opcion 1: Modificar nombre \n");
                 printf("Nombre registrado: %s \n", salaModificar->nombreSala);
                 printf("Ingrese el nuevo nombre = ");
-                fgets(nuevoTexto, 100, stdin);
-                nuevoTexto[strcspn(nuevoTexto, "\n")] = '\0';
+                leerTexto(nuevoTexto, sizeof(nuevoTexto));
                 if (strlen(nuevoTexto) > 0) {
                     salaModificar->nombreSala = (char *) realloc(salaModificar->nombreSala, strlen(nuevoTexto) + 1);
                     strcpy(salaModificar->nombreSala, nuevoTexto);
@@ -1534,12 +1531,10 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
 
     /* supuesto: el nombre no se repite para que la busqueda por nombre sea unica */
     printf("Ingrese el nombre de la sala = ");
-    fgets(nombreSala, 100, stdin);
-    nombreSala[strcspn(nombreSala, "\n")] = '\0';
+    leerTexto(nombreSala, sizeof(nombreSala));
     while (strlen(nombreSala) == 0 || buscarSalaPorNombre(tienda, nombreSala) != NULL) {
         printf("Error: El nombre no puede estar vacio ni repetido. Ingrese otro nombre = ");
-        fgets(nombreSala, 100, stdin);
-        nombreSala[strcspn(nombreSala, "\n")] = '\0';
+        leerTexto(nombreSala, sizeof(nombreSala));
     }
 
     printf(" Opciones disponibles : \n");
@@ -1662,8 +1657,7 @@ void mostrarMenuSalas(struct Tienda *tienda, int tamSalas) {
             case 5:
                 printf("Ha seleccionado la opcion 5: Buscar sala por nombre \n");
                 printf("Ingrese el nombre de la sala = ");
-                fgets(nombreOperar, 100, stdin);
-                nombreOperar[strcspn(nombreOperar, "\n")] = '\0';
+                leerTexto(nombreOperar, sizeof(nombreOperar));
                 salaOperar = buscarSalaPorNombre(tienda, nombreOperar);
                 if (salaOperar != NULL) {
                     mostrarDatosSala(salaOperar);
@@ -1753,12 +1747,10 @@ struct Titulo *crearYAgregarTitulo(struct Tienda *tienda, struct Sala *sala) {
     }
 
     printf("Ingrese el nombre del titulo = ");
-    fgets(nombreTitulo, 100, stdin);
-    nombreTitulo[strcspn(nombreTitulo, "\n")] = '\0';
+    leerTexto(nombreTitulo, sizeof(nombreTitulo));
     while (strlen(nombreTitulo) == 0 || buscarTituloEnSalas(tienda, nombreTitulo) != NULL) {
         printf("Error: El nombre no puede estar vacio ni repetido. Ingrese otro nombre = ");
-        fgets(nombreTitulo, 100, stdin);
-        nombreTitulo[strcspn(nombreTitulo, "\n")] = '\0';
+        leerTexto(nombreTitulo, sizeof(nombreTitulo));
     }
 
     printf(" Opciones disponibles : \n");
@@ -1906,8 +1898,7 @@ void mostrarMenuTitulos(struct Tienda *tienda) {
             case 5:
                 printf("Ha seleccionado la opcion 5: Buscar titulo por nombre \n");
                 printf("Ingrese el nombre del titulo = ");
-                fgets(nombreOperar, 100, stdin);
-                nombreOperar[strcspn(nombreOperar, "\n")] = '\0';
+                leerTexto(nombreOperar, sizeof(nombreOperar));
                 tituloOperar = buscarTituloEnSalas(tienda, nombreOperar);
                 if (tituloOperar != NULL) {
                     mostrarDatosTitulo(tituloOperar);
@@ -2232,8 +2223,7 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     printf("Titulo encontrado: %s\n\n", tituloEncontrado->nombreTitulo);
 
     printf("Ingrese ID del cliente o RUT (Ej: 12.345.678-9) =\n");
-    fgets(idRutCliente, sizeof(idRutCliente), stdin);
-    idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
+    leerTexto(idRutCliente, sizeof(idRutCliente));
 
     clienteEnTienda = buscarClientePorRutOIdArbol(ibcomics->raiz,idRutCliente);
     if (clienteEnTienda == NULL) {
@@ -2283,8 +2273,7 @@ void quitarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     }
     printf("Titulo encontrado: %s\n\n", tituloEncontrado->nombreTitulo);
     printf("Ingrese ID del cliente o RUT (Ej: 12.345.678-9) =\n");
-    fgets(idRutCliente, sizeof(idRutCliente), stdin);
-    idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
+    leerTexto(idRutCliente, sizeof(idRutCliente));
 
     /*no se verifica si el cliente está en tienda pq se asume que si está en una lista de espera ya está en la tienda*/
 
@@ -3660,8 +3649,7 @@ void menusIngresarClienteSala(struct Tienda *ibcomics) {
     if (ibcomics->diaAbierto == 1) {
         /*Si el dia esta abierto*/
         printf("Ingrese ID o RUT del cliente (Ej. 12.345.678-9) = \n");
-        fgets(idRutCliente, sizeof(idRutCliente), stdin);
-        idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
+        leerTexto(idRutCliente, sizeof(idRutCliente));
 
         clienteEncontrado = buscarClientePorRutOIdArbol(ibcomics->raiz, idRutCliente);
         if (clienteEncontrado == NULL) {
@@ -3698,8 +3686,7 @@ void menuSacarClienteSala(struct Tienda *ibcomics) {
 
     printf(" ============ MENU SACAR CLIENTE DE SALA ============\n\n");
     printf("Ingrese ID o RUT del cliente (Ej. 12.345.678-9) = \n");
-    fgets(idRutCliente, sizeof(idRutCliente), stdin);
-    idRutCliente[strcspn(idRutCliente, "\n")] = '\0';
+    leerTexto(idRutCliente, sizeof(idRutCliente));
 
     clienteEncontrado = buscarClientePorRutOIdArbol(ibcomics->raiz, idRutCliente);
     if (clienteEncontrado == NULL) {
