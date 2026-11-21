@@ -145,16 +145,15 @@ int validarNombreSoloLetrasYEspacios(const char *cadenaNombre) {
 }
 /* Lee un texto y elimina los caracteres sobrantes si supera el arreglo */
 void leerTexto(char texto[], int tamano) {
-    if (fgets(texto, tamano, stdin) != NULL) {
-
-        if (strchr(texto, '\n') != NULL) {
-            texto[strcspn(texto, "\n")] = '\0';
-        } else {
-            int caracter;
-
-            /* Limpia los caracteres que quedaron pendientes */
-            while ((caracter = getchar()) != '\n' && caracter != EOF);
-        }
+    int caracter;
+    if (fgets(texto, tamano, stdin) == NULL) {
+        texto[0] = '\0';
+        return;
+    }
+    if (strchr(texto, '\n') != NULL) {
+        texto[strcspn(texto, "\n")] = '\0';
+    } else {
+        while ((caracter = getchar()) != '\n' && caracter != EOF);
     }
 }
 /* =========================================================================
