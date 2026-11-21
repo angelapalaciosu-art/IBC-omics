@@ -3464,6 +3464,10 @@ void modificarDatosPaseMenu(struct Tienda *tienda) {
 
         case 4:
             printf("\n");
+            if (tienda->cantidadSalas == 0) {
+                printf("Error: No hay salas registradas.\n");
+                break;
+            }
             do {
 
                 printf("   Ingrese la nueva sala : \n");
