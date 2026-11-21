@@ -3913,15 +3913,26 @@ int main(void) {
     poblarPrecios(preciosPases);
 
     ibcomics = (struct Tienda *)malloc(sizeof(struct Tienda));
-    if (ibcomics != NULL) {
-        ibcomics->nombreTienda = "IBC - OMICS INC.";
-        ibcomics->raiz = NULL;
-        ibcomics->salas = crearArregloSalas(tamSalas);
-        ibcomics->cantidadSalas = 0;
-        ibcomics->diaAbierto = 0; /* 0: No iniciado, 1: Abierto, 2: Cerrado*/
-        ibcomics->totalClientes = 0;
+    if (ibcomics == NULL) {
+        printf("ERROR: no se puede asignar memoria a la tienda.\n");
+       return 1;
     }
-
+      ibcomics->nombreTienda = "IBC - OMICS INC.";
+    ibcomics->raiz = NULL;
+    ibcomics->salas = crearArregloSalas(tamSalas);
+    ibcomics->cantidadSalas = 0;
+    ibcomics->diaAbierto = 0;
+    ibcomics->arregloFechaAct[0] = 0;
+    ibcomics->arregloFechaAct[1] = 0;
+    ibcomics->arregloFechaAct[2] = 0;
+    ibcomics->totalClientes = 0;
+    
+   if (ibcomics->salas == NULL) {
+        printf("ERROR: no se puede asignar memoria para salas.\n");
+      free(ibcimics);
+       return 1;
+    }
+   
     do {
         printf("\n==========================================================\n");
         printf("       SISTEMA PRINCIPAL - IBC - OMICS INC.\n");
