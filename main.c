@@ -2377,22 +2377,26 @@ void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
     if (ibcomics == NULL) {
         return;
     }
-
     printf(" ============ MENU MOSTRAR TITULO CON MAYOR LISTA DE ESPERA POR SALA ============\n");
     printf("\n");
 
+    if (ibcomics->cantidadSalas == 0) {
+        printf("Error: No hay salas registradas.\n");
+        return;
+    }
     do {
         printf("Salas Disponibles: \n");
         listarSalas(ibcomics);
-        printf("\n Ingrese ID de la sala que desea buscar: \n");
+        printf("\n Ingrese ID de la sala (0 para volver): \n");
         idSala = inputEntero();
-
-        salaEncontrada = buscarSalaPorId(ibcomics,idSala);
+        if (idSala == 0) {
+            return;
+        }
+        salaEncontrada = buscarSalaPorId(ibcomics, idSala);
         if (salaEncontrada == NULL) {
             printf("Error: No hay ninguna sala registrada con ese ID\n\n");
         }
-
-    }while (salaEncontrada == NULL);
+    } while (salaEncontrada == NULL);
 
     printf("Sala encontrada con exito!\n");
     printf("Nombre de la sala: %s\n", salaEncontrada->nombreSala);
