@@ -3257,38 +3257,6 @@ void verMasVendidosMenu(struct NodoCliente *abb) {
     printf("\n =====> Los pases mas vendidos tienen %d ventas <=====\n", mayor);
 }
 
-void poblarTextoPase(char **Estado, int tipo, int estado, char **Tipo ) {
-    switch (tipo) {
-        case 1:
-            *Tipo = "General";
-            break;
-        case 2:
-            *Tipo = "Infantil";
-            break;
-        case 3:
-            *Tipo = "Familiar";
-            break;
-        case 4:
-            *Tipo = "Prioritario";
-            break;
-    }
-
-    switch (estado) {
-        case 1:
-            *Estado = "Activo";
-            break;
-        case 2:
-            *Estado = "Utilizado";
-            break;
-        case 3:
-            *Estado = "Anulado";
-            break;
-        case 4:
-            *Estado = "Vencido";
-            break;
-    }
-}
-
 /*funcion que recibe el abb por lo tanto sirve para el menu*/
 void listarPasesMenu(struct NodoCliente *abb) {
     int idClienteListar;
@@ -3310,10 +3278,7 @@ void listarPasesMenu(struct NodoCliente *abb) {
     actual = cliente->headPase->sig;
     while (actual != NULL) {
         if (actual->datosPase != NULL) {
-            poblarTextoPase(&Estado, actual->datosPase->tipoPase, actual->datosPase->estado,&Tipo);
-            printf("   [%d] Valor: $%d | Estado: %s | Tipo: %s\n",
-                   actual->datosPase->idPase, actual->datosPase->valor,
-                   Estado, Tipo);
+            printf("   [%d] Valor: $%d | Estado: %s | Tipo: %s\n",actual->datosPase->idPase, actual->datosPase->valor,nombreEstadoPase(actual->datosPase->estado), nombreTipoPase(actual->datosPase->tipoPase));
         }
         actual = actual->sig;
     }
