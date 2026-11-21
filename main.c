@@ -3019,10 +3019,51 @@ void comprarPasesMenu(struct Tienda *tienda, int precios[]) {
     printf("Pase creado con exito!\n");
     printf("ID del pase: %d\n", nuevo->idPase);
 }
+char *nombreEstadoPase(int estado) {
+    if (estado == 1) {
+        return "Activo";
+    } else if (estado == 2) {
+        return "Utilizado";
+    } else if (estado == 3) {
+        return "Anulado";
+    } else if (estado == 4) {
+        return "Vencido";
+    }
+    return "Desconocido";
+}
+
+char *nombreTipoPase(int tipoPase) {
+    if (tipoPase == 1) {
+        return "General";
+    }
+    else if (tipoPase == 2) {
+        return "Infantil";
+    }
+    else if (tipoPase == 3) {
+        return "Anulado";
+    }
+    else {
+        return "Prioritario";
+    }
+    return "Desconocido";
+}
+
+void datosDelPase(struct Pase *pase) {
+    printf("Pase encontrado con exito!\n");
+    printf("Id del pase: %d\n", pase->idPase);
+    printf("Valor del pase: %d\n", pase->valor);
+    printf("Estado: %s\n", nombreEstadoPase(pase->estado));
+    printf("Tipo: %s\n", nombreTipoPase(pase->tipoPase));
+    printf("Fecha de uso: %02d/%02d/%d %02d:%02d hrs (%s)\n",
+           pase->arregloFecha[0], pase->arregloFecha[1],
+           pase->arregloFecha[2], pase->arregloFecha[3],
+           pase->arregloFecha[4], pase->horarioUso);
+}
+
 void verDatosPasesMenu(struct NodoCliente *clientes) {
     int idDelPase, idDelCliente;
     struct Cliente *cliente;
-    struct Pase *mostrado;
+    struct Pase *paseEncontrado;
 
     printf(" ============ MENU VER DATOS DE PASE ============\n");
     printf("\n");
@@ -3041,52 +3082,20 @@ void verDatosPasesMenu(struct NodoCliente *clientes) {
 
     printf("Ingrese el id del pase = \n");
     idDelPase = inputEntero();
-    mostrado = buscarPasePorId(cliente->headPase, idDelPase);
-    if (mostrado == NULL) {
+    paseEncontrado = buscarPasePorId(cliente->headPase, idDelPase);
+    if (paseEncontrado == NULL) {
         printf("Error: No se pudo encontrar el pase con el ID %d.\n", idDelPase);
         return;
     }
-
     printf("Pase encontrado con exito!\n");
-    printf("Id del pase: %d\n", mostrado->idPase);
-    printf("Valor del pase: %d\n", mostrado->valor);
-    if (mostrado->estado == 1) {
-        printf("Estado: Activo");
-    }else if (mostrado->estado == 2){
-        printf("Estado: Utilizado");
-    }else if (mostrado->estado == 3) {
-        printf("Estado: Anulado");
-    }else {
-        printf("Estado: Vencido");
-    }
-    if (mostrado->tipoPase == 1) {
-        printf("Tipo: General");
-    }else if (mostrado->tipoPase == 2) {
-        printf("Tipo: Infantil");
-    }else if (mostrado->tipoPase == 3) {
-        printf("Tipo: Familiar");
-    }else {
-        printf("Tipo: Prioritario");
-    }
-    if (mostrado->datosSala != NULL) {
-    printf("Sala: %s\n", mostrado->datosSala->nombreSala);
+    datosDelPase(paseEncontrado);
+
+    if (paseEncontrado->datosSala != NULL) {
+        printf("Sala: %s\n", paseEncontrado->datosSala->nombreSala);
     }
     else {
-    printf("Sala: (sin sala asignada)\n");
+        printf("Sala: (sin sala asignada)\n");
     }
-
-}
-char *nombreEstadoPase(int estado) {
-    if (estado == 1) {
-        return "Activo";
-    } else if (estado == 2) {
-        return "Utilizado";
-    } else if (estado == 3) {
-        return "Anulado";
-    } else if (estado == 4) {
-        return "Vencido";
-    }
-    return "Desconocido";
 }
 
 void listarPasesDeCliente(struct Cliente *cliente) {
