@@ -821,8 +821,9 @@ struct Sala *buscarSalaPorId(struct Tienda *tienda, int idSala) {
     }
     return NULL;
 }
-/* Esta funcion busca una sala en la tienda segun su Tematica */
+
 /*recibe el numero de la tematica y la busca en el arreglo salas*/
+/*busqueda secuencial*/
 struct Sala *buscarSalaPorTematica(struct Tienda *tienda, int tematica) {
     int i;
     if (tienda == NULL) {
@@ -1173,8 +1174,7 @@ void listarSalas(struct Tienda *tienda) {
         return;
     }
     for (i = 0; i < tienda->cantidadSalas; i++) {
-        printf("   [%d] %s | Horario: %s | Aforo: %d \n", tienda->salas[i]->idSala,
-               tienda->salas[i]->nombreSala, tienda->salas[i]->horario, tienda->salas[i]->aforoMax);
+        printf("   [%d] %s | Horario: %s | Aforo Actual: %d | Aforo Maximo: %d\n", tienda->salas[i]->idSala, tienda->salas[i]->nombreSala, tienda->salas[i]->horario, tienda->salas[i]->aforoActual,tienda->salas[i]->aforoMax);
     }
 }
 
@@ -1469,6 +1469,7 @@ int contarTitulosEnSala(struct Sala *sala) {
 }
 
 /* Esta funcion ordena las salas por cantidad de personas de mayor a menor */
+/*bubblesort*/
 struct Tienda *ordenarSalasPorPersonas(struct Tienda *tienda) {
     int i, j;
     struct Sala *aux;
