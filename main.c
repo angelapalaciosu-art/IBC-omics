@@ -2743,7 +2743,7 @@ void crearFechaPase(int fechaUsoPase[], struct Tienda *tienda) {
     fechaUsoPase[3] = hora;
     fechaUsoPase[4] = minuto;
 
-    printf("\nPase creado con fecha: %2d/%2d/%2d, a las %2d:%2dhrs\n", fechaUsoPase[0], fechaUsoPase[1],fechaUsoPase[2], fechaUsoPase[3], fechaUsoPase[4]);
+    printf("\nFecha ingresada: %02d/%02d/%04d, a las %02d:%02d hrs\n", fechaUsoPase[0], fechaUsoPase[1], fechaUsoPase[2], fechaUsoPase[3], fechaUsoPase[4]);
 }
 
 void comprobarPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *clienteComprador,int *esValidoPase) {
