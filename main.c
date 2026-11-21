@@ -102,9 +102,7 @@ struct Tienda {
     int arregloFechaAct[3];  /*[0]: Dia / [1]: Mes / [2]: Anio */
     int totalClientes;  /*dentro de la tienda en el dia*/
 };
-/* =========================================================================
-   UTILIDADES
-   ========================================================================= */
+
 /* inputEntero contra puntos, guiones y letras usando fgets */
 int inputEntero(void) {
     int numero, caracterLeido;
@@ -160,7 +158,7 @@ void leerTexto(char texto[], int tamano) {
     }
 }
 /* =========================================================================
-   MODULO DE CLIENTES Y ARBOL 
+   CLIENTES Y ARBOL
    ========================================================================= */
 /*Busca a un cliente en el arbol binario utilizando el id*/
 struct Cliente *buscarClientePorID(struct NodoCliente *raiz, int idBuscado) {
@@ -596,8 +594,6 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
     } while (opcionSeleccionada != 0);
 }
 /*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
-/*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
-/*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
 
 void registrarCliente(struct NodoCliente **raiz) {
     int idGenerado;
@@ -946,14 +942,18 @@ struct Sala *crearSala(int idSala, char *nombreSala, int tematica, int arregloFe
     return nuevaSala;
 }
 /*cambia el estado de una lista de espera*/
+/* Regla estado titulo:
+   Agotado (2) Preventa (3) Disponible (1): lista ACTIVA
+   Descatalogado (4): lista SUSPENDIDA no habra mas ejemplarespor lo tanto se bloquean las nuevas inscripciones */
+
 void actualizarEstadoListaEspera(struct Titulo *titulo) {
     if (titulo == NULL) {
         return;
     }
-    if (titulo->estado == 2 || titulo->estado == 3) { /*Si titulo esta agotado o en preventa, el estado de la lista de espera será Activo*/
+    if (titulo->estado == 2 || titulo->estado == 3 || titulo->estado == 1) { /*Si titulo esta agotado, preventa o activo el estado de la lista de espera será activo*/
         titulo->estadoListaEspera = 1;
     } else {
-        titulo->estadoListaEspera = 2; /*Si titulo está dispo, en preventa o descatalogado, el estado de lista de espera será Suspendido*/
+        titulo->estadoListaEspera = 2; /*Si titulo está descatalogado el estado de lista de espera será suspendido*/
     }
 }
 
@@ -2248,7 +2248,10 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
         return;
     }
     if (tituloEncontrado->estadoListaEspera != 1) {  /*1: Activo*/
-        printf("Error: La lista de espera se encuentra suspendida, (solo se activa si el titulo esta agotado o en preventa)\n");
+        printf("Error: La lista de espera se encuentra suspendida\n");
+        if (tituloEncontrado->estado == 4) {
+            printf("El titulo se encuentra descatalogado\n");
+        }
         return;
     }
     nuevoNodo = crearNodoListasEspera(clienteEnTienda);
@@ -2948,7 +2951,7 @@ int crearPasesFamiliares(struct Tienda *tienda, struct Pase *nuevo,int idCliente
     return 1;
 }
 
-void comprarPases(struct Tienda *tienda, int precios[]) {
+void comprarPasesMenu(struct Tienda *tienda, int precios[]) {
     int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, esValidoPase;
     int fechaUsoPase[5];
     int idClienteFamiliar[4];
@@ -3021,14 +3024,14 @@ void comprarPases(struct Tienda *tienda, int precios[]) {
     printf("Pase creado con exito!\n");
     printf("ID del pase: %d\n", nuevo->idPase);
 }
-void verDatosPases(struct NodoCliente *clientes) {
+void verDatosPasesMenu(struct NodoCliente *clientes) {
     int idDelPase, idDelCliente;
     struct Cliente *cliente;
     struct Pase *mostrado;
 
     printf(" ============ MENU VER DATOS DE PASE ============\n");
     printf("\n");
-    printf("Ingrese el id del cliente = ");
+    printf("Ingrese el id del cliente = \n");
     idDelCliente = inputEntero();
     cliente = buscarClientePorID(clientes, idDelCliente);
     if (cliente == NULL) {
@@ -3041,7 +3044,7 @@ void verDatosPases(struct NodoCliente *clientes) {
         return;
     }
 
-    printf("Ingrese el id del pase = ");
+    printf("Ingrese el id del pase = \n");
     idDelPase = inputEntero();
     mostrado = buscarPasePorId(cliente->headPase, idDelPase);
     if (mostrado == NULL) {
@@ -3101,11 +3104,28 @@ void listarPasesDeCliente(struct Cliente *cliente) {
         rec = rec->sig;
     }
 }
+/*anula un pase activo .return 1 bien, return 0 no existe, return -1 no esta activo*/
+int anularPase(struct Cliente *cliente, int idPase) {
+    struct Pase *pase;
+    if (cliente == NULL || cliente->headPase == NULL) {
+        return 0;
+    }
+    pase = buscarPasePorId(cliente->headPase, idPase);
+    if (pase == NULL) {
+        return 0;
+    }
+    if (pase->estado != 1) {
+        return -1;
+    }
+    pase->estado = 3;
+    return 1;
+}
 
-void anularPases(struct NodoCliente *abb) {
+void anularPasesMenu(struct NodoCliente *abb) {
     int idCliente, id_Pase;
     struct Cliente *cliente;
     struct NodoPase *nodoPase;
+    int resultado;
 
     printf(" ============ MENU ANULAR PASE ============\n");
     printf("\n");
@@ -3120,19 +3140,17 @@ void anularPases(struct NodoCliente *abb) {
     printf("Ingrese el id del pase a anular = ");
     id_Pase = inputEntero();
 
-    nodoPase = cliente->headPase->sig;
-    while (nodoPase != NULL) {
-        if (nodoPase->datosPase != NULL && nodoPase->datosPase->idPase == id_Pase) {
-            nodoPase->datosPase->estado = 3;
-            printf("Pase anulado con exito!\n");
-            return;
-        }
-        nodoPase = nodoPase->sig;
+    resultado = anularPase(cliente, id_Pase);
+    if (resultado == 1) {
+        printf("Pase anulado con exito!\n");
+    } else if (resultado == -1) {
+        printf("Error: Solo se pueden anular pases activos.\n");
+    } else {
+        printf("Error: No se pudo encontrar el pase con el ID %d.\n", id_Pase);
     }
-    printf("Error: No se pudo encontrar el pase con el ID %d.\n", id_Pase);
 }
 
-void verCantidad(struct NodoCliente *abb) {
+void verCantidadMenu(struct NodoCliente *abb) {
     int idCliente, contador = 0;
     struct Cliente *cliente;
     struct NodoPase *actual;
@@ -3155,7 +3173,7 @@ void verCantidad(struct NodoCliente *abb) {
     printf("\n =====> El numero de pases es: %d <=====\n", contador);
 }
 
-void eliminarPases(struct NodoCliente *abb) {
+void eliminarPasesMenu(struct NodoCliente *abb) {
     int idCliente, id_pase;
     struct Cliente *cliente;
     struct NodoPase *actual, *nodoEliminar;
@@ -3217,7 +3235,7 @@ void contarPases(struct NodoCliente *abb, int contarTipoPase[]) {
     contarPases(abb->der, contarTipoPase);
 }
 
-void verMasVendidos(struct NodoCliente *abb) {
+void verMasVendidosMenu(struct NodoCliente *abb) {
     int contadorTipoPase[4] = {0, 0, 0, 0}, i, mayor = 0;
     contarPases(abb, contadorTipoPase);
     contadorTipoPase[2] = contadorTipoPase[2]/ 4;
@@ -3268,7 +3286,7 @@ void poblarTextoPase(char **Estado, int tipo, int estado, char **Tipo ) {
 }
 
 /*funcion que recibe el abb por lo tanto sirve para el menu*/
-void listarPases(struct NodoCliente *abb) {
+void listarPasesMenu(struct NodoCliente *abb) {
     int idClienteListar;
     struct Cliente *cliente;
     struct NodoPase *actual;
@@ -3309,7 +3327,7 @@ void cambiarPreciosArreglo(int arregloPrecios[], int precioGeneral, int precioIn
     arregloPrecios[2] = precioFamiliar;
     arregloPrecios[3] = precioPrioritario;
 }
-void cambiarPrecios(int arregloPrecios[]) {
+void cambiarPreciosMenu(int arregloPrecios[]) {
     int precioGeneral, precioInfantil, precioFamiliar, precioPrioritario;
     printf(" ============ MENU CAMBIAR PRECIOS ============\n");
     printf("\n");
@@ -3342,7 +3360,7 @@ void cambiarPrecios(int arregloPrecios[]) {
     printf("Precios actualizados con exito!\n");
 }
 
-void modificarDatosPase(struct Tienda *tienda) {
+void modificarDatosPaseMenu(struct Tienda *tienda) {
     int idClienteModificar, idPaseModificar, opcionModificar, i;
     int nuevoValor, nuevoEstado, nuevaSala,nuevaFecha[5],esIgual=1;
     struct Cliente *cliente;
@@ -3372,11 +3390,17 @@ void modificarDatosPase(struct Tienda *tienda) {
         printf("Error: No se pudo encontrar el pase con el ID %d.\n", idPaseModificar);
         return;
     }
+    if (pase->estado != 1) {
+        printf("Error: Solo se pueden modificar pases ACTIVOS (estado actual: %s).\n",
+               nombreEstadoPase(pase->estado));
+        return;
+    }
+
     do {
         printf("   Que desea modificar : \n");
         printf("\n");
         printf("      Opcion [1]: Valor del pase \n");
-        printf("      Opcion [2]: Estado del pase \n");
+        printf("      Opcion [2]: Estado del pase anular \n");
         printf("      Opcion [3]: Fecha de uso \n");
         printf("      Opcion [4]: Sala asociada \n");
         printf("\n");
@@ -3406,19 +3430,12 @@ void modificarDatosPase(struct Tienda *tienda) {
 
         case 2:
             printf("\n");
-            do {
-                printf("   Seleccione el nuevo estado : \n");
-                printf("      Opcion [1]: Activo \n");
-                printf("      Opcion [2]: Utilizado \n");
-                printf("      Opcion [3]: Anulado \n");
-                printf("      Opcion [4]: Vencido \n");
-                nuevoEstado = inputEntero();
-            } while (nuevoEstado < 1 || nuevoEstado > 4);
-            if (pase->estado == nuevoEstado) {
-                printf("Error: El pase ya se encuentra en ese estado.\n");
+            printf("Desea anular este pase? [1] Si / [0] No = ");
+            if (inputEntero() == 1) {
+                anularPase(cliente, idPaseModificar);
+                printf("Pase anulado con exito!\n");
             } else {
-                pase->estado = nuevoEstado;
-                printf("Estado modificado con exito!\n");
+                printf("Operacion cancelada.\n");
             }
             break;
 
@@ -3518,7 +3535,7 @@ void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
                 break;
             case 3:
                 printf("Ha seleccionado la opcion 3: Anular mi pase \n");
-                anularPases(ibcomics->raiz);
+                anularPasesMenu(ibcomics->raiz);
                 break;
             case 4:
                 printf("Ha seleccionado la opcion 4: Cantidad de Pases comprados por cliente \n");
