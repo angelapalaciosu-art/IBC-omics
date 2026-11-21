@@ -1047,9 +1047,7 @@ struct Titulo *agregarTitulo(struct Tienda *tienda, struct Sala *sala, struct Ti
     if (tienda == NULL || sala == NULL || titulo == NULL) {
         return NULL;
     }
-    if (buscarTituloEnSalasPorId(tienda, titulo->idTitulo) != NULL || buscarTituloEnSalas(tienda, titulo->nombreTitulo) != NULL) {
-        return NULL;
-    }
+    
     nuevoNodo = crearNodoTitulo(titulo);
     if (nuevoNodo == NULL) {
         return NULL;
