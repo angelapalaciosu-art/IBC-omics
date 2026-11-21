@@ -96,7 +96,7 @@ struct Sala {
 struct Tienda {
     char *nombreTienda;
     int cantidadSalas;
-    struct Sala **salas;
+    struct Sala *salas[12];
     struct NodoCliente *raiz;
     int diaAbierto;   /*1: Abierto / 2: Cerrado*/
     int arregloFechaAct[3];  /*[0]: Dia / [1]: Mes / [2]: Anio */
@@ -360,13 +360,10 @@ void liberarTienda(struct Tienda *ibcomics) {
     ibcomics->raiz = NULL;
 
     /* 2. Liberar las salas siempre sacando la primera */
-    if (ibcomics->salas != NULL) {
-        while (ibcomics->cantidadSalas > 0) {
+   while (ibcomics->cantidadSalas > 0) {
             eliminarSala(ibcomics, ibcomics->salas[0]);
         }
-        free(ibcomics->salas);
-    }
-
+   
     /* 3. Liberar la tienda */
     free(ibcomics);
 }
@@ -790,22 +787,6 @@ void mostrarMenuClientes(struct Tienda *tienda) {
 /* =========================================================================
    MODULO DE SALAS Y TITULOS 
    ========================================================================= */
-/* Esta funcion crea el arreglo de punteros a salas vacio */
-   struct Sala **crearArregloSalas(int maxSalas) {
-    struct Sala **arregloSalas;
-    int i;
-    if (maxSalas <= 0) {
-        return NULL;
-    }
-    arregloSalas = (struct Sala **) malloc(sizeof(struct Sala *) * maxSalas);
-    if (arregloSalas == NULL) {
-        return NULL;
-    }
-    for (i = 0; i < maxSalas; i++) {
-        arregloSalas[i] = NULL;
-    }
-    return arregloSalas;
-}
 
 /* Esta funcion busca una sala en la tienda segun su ID */
 
@@ -3041,9 +3022,9 @@ char *nombreTipoPase(int tipoPase) {
         return "Infantil";
     }
     else if (tipoPase == 3) {
-        return "Anulado";
+        return "Familiar";
     }
-    else {
+    else if (tipoPase == 4) {
         return "Prioritario";
     }
     return "Desconocido";
@@ -3882,7 +3863,7 @@ void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4], int tamS
 }
 
 int main(void) {
-    int opcionPrincipal;
+    int opcionPrincipal, i;
     int preciosPases[4];
     int tamSalas = 12;
     struct Tienda *ibcomics;
@@ -3897,7 +3878,9 @@ int main(void) {
     }
       ibcomics->nombreTienda = "IBC - OMICS INC.";
     ibcomics->raiz = NULL;
-    ibcomics->salas = crearArregloSalas(tamSalas);
+    for(i = 0; i < tamSalas; i++){
+         ibcomics->salas[i] = NULL;
+    }
     ibcomics->cantidadSalas = 0;
     ibcomics->diaAbierto = 0;
     ibcomics->arregloFechaAct[0] = 0;
@@ -3905,12 +3888,6 @@ int main(void) {
     ibcomics->arregloFechaAct[2] = 0;
     ibcomics->totalClientes = 0;
     
-   if (ibcomics->salas == NULL) {
-        printf("ERROR: no se puede asignar memoria para salas.\n");
-      free(ibcomics);
-       return 1;
-    }
-   
     do {
         printf("\n==========================================================\n");
         printf("       SISTEMA PRINCIPAL - IBC - OMICS INC.\n");
