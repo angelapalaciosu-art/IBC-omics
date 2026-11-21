@@ -1254,8 +1254,8 @@ void menuModificarTitulo(struct Tienda *tienda, struct Titulo *tituloModificar) 
                 printf("Precio registrado: %d \n", tituloModificar->precio);
                 printf("Ingrese el nuevo precio = ");
                 tituloModificar->precio = inputEntero();
-                while(tituloModificar->precio < 0){
-                    printf("Error: El precio no puede ser negativo. Ingrese el nuevo precio = ");
+                while(tituloModificar->precio <= 0){
+                    printf("Error: El precio debe ser mayor a 0. Ingrese el nuevo precio = ");
                     tituloModificar->precio = inputEntero();
                 }
                 printf("Precio modificado con exito! Nuevo precio: %d \n\n", tituloModificar->precio);
@@ -2452,7 +2452,7 @@ void vaciarListaEsperaMenu(struct Tienda *ibcomics) {
     }
 
     printf("El titulo ha sido encontrado! \n");
-    printf("Nombre: %s", tituloEncontrado->nombreTitulo);
+    printf("Nombre: %s\n", tituloEncontrado->nombreTitulo);
 
     resultado = contarCantidadClientesEnListaEspera(tituloEncontrado->headListaEspera);
     if (resultado == 0) {
@@ -3484,7 +3484,7 @@ void modificarDatosPaseMenu(struct Tienda *tienda) {
 
             nueva_sala = tienda->salas[nuevaSala - 1];
             if (nueva_sala == NULL) {
-                printf("Error: No existe una sala con esa tematica.\n");
+                printf(""Error: La sala seleccionada no es valida.\n"");
             } else if (nueva_sala == pase->datosSala) {
                 printf("Error: La sala nueva es igual a la anterior.\n");
             } else {
