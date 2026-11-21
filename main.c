@@ -2684,6 +2684,7 @@ void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala) {
                 rec->datosPase->datosSala = NULL;
                if(rec->datosPase->estado ==1){
                   rec->datosPase->estado=3;
+               }
             }
             rec = rec->sig;
         }
