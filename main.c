@@ -102,8 +102,8 @@ struct Tienda {
     int arregloFechaAct[3];  /*[0]: Dia / [1]: Mes / [2]: Anio */
     int totalClientes;  /*dentro de la tienda en el dia*/
 };
-
-/* inputEntero contra puntos, guiones y letras usando fgets */
+/*funciones de utilidad*/
+/* Lee un entero desde teclado y no sale hasta recibir un valor que sea valido y retorna el entero leido*/ */
 int inputEntero(void) {
     int numero, caracterLeido;
     while (scanf("%d", &numero) != 1) {
@@ -143,7 +143,7 @@ int validarNombreSoloLetrasYEspacios(const char *cadenaNombre) {
     }
     return 1;
 }
-/* Lee un texto y elimina los caracteres sobrantes si supera el arreglo */
+/* Lee una linea de texto y elimina los caracteres sobrantes si supera el arreglo */
 void leerTexto(char texto[], int tamano) {
     int caracter;
     if (fgets(texto, tamano, stdin) == NULL) {
@@ -236,7 +236,7 @@ struct Cliente *crearEstructuraCliente(int id, const char *nombre, const char *r
 
     nuevoCliente->nombreCliente = copiarTexto(nombre);
     nuevoCliente->correo = copiarTexto(correo);
-
+   /* Si alguna copia fallo, se libera todo para no dejar fugas de memoria */
     if (nuevoCliente->nombreCliente == NULL || nuevoCliente->correo == NULL) {
         free(nuevoCliente->nombreCliente);
         free(nuevoCliente->correo);
@@ -497,7 +497,7 @@ void mostrarInformacionCliente(struct Cliente *cliente) {
     printf(" Correo : %s \n", cliente->correo);
     printf(" ===========================================\n\n");
 }
-
+/*lista todos los clientes del ABB ordenados por ID(recorrido inorden*/
 void listarClientes(struct NodoCliente *raiz) {
     if (raiz == NULL) {
         return;
@@ -588,7 +588,6 @@ void menuModificarCliente(struct Cliente *clienteModificar) {
     } while (opcionSeleccionada != 0);
 }
 /*Interfaz para registrar un nuevo cliente validando entradas y unicidad de RUT*/
-
 void registrarCliente(struct NodoCliente **raiz) {
     int idGenerado;
     int edadCliente;
