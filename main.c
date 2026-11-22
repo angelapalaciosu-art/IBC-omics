@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 
+#define MAX_SALAS 12
 /* =========================================================================
    DECLARACIONES ADELANTADAS
    ========================================================================= */
@@ -96,7 +97,7 @@ struct Sala {
 struct Tienda {
     char *nombreTienda;
     int cantidadSalas;
-    struct Sala *salas[12];
+    struct Sala *salas[MAX_SALAS];
     struct NodoCliente *raiz;
     int diaAbierto;   /*1: Abierto / 2: Cerrado*/
     int arregloFechaAct[3];  /*[0]: Dia / [1]: Mes / [2]: Anio */
@@ -3855,7 +3856,7 @@ void mostrarMenuPrincipal(struct Tienda *ibcomics, int preciosPases[4], int tamS
 int main(void) {
     int opcionPrincipal, i;
     int preciosPases[4];
-    int tamSalas = 12;
+    int tamSalas = MAX_SALAS;
     struct Tienda *ibcomics;
 
     srand(time(NULL));
