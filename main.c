@@ -2730,6 +2730,7 @@ void comprobarPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *c
             *valorPase = precios[0];
             break;
         case 2:
+            *valorPase = precios[1];
             if (clienteComprador->edad > 10 || clienteComprador->edad < 1) {
                 *esValidoPase = 0;
                 return;
@@ -3103,7 +3104,6 @@ int anularPase(struct Cliente *cliente, int idPase) {
 void anularPasesMenu(struct NodoCliente *abb) {
     int idCliente, id_Pase;
     struct Cliente *cliente;
-    struct NodoPase *nodoPase;
     int resultado;
 
     printf(" ============ MENU ANULAR PASE ============\n");
