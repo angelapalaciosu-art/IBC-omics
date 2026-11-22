@@ -1684,7 +1684,7 @@ int eliminarTitulo(struct Tienda *tienda, struct Titulo *tituloEliminar) {
     int i;
     struct NodoTitulo *rec;
 
-    if (tienda->salas == NULL) {
+    if (tienda == NULL || tituloEliminar == NULL || tienda->salas == NULL) {
         return 0;
     }
 
