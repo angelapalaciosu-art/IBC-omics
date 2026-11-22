@@ -3068,7 +3068,6 @@ void verDatosPasesMenu(struct NodoCliente *clientes) {
         printf("Error: No se pudo encontrar el pase con el ID %d.\n", idDelPase);
         return;
     }
-    printf("Pase encontrado con exito!\n");
     datosDelPase(paseEncontrado);
 
     if (paseEncontrado->datosSala != NULL) {
@@ -3150,11 +3149,31 @@ void verCantidadMenu(struct NodoCliente *abb) {
     }
     printf("\n =====> El numero de pases es: %d <=====\n", contarPasesCliente(cliente));
 }
+/* Elimina un pase del cliente y libera su memoria y retorna 1 si lo elimino 0 si no existe */
+int eliminarPaseDeCliente(struct Cliente *cliente, int idPase) {
+    struct NodoPase *actual, *nodoEliminar;
+
+    if (cliente == NULL || cliente->headPase == NULL) {
+        return 0;
+    }
+    actual = cliente->headPase;
+    while (actual->sig != NULL) {
+        if (actual->sig->datosPase != NULL && actual->sig->datosPase->idPase == idPase) {
+            nodoEliminar = actual->sig;
+            actual->sig = nodoEliminar->sig;
+            free(nodoEliminar->datosPase->horarioUso);
+            free(nodoEliminar->datosPase);
+            free(nodoEliminar);
+            return 1;
+        }
+        actual = actual->sig;
+    }
+    return 0;
+}
 
 void eliminarPasesMenu(struct NodoCliente *abb) {
     int idCliente, id_pase;
     struct Cliente *cliente;
-    struct NodoPase *actual, *nodoEliminar;
 
     printf(" ============ MENU ELIMINAR PASE ============\n");
     printf("\n");
@@ -3169,20 +3188,7 @@ void eliminarPasesMenu(struct NodoCliente *abb) {
     printf("Ingrese el id del pase a eliminar = ");
     id_pase = inputEntero();
 
-    actual = cliente->headPase;
-    while (actual->sig != NULL) {
-        if (actual->sig->datosPase != NULL && actual->sig->datosPase->idPase == id_pase) {
-            break;
-        }
-        actual = actual->sig;
-    }
-
-    if (actual->sig != NULL) {
-        nodoEliminar = actual->sig;
-        actual->sig = nodoEliminar->sig;
-        free(nodoEliminar->datosPase->horarioUso);
-        free(nodoEliminar->datosPase);
-        free(nodoEliminar);
+    if (eliminarPaseDeCliente(cliente, id_pase) == 1) {
         printf("Pase eliminado con exito!\n");
     } else {
         printf("Error: No se pudo encontrar el pase con el ID %d.\n", id_pase);
