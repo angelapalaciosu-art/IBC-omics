@@ -3594,7 +3594,7 @@ char *motivoRechazoIngreso(struct Tienda *ibcomics, struct Cliente *cliente, str
     }
     return NULL;
 }
-
+/*Registra el ingreso de un cliente a una sala si el pase y las reglas lo permiten */*/
 int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresado, struct Pase *pase) {
     if (motivoRechazoIngreso(ibcomics, clienteIngresado, pase) != NULL) {
         return 0;
@@ -3606,6 +3606,7 @@ int ingresarClienteSala(struct Tienda *ibcomics, struct Cliente *clienteIngresad
     pase->estado = 2; /*utilizado*/
     return 1;
 }
+/* Permite ingresar un cliente a una sala validando su pase y el estado del dia */
 void menusIngresarClienteSala(struct Tienda *ibcomics) {
     struct Cliente *clienteEncontrado;
     struct Pase *paseEncontrado;
@@ -3674,6 +3675,7 @@ void menuSacarClienteSala(struct Tienda *ibcomics) {
     sacarClienteDeSala(ibcomics,clienteEncontrado);
 
 }
+/* Recorre el arbol de clientes y saca a quienes esten en la sala indicada */
 void sacarTodosClientesSala(struct Tienda *ibcomics, struct NodoCliente *raiz, struct Sala *salaQuitada) {
     if (raiz == NULL) {
         return ;
@@ -3684,7 +3686,7 @@ void sacarTodosClientesSala(struct Tienda *ibcomics, struct NodoCliente *raiz, s
     sacarTodosClientesSala(ibcomics,raiz->izq, salaQuitada);
     sacarTodosClientesSala(ibcomics,raiz->der, salaQuitada);
 }
-
+/*solicita una sala y vacia a todos los clientes que se encuentren en ella*/
 void menuSacarTodosClientesSala(struct Tienda *ibcomics) {
     int idSala;
     struct Sala *salaEncontrada;
@@ -3954,7 +3956,7 @@ int main(void) {
                 break;
         }
     } while (opcionPrincipal != 7);
-
+   /*libera la memoria deinamica usada por la tienda antes de terminar*/
     liberarTienda(ibcomics);
     return 0;
 }
