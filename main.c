@@ -374,7 +374,7 @@ int removerClienteDeListasDeEspera(struct Tienda *tienda, int idCliente) {
     struct NodoTitulo *tituloActual;
 
     totalRemovidos = 0;
-    if (tienda == NULL || tienda->salas == NULL) {
+    if (tienda->salas == NULL) {
         return 0;
     }
 
@@ -831,7 +831,7 @@ struct Sala *buscarSalaPorNombre(struct Tienda *tienda, char *nombreSala) {
 }
 /* Esta funcion agrega una sala al arreglo de la tienda */
 struct Sala *agregarSala(struct Tienda *tienda, struct Sala *sala, int tamSalas) {
-    if (tienda == NULL || sala == NULL || tienda->salas == NULL) {
+    if (tienda->salas == NULL) {
         return NULL;
     }
     if (tienda->cantidadSalas >= tamSalas) {
@@ -1383,7 +1383,7 @@ int eliminarSala(struct Tienda *tienda, struct Sala *salaEliminar) {
     int i;
     struct NodoTitulo *rec, *siguiente;
 
-    if (tienda == NULL || tienda->salas == NULL || salaEliminar == NULL) {
+    if (tienda->salas == NULL) {
         return 0;
     }
 
@@ -1451,7 +1451,7 @@ int contarTitulosEnSala(struct Sala *sala) {
 struct Tienda *ordenarSalasPorPersonas(struct Tienda *tienda) {
     int i, j;
     struct Sala *aux;
-    if (tienda == NULL || tienda->salas == NULL) {
+    if (tienda->salas == NULL) {
         return NULL;
     }
     for (i = 0; i < tienda->cantidadSalas - 1; i++) {
@@ -1469,7 +1469,7 @@ struct Tienda *ordenarSalasPorPersonas(struct Tienda *tienda) {
 struct Tienda *ordenarSalasPorTitulos(struct Tienda *tienda) {
     int i, j;
     struct Sala *aux;
-    if (tienda == NULL || tienda->salas == NULL) {
+    if (tienda->salas == NULL) {
         return NULL;
     }
     for (i = 0; i < tienda->cantidadSalas - 1; i++) {
@@ -1490,7 +1490,7 @@ struct Sala *crearYAgregarSala(struct Tienda *tienda, int tamSalas) {
     char nombreSala[100];
     struct Sala *nuevaSala;
 
-    if (tienda == NULL || tienda->salas == NULL) {
+    if (tienda->salas == NULL) {
         return NULL;
     }
     if (tienda->cantidadSalas >= tamSalas) {
@@ -1678,7 +1678,7 @@ int eliminarTitulo(struct Tienda *tienda, struct Titulo *tituloEliminar) {
     int i;
     struct NodoTitulo *rec;
 
-    if (tienda == NULL || tienda->salas == NULL || tituloEliminar == NULL) {
+    if (tienda->salas == NULL) {
         return 0;
     }
 
