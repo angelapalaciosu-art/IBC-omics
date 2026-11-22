@@ -3129,27 +3129,21 @@ void anularPasesMenu(struct NodoCliente *abb) {
     }
 }
 
+
 void verCantidadMenu(struct NodoCliente *abb) {
-    int idCliente, contador = 0;
+    int idCliente;
     struct Cliente *cliente;
-    struct NodoPase *actual;
 
     printf(" ============ MENU VER CANTIDAD DE PASES ============\n");
     printf("\n");
     printf("Ingrese el id del cliente = ");
     idCliente = inputEntero();
     cliente = buscarClientePorID(abb, idCliente);
-    if (cliente == NULL || cliente->headPase->sig == NULL) {
-        printf("Error: El cliente no tiene pases o no fue encontrado.\n");
+    if (cliente == NULL) {
+        printf("Error: No se encontro al cliente.\n");
         return;
     }
-
-    actual = cliente->headPase->sig;
-    while (actual != NULL) {
-        contador++;
-        actual = actual->sig;
-    }
-    printf("\n =====> El numero de pases es: %d <=====\n", contador);
+    printf("\n =====> El numero de pases es: %d <=====\n", contarPasesCliente(cliente));
 }
 
 void eliminarPasesMenu(struct NodoCliente *abb) {
