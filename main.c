@@ -2525,7 +2525,7 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
    MODULO DE PASES (Nico)
    ========================================================================= */
 
-
+/*Crea un nodo para la lista de pases*/
 struct NodoPase *crearNodoPase(void) {
     struct NodoPase *nodoPase = (struct NodoPase *) malloc(sizeof(struct NodoPase));
     if (nodoPase == NULL) {
@@ -2535,7 +2535,7 @@ struct NodoPase *crearNodoPase(void) {
     nodoPase->sig = NULL;
     return nodoPase;
 }
-
+/*Crea un pase con datos iniciales*/
 struct Pase *crearPase(void) {
     struct Pase *pase = (struct Pase *) malloc(sizeof(struct Pase));
     if (pase == NULL) {
@@ -2554,7 +2554,7 @@ struct Pase *crearPase(void) {
     pase->arregloFecha[4] = 0;
     return pase;
 }
-
+/*Busca un pase por su ID*/
 struct Pase *buscarPasePorId(struct NodoPase *pases, int idBuscado) {
     struct NodoPase *actual;
     if (pases == NULL) {
@@ -2570,7 +2570,7 @@ struct Pase *buscarPasePorId(struct NodoPase *pases, int idBuscado) {
     return NULL;
 }
 
-
+/*Busca un pase entre los clientes*/
 int buscarPaseEnCLientes(struct NodoCliente *abb, int idBuscado) {
     if (abb == NULL) {
         return 0;
@@ -2585,7 +2585,7 @@ int buscarPaseEnCLientes(struct NodoCliente *abb, int idBuscado) {
 
     return 0;
 }
-
+/*Genera un ID para un pase*/
 int crearIdPase(struct NodoCliente *abb) {
     int idNuevo = 0;
     int esUnico = 0;
@@ -2599,7 +2599,7 @@ int crearIdPase(struct NodoCliente *abb) {
     }
     return idNuevo;
 }
-
+/*Agrega un pase a un cliente*/
 int agregarPaseACliente(struct Cliente *cliente, struct Pase *pase) {
     struct NodoPase *nuevoNodo, *actual;
 
@@ -2617,7 +2617,7 @@ int agregarPaseACliente(struct Cliente *cliente, struct Pase *pase) {
     return 1;
 }
 
-/* Crea un pase completo con ID nuevo. Retorna NULL si falla la memoria */
+/* Crea un pase completo con ID nuevo, retorna NULL si falla la memoria */
 struct Pase *crearPaseCompleto(struct Tienda *tienda, int tipoPase, int valorPase, int fechaUsoPase[], struct Sala *sala) {
     struct Pase *nuevo = crearPase();
     if (nuevo == NULL) {
@@ -2667,7 +2667,7 @@ void desvincularPasesDeSala(struct NodoCliente *raiz, struct Sala *sala) {
     desvincularPasesDeSala(raiz->izq, sala);
     desvincularPasesDeSala(raiz->der, sala);
 }
-
+/*Solicita la fecha de uso del pase*/
 void crearFechaPase(int fechaUsoPase[], struct Tienda *tienda) {
     int dia, mes, anio, hora, minuto, maxDia;  /*maxDia es el maximo de dia que tendra un mes*/
     do {
@@ -2721,6 +2721,7 @@ void crearFechaPase(int fechaUsoPase[], struct Tienda *tienda) {
     printf("\nFecha ingresada: %02d/%02d/%04d, a las %02d:%02d hrs\n", fechaUsoPase[0], fechaUsoPase[1], fechaUsoPase[2], fechaUsoPase[3], fechaUsoPase[4]);
 }
 
+/*Comprueba el tipo de pase seleccionado*/
 void comprobarPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *clienteComprador,int *esValidoPase) {
     *esValidoPase = 1;
     switch (*tipoPase) {
@@ -2747,6 +2748,7 @@ void comprobarPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *c
 
 }
 
+/*Permite seleccionar un tipo de pase*/
 void seleccionarTipoPase(int *tipoPase, int precios[],int *valorPase,struct Cliente *clienteComprador,int *esValidoPase){
     do {
         printf("\n");
@@ -2769,6 +2771,7 @@ void seleccionarTipoPase(int *tipoPase, int precios[],int *valorPase,struct Clie
 
 }
 
+/*Permite seleccionar una sala*/
 void seleccionarSala(struct Tienda* tienda,int *salaSeleccionada) {
     int i;
     do {
@@ -2784,7 +2787,8 @@ void seleccionarSala(struct Tienda* tienda,int *salaSeleccionada) {
     } while (*salaSeleccionada < 1 || *salaSeleccionada > tienda->cantidadSalas);
 }
 
-struct Pase *crearCopiaPaseFamiliar(struct Pase *paseOriginal) {    /* Esta funcion hace una copia del pase creado para cada miembro familiar*/
+/* Esta funcion hace una copia del pase creado para cada miembro familiar*/
+struct Pase *crearCopiaPaseFamiliar(struct Pase *paseOriginal) {    
     struct Pase *paseCopia;
 
     if (paseOriginal == NULL) {
@@ -2809,6 +2813,7 @@ struct Pase *crearCopiaPaseFamiliar(struct Pase *paseOriginal) {    /* Esta func
     return paseCopia;
 }
 
+/*Agrega un pase individual al cliente*/
 int crearPaseIndividual(struct Pase *nuevo, struct Cliente *clienteComprador) {
     if (nuevo == NULL) {
         return 0;
@@ -2821,6 +2826,7 @@ int crearPaseIndividual(struct Pase *nuevo, struct Cliente *clienteComprador) {
     return 1;
 }
 
+/*Solicita los integrantes del pase familiar*/
 int agregarCLienteFamiliar(struct Tienda *tienda, int idClienteFamiliar[4]) {
     int i, j, idCliente, esIdValido;
 
@@ -2861,6 +2867,7 @@ int agregarCLienteFamiliar(struct Tienda *tienda, int idClienteFamiliar[4]) {
     return 1;
 }
 
+/*Crea los pases para los integrantes familiares*/
 int crearPasesFamiliares(struct Tienda *tienda, struct Pase *nuevo,int idClienteFamiliar[4]) {
     struct Cliente *cliente;
     struct Pase *pases[4];
@@ -2919,6 +2926,7 @@ int crearPasesFamiliares(struct Tienda *tienda, struct Pase *nuevo,int idCliente
     return 1;
 }
 
+/*Menu para comprar pases*/
 void comprarPasesMenu(struct Tienda *tienda, int precios[]) {
     int tipoPase, valorPase = 0, idClienteCompra, salaSeleccionada, esValidoPase;
     int fechaUsoPase[5];
@@ -2992,6 +3000,8 @@ void comprarPasesMenu(struct Tienda *tienda, int precios[]) {
     printf("Pase creado con exito!\n");
     printf("ID del pase: %d\n", nuevo->idPase);
 }
+
+/*Retorna el nombre del estado del pase*/
 char *nombreEstadoPase(int estado) {
     if (estado == 1) {
         return "Activo";
@@ -3005,6 +3015,7 @@ char *nombreEstadoPase(int estado) {
     return "Desconocido";
 }
 
+/*Retorna el nombre del tipo de pase*/
 char *nombreTipoPase(int tipoPase) {
     if (tipoPase == 1) {
         return "General";
@@ -3021,6 +3032,7 @@ char *nombreTipoPase(int tipoPase) {
     return "Desconocido";
 }
 
+/*Muestra los datos de un pase*/
 void datosDelPase(struct Pase *pase) {
     printf("Pase encontrado con exito!\n");
     printf("Id del pase: %d\n", pase->idPase);
@@ -3033,6 +3045,7 @@ void datosDelPase(struct Pase *pase) {
            pase->arregloFecha[4], pase->horarioUso);
 }
 
+/*Menu para consultar los datos de un pase*/
 void verDatosPasesMenu(struct NodoCliente *clientes) {
     int idDelPase, idDelCliente;
     struct Cliente *cliente;
@@ -3071,6 +3084,7 @@ void verDatosPasesMenu(struct NodoCliente *clientes) {
     }
 }
 
+/*Muestra los pases del cliente*/
 void listarPasesDeCliente(struct Cliente *cliente) {
     struct NodoPase *rec;
     rec = cliente->headPase->sig;
@@ -3081,7 +3095,7 @@ void listarPasesDeCliente(struct Cliente *cliente) {
         rec = rec->sig;
     }
 }
-/*anula un pase activo .return 1 bien, return 0 no existe, return -1 no esta activo*/
+/*anula un pase activo return 1 bien, return 0 no existe, return -1 no esta activo*/
 int anularPase(struct Cliente *cliente, int idPase) {
     struct Pase *pase;
     if (cliente == NULL || cliente->headPase == NULL) {
@@ -3098,6 +3112,7 @@ int anularPase(struct Cliente *cliente, int idPase) {
     return 1;
 }
 
+/*Menu para anular pases*/
 void anularPasesMenu(struct NodoCliente *abb) {
     int idCliente, id_Pase;
     struct Cliente *cliente;
@@ -3127,6 +3142,7 @@ void anularPasesMenu(struct NodoCliente *abb) {
     }
 }
 
+/*Menu para ver la cantidad de pases*/
 void verCantidadMenu(struct NodoCliente *abb) {
     int idCliente, contador = 0;
     struct Cliente *cliente;
@@ -3150,6 +3166,7 @@ void verCantidadMenu(struct NodoCliente *abb) {
     printf("\n =====> El numero de pases es: %d <=====\n", contador);
 }
 
+/*Menu para eliminar pases*/
 void eliminarPasesMenu(struct NodoCliente *abb) {
     int idCliente, id_pase;
     struct Cliente *cliente;
@@ -3188,6 +3205,7 @@ void eliminarPasesMenu(struct NodoCliente *abb) {
     }
 }
 
+/*Cuenta los pases por tipo*/
 void contarPases(struct NodoCliente *abb, int contarTipoPase[]) {
     struct NodoPase *actual;
     int tipo;
@@ -3212,6 +3230,7 @@ void contarPases(struct NodoCliente *abb, int contarTipoPase[]) {
     contarPases(abb->der, contarTipoPase);
 }
 
+/*Menu para ver las ventas por tipo de pase*/
 void verMasVendidosMenu(struct NodoCliente *abb) {
     int contadorTipoPase[4] = {0, 0, 0, 0}, i, mayor = 0;
     contarPases(abb, contadorTipoPase);
@@ -3254,19 +3273,23 @@ void listarPasesMenu(struct NodoCliente *abb) {
         actual = actual->sig;
     }
 }
-
+/*Asigna los precios iniciales de los pases*/
 void poblarPrecios(int arregloPrecios[]) {
     arregloPrecios[0] = 5000;
     arregloPrecios[1] = 3000;
     arregloPrecios[2] = 17000;
     arregloPrecios[3] = 10000;
 }
+
+/*Actualiza los precios del arreglo*/
 void cambiarPreciosArreglo(int arregloPrecios[], int precioGeneral, int precioInfantil, int precioFamiliar, int precioPrioritario) {
     arregloPrecios[0] = precioGeneral;
     arregloPrecios[1] = precioInfantil;
     arregloPrecios[2] = precioFamiliar;
     arregloPrecios[3] = precioPrioritario;
 }
+
+/*Menu para cambiar los precios*/
 void cambiarPreciosMenu(int arregloPrecios[]) {
     int precioGeneral, precioInfantil, precioFamiliar, precioPrioritario;
     printf(" ============ MENU CAMBIAR PRECIOS ============\n");
@@ -3300,6 +3323,7 @@ void cambiarPreciosMenu(int arregloPrecios[]) {
     printf("Precios actualizados con exito!\n");
 }
 
+ /*Menu para modificar los datos de un pase*/
 void modificarDatosPaseMenu(struct Tienda *tienda) {
     int idClienteModificar, idPaseModificar, opcionModificar, i;
     int nuevoValor, nuevaSala,nuevaFecha[5],esIgual=1;
@@ -3437,6 +3461,7 @@ void modificarDatosPaseMenu(struct Tienda *tienda) {
     printf("Saliendo del menu modificar pase...\n");
 }
 
+/*Menu principal de pases*/
 void menuPases(struct Tienda *ibcomics, int preciosPases[4]) {
     int opcion;
 
