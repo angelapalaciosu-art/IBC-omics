@@ -2168,7 +2168,6 @@ void listarClientesListaEspera(struct NodoListaEspera *head) {
         printf("La lista se encuentra vacia\n");
         return;
     }
-
     rec = head;
 
     do {
@@ -2192,7 +2191,7 @@ void agregarClienteListaEsperaMenu(struct Tienda *ibcomics) {
     }
     printf(" ============ MENU AGREGAR CLIENTE LISTA DE ESPERA ============\n\n");
     printf("Ingrese el ID del titulo que desea buscar: \n");
-    idTituloBuscado = inputEntero();
+    idTituloBuscado = inputEntero(); /*leer id del titulo*/
 
     tituloEncontrado = buscarTituloEnSalasPorId(ibcomics, idTituloBuscado);
     if (tituloEncontrado == NULL) {
@@ -2363,7 +2362,7 @@ void mostrarTituloMayorListaEsperaEnSalaMenu(struct Tienda *ibcomics) {
         if (salaEncontrada == NULL) {
             printf("Error: No hay ninguna sala registrada con ese ID\n\n");
         }
-    } while (salaEncontrada == NULL);
+    } while (salaEncontrada == NULL);  /*preguntar hasta que sala exista*/
 
     printf("Sala encontrada con exito!\n");
     printf("Nombre de la sala: %s\n", salaEncontrada->nombreSala);
@@ -2526,7 +2525,6 @@ void imprimirMenuListaEspera(struct Tienda *ibcomics) {
    MODULO DE PASES (Nico)
    ========================================================================= */
 
-
 struct NodoPase *crearNodoPase(void) {
     struct NodoPase *nodoPase = (struct NodoPase *) malloc(sizeof(struct NodoPase));
     if (nodoPase == NULL) {
@@ -2556,6 +2554,7 @@ struct Pase *crearPase(void) {
     return pase;
 }
 
+/*recorre los pases y busca por su id*/
 struct Pase *buscarPasePorId(struct NodoPase *pases, int idBuscado) {
     struct NodoPase *actual;
     if (pases == NULL) {
@@ -2571,7 +2570,7 @@ struct Pase *buscarPasePorId(struct NodoPase *pases, int idBuscado) {
     return NULL;
 }
 
-
+/*recorre el arbol de clientes preorden buscando si un cliente posee el pase buscado*/
 int buscarPaseEnCLientes(struct NodoCliente *abb, int idBuscado) {
     if (abb == NULL) {
         return 0;
@@ -2587,6 +2586,7 @@ int buscarPaseEnCLientes(struct NodoCliente *abb, int idBuscado) {
     return 0;
 }
 
+/*crea un id unico*/
 int crearIdPase(struct NodoCliente *abb) {
     int idNuevo = 0;
     int esUnico = 0;
