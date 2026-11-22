@@ -1047,7 +1047,10 @@ struct Titulo *agregarTitulo(struct Tienda *tienda, struct Sala *sala, struct Ti
     if (tienda == NULL || sala == NULL || titulo == NULL) {
         return NULL;
     }
-    
+    if (buscarTituloEnSalasPorId(tienda, titulo->idTitulo) != NULL || buscarTituloEnSalas(tienda, titulo->nombreTitulo) != NULL) {
+        return NULL;
+    } /*si el titulo ya existe*/
+
     nuevoNodo = crearNodoTitulo(titulo);
     if (nuevoNodo == NULL) {
         return NULL;
@@ -1599,6 +1602,8 @@ void mostrarMenuSalas(struct Tienda *tienda, int tamSalas) {
                 salaOperar = crearYAgregarSala(tienda, tamSalas);
                 if (salaOperar != NULL) {
                     printf("Sala registrada con exito! \n\n");
+                } else {
+                    printf("Error: No se pudo registrar la sala.\n\n");
                 }
                 break;
             case 2:
